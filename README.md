@@ -118,6 +118,9 @@ Telegram bot replies with a clean rich-text card:
 - Run the pre-made Notion MCP server locally using environment flags for your tokens.
 - Write a small standalone script using the standard MCP library to confirm your environment can write a test card directly into your Notion board without Telegram involved.
 
+References:
+-https://developers.notion.com/guides/mcp/overview
+
 ---
 
 ## Phase 3: Bot Brain & Routing
