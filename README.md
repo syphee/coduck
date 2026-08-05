@@ -136,6 +136,9 @@ Start flat. Migrate to relational later only if you find you actually need per-p
 
 **Exit criteria:** Bot runs unattended, processes messages in near real-time from both channels.
 
+References:
+-https://developers.notion.com/guides/mcp/overview
+
 ---
 
 ## 🧾 Simplified Checklist
