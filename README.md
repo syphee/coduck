@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🤖 AI Clipboard Agent — Revised Plan (v2)
 
 ## Project Summary
@@ -178,6 +177,3 @@ Start flat. Migrate to relational later only if you find you actually need per-p
 
 1. **Flat vs. relational Notion schema** — do you want dedicated project pages, or is a single filtered database enough?
 2. **Voice notes** — Gemini 2.5 Flash can accept audio directly, so voice notes can skip a separate transcription step and go straight into the same classification call. Worth confirming this is how you want to handle Telegram/Discord voice messages, since it slightly changes the Stage 1 handler (send audio bytes to Gemini instead of text).
-=======
-# coduck
->>>>>>> 68d137c (Initial commit)
