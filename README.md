@@ -203,31 +203,52 @@ The application runs fully detached, offering sub-second omnichannel processing 
 
 ---
 
-# 🛠️ Execution Checklist
+### 🛠️ Execution Checklist
 
-## Phase 1: Environment & Token Provisioning
+### Phase 1: Environment & Token Provisioning
 
-- [ ] Create **Master Projects** Database in Notion.
-- [ ] Create **Master Kanban Tasks** Database in Notion.
-- [ ] Establish a Relation field from Tasks to Projects.
-- [ ] Set up an Internal Integration Token (`ntn_...`) via the Notion Developer Portal.
-- [ ] Link the Internal Integration to both Notion databases via the UI interface.
-- [ ] Register a new bot via Telegram's **@BotFather** and secure the API HTTP Token.
-- [ ] Create a Discord application portal account and acquire a Bot Secret Token.
+* [ ] Create **Master Projects** Database in Notion.
+* [ ] Create **Master Kanban Tasks** Database in Notion.
+* [ ] Establish a Relation field from the Tasks database to the Projects database.
+* [ ] Generate an Internal Integration Token (ntn_...) via the Notion Developer Portal.
+* [ ] Link the Internal Integration to both Notion databases using the connections menu in the UI.
+* [ ] Register a new bot via Telegram's @BotFather and securely save the HTTP API Token.
+* [ ] Create a Discord application in the developer portal and acquire a Bot Token.
 
----
+### Phase 2: Local MCP Core Setup
 
-## Phase 2: Local MCP Core Setup
+* [ ] Install Node.js runtime and Python 3.11+ on your local development machine.
+* [ ] Verify local library accessibility by running npx -y @modelcontextprotocol/server-notion.
+* [ ] Initialize a local Python virtual environment and run pip install mcp.
+* [ ] Code a local handshake verification script (test_mcp.py) to handle standard I/O stream connections.
+* [ ] Successfully fetch and log available tools (such as notion_create_database_page and notion_query_database).
 
-- [ ] Install Node.js runtime and Python 3.11+ on the local developer machine.
-- [ ] Run `npx -y @modelcontextprotocol/server-notion` to ensure library accessibility.
-- [ ] Run `pip install mcp` inside a local Python virtual environment.
-- [ ] Code a local handshake verification script (`test_mcp.py`) to trace active Node processes.
-- [ ] Successfully fetch available tool arrays (`notion_create_database_page`, `notion_query_database`) using client standard I/O stream connections.
+### Phase 3: Relational Tool Construction
 
----
+* [ ] Construct JSON query parameters to find identical title properties inside the Projects database.
+* [ ] Implement search evaluation logic to parse unique Notion Page IDs from matching queries.
+* [ ] Write a fallback creation block that triggers a page creation tool when a project lookup yields zero results.
+* [ ] Package your target project's structural reference ID into the secondary task insertion payload.
+* [ ] Verify the execution by calling the Python runner to inject a brand-new project parent tab and its nested task simultaneously.
 
-## Phase 3: Relational Tool Construction
+### Phase 4: Chat Integrations & Brain Config
 
-- [ ] Create JSON query parameters to find identical title parameters in the Projects Index database.
-- [ ] Write a logic tree to parse unique Notion Page IDs from search matching sequences.
+* [ ] Build an asynchronous background listener loop for incoming Telegram text using Python's aiogram framework.
+* [ ] Build a parallel message listener hook for Discord text channels using discord.py.
+* [ ] Provide strict system prompt instructions to your target LLM (Claude or OpenAI) for schema entity classification.
+* [ ] Map successful tool output payloads to outbound chat confirmation dispatch cards.
+
+### Phase 5: Historical Migrations
+
+* [ ] Export raw chat logs in a JSON structure (result.json) using the Telegram Desktop client.
+* [ ] Pull WhatsApp structural conversation files (.txt) via the mobile app settings panels.
+* [ ] Fetch historical text channel datasets in a JSON format using the DiscordChatExporter tool.
+* [ ] Run regular expression extraction scripts to strip away unneeded message metadata blocks.
+* [ ] Run a throttled execution queue to feed items sequentially while applying origin platform system badges.
+
+### Phase 6: Server Deployment
+
+* [ ] Package your Python application code and the running Node runtime inside a multi-stage Dockerfile.
+* [ ] Provision a lightweight virtual private server (VPS) instance.
+* [ ] Push local application configurations and Docker environment setups to your remote host.
+* [ ] Activate detached background system workers to monitor your continuous messaging pipelines 24/7.
