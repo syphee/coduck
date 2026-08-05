@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🤖 AI Clipboard Agent — Revised Plan (v2)
 
 ## Project Summary
@@ -13,11 +14,19 @@ This project is a personal knowledge-capture agent that lets you dump quick note
 - **Docker/VPS deferred** — run it on a free-tier VPS (Oracle Cloud Always Free) or a spare machine with `systemd`, no containerization needed until you actually want portable deploys.
 - **Build order flipped** — working Telegram MVP first, relational logic second, instead of a strict waterfall that delays a usable tool.
 ### 🤖 Omnichannel AI Clipboard Agent
+=======
+# 🤖 Omnichannel AI Clipboard Agent
+>>>>>>> 0200c68 (Update README.md)
 
-A frictionless, voice- and text-driven personal knowledge ingestion pipeline. This agent allows you to dump messy, unstructured thoughts, voice notes, and web links into your daily communication apps (**Telegram, WhatsApp, and Discord**). It utilizes the **Model Context Protocol (MCP)** to parse, enrich, summarize, and dynamically organize your data into dedicated project contexts within a centralized **Notion Kanban Dashboard**. 
+## Executive Summary
 
-### 🏗️ Architecture & Ecosystem
+A frictionless, voice- and text-driven personal knowledge ingestion pipeline. This agent allows you to dump messy, unstructured thoughts, voice notes, and web links into your daily communication apps (**Telegram, WhatsApp, and Discord**). It utilizes the **Model Context Protocol (MCP)** to parse, enrich, summarize, and dynamically organize your data into dedicated project contexts within a centralized **Notion Kanban Dashboard**.
 
+---
+
+# 🏗️ Architecture & Ecosystem
+
+```text
 ┌────────────────────────────────────────────────────────────────┐
 │                          INPUT CACHING                         │
 │   ┌──────────────────┐  ┌──────────────────┐  ┌─────────────┐  │
@@ -49,11 +58,13 @@ A frictionless, voice- and text-driven personal knowledge ingestion pipeline. Th
 ┌────────────────────────────────────────────────────────────────┐
 │                       NOTION WORKSPACE                         │
 │  ┌───────────────────────────────┐   ┌──────────────────────┐  │
-│  │    Master Projects Index     │ ──►│ Master Kanban Tasks  │  │
-│  │ (Dynamically Generated Tabs)  │   │  (Filtered Relational│  │
+│  │    Master Projects Index      │──►│ Master Kanban Tasks  │  │
+│  │ (Dynamically Generated Tabs)  │   │ (Filtered Relational)│  │
 │  └───────────────────────────────┘   └──────────────────────┘  │
 └────────────────────────────────────────────────────────────────┘
+```
 
+<<<<<<< HEAD
 ## 🏗️ Architecture
 
 ```text
@@ -102,17 +113,21 @@ when a message contains a URL.
 | Backlog parsing | Python `json`/`re` | For Telegram/Discord exports only |
 | Hosting | Oracle Cloud Always Free VPS, or spare machine | No cost, `systemd` for persistence |
 ### 🛠️ Technology Stack
+=======
+---
+>>>>>>> 0200c68 (Update README.md)
 
-* **Frontend UI Gateways:** Telegram Bot API (aiogram), Discord Client API (discord.py), and WhatsApp raw log parsers.
-* **Core Agent Runtime:** Python 3.11+ using the official Python mcp asynchronous client SDK.
-* **Brain Engine:** Anthropic Claude 3.5 Sonnet / OpenAI GPT-4o (optimized for native json-schema tool manipulation).
-* **Data Integration Layer:** server-notion (Official community MCP server running over Node/npx).
-* **Enrichment Tooling:** puppeteer headless browser MCP server for extracting dark text contexts from unstructured text links.
+# 🛠️ Technology Stack
 
-### 🔄 Dynamic Ingestion Flow
+- **Frontend UI Gateways:** Telegram Bot API (aiogram), Discord Client API (discord.py), and WhatsApp raw log parsers.
+- **Core Agent Runtime:** Python 3.11+ using the official Python MCP asynchronous client SDK.
+- **Brain Engine:** Anthropic Claude 3.5 Sonnet / OpenAI GPT-4o (optimized for native JSON-schema tool manipulation).
+- **Data Integration Layer:** `server-notion` (Official community MCP server running over Node/npx).
+- **Enrichment Tooling:** Puppeteer headless browser MCP server for extracting dark text contexts from unstructured text links.
 
-1. **The Dump:** You send a message or drop a link into your app of choice: 
+---
 
+<<<<<<< HEAD
 ## 📌 Decision to make before you start: flat vs. relational Notion schema
 
 **Flat (recommended for MVP):** One database, with a `Project` select property and a `Status` property for Kanban columns. Group-by-Project view gives you per-project boards natively. No parent-page-ID lookups, no relation plumbing.
@@ -123,17 +138,53 @@ Start flat. Migrate to relational later only if you find you actually need per-p
 *"Add draft design to a new project called HydroGrow"*
 2. **Entity Recognition & Extraction:** The AI Brain isolates the **Intent** (Create Project + Add Task), the **Project Context** (HydroGrow), and the **Action Item** (draft design).
 3. **Database Discovery Loop:** 
+=======
+# 🔄 Dynamic Ingestion Flow
+>>>>>>> 0200c68 (Update README.md)
 
-  * The agent searches the **Master Projects Index** via the Notion MCP Server.
-  * If HydroGrow does not exist, a new relational parent row is automatically instantiated.
-  * If it exists, the agent retrieves its unique Notion Page ID.
-4. **Relational Entry Injection:** The agent calls notion_create_database_page to insert the task card inside the **Master Kanban Tasks** table, explicitly passing the Parent Project ID into the relational property field.
-5. **Dashboard Rendering:** Your Notion workspace reflects a fresh Kanban task nested cleanly inside its corresponding project filter tab.
+## 1. The Dump
 
-### 📉 Waterfall Development Roadmap
+You send a message or drop a link into your app of choice:
 
-The system development follows a strict dependencies waterfall workflow. Each milestone must pass its specified exit validation criteria before proceeding to the next. 
+> *"Add draft design to a new project called HydroGrow"*
 
+---
+
+## 2. Entity Recognition & Extraction
+
+The AI Brain isolates:
+
+- **Intent:** Create Project + Add Task
+- **Project Context:** HydroGrow
+- **Action Item:** Draft design
+
+---
+
+## 3. Database Discovery Loop
+
+- The agent searches the **Master Projects Index** via the Notion MCP Server.
+- If **HydroGrow** does not exist, a new relational parent row is automatically instantiated.
+- If it exists, the agent retrieves its unique Notion Page ID.
+
+---
+
+## 4. Relational Entry Injection
+
+The agent calls `notion_create_database_page` to insert the task card inside the **Master Kanban Tasks** table, explicitly passing the Parent Project ID into the relational property field.
+
+---
+
+## 5. Dashboard Rendering
+
+Your Notion workspace reflects a fresh Kanban task nested cleanly inside its corresponding project filter tab.
+
+---
+
+# 📉 Waterfall Development Roadmap
+
+The system development follows a strict dependencies waterfall workflow. Each milestone must pass its specified exit validation criteria before proceeding to the next.
+
+```text
 [M1: Database & Token Setup] ──────┐
                                    ▼
                        [M2: Core MCP Handshake] ──────┐
@@ -145,7 +196,9 @@ The system development follows a strict dependencies waterfall workflow. Each mi
                                                                                    [M5: Backlog Migration] ──────┐
                                                                                                                  ▼
                                                                                                       [M6: Cloud Deployment]
+```
 
+<<<<<<< HEAD
 ## 🔄 Revised Build Order
 
 ### Stage 1: Telegram MVP (get something working fast)
@@ -168,19 +221,22 @@ The system development follows a strict dependencies waterfall workflow. Each mi
 
 **Exit criteria:** Sending a message to your Telegram bot creates a correctly-tagged card in Notion within a few seconds.
 ### Milestone 1: Tokens & Relational Databases (Days 1-2)
+=======
+---
+>>>>>>> 0200c68 (Update README.md)
 
-* **Tasks:** 
+## Milestone 1: Tokens & Relational Databases (Days 1–2)
 
-  * Create the **Master Projects** parent database in Notion.
-  * Create the **Master Kanban Tasks** child database.
-  * Add a Relation property linking the tasks database to the projects database.
-  * Provision Developer Access tokens across Telegram, Discord, and Notion.
-* **Exit Gate:** Notion Integration is manually bound as a connection to both schemas, and database IDs are securely logged.
+### Tasks
 
-### Milestone 2: Core MCP Client Handshake (Days 3-4)
+- Create the **Master Projects** parent database in Notion.
+- Create the **Master Kanban Tasks** child database.
+- Add a Relation property linking the Tasks database to the Projects database.
+- Provision Developer Access tokens across Telegram, Discord, and Notion.
 
-* **Tasks:** 
+### Exit Gate
 
+<<<<<<< HEAD
 ### Stage 2: Relational/Project Logic (only if you decide you need it)
 
 - [ ] Add a "does this project already exist as a distinct entity" check — for the flat schema this is just checking whether the `Project` select value exists; for relational, this is the lookup-or-create page flow from v1.
@@ -189,27 +245,27 @@ The system development follows a strict dependencies waterfall workflow. Each mi
   * Initialize the pre-built @modelcontextprotocol/server-notion via an internal pipeline process.
   * Write a basic test client (test_mcp.py) to connect via standard I/O streams.
 * **Exit Gate:** Execution logs successfully print discovered server tools and run a non-relational test page creation entry inside the workspace.
+=======
+Notion Integration is manually bound as a connection to both schemas, and database IDs are securely logged.
+>>>>>>> 0200c68 (Update README.md)
 
-### Milestone 3: Dynamic Relational Intelligence (Days 5-7)
+---
 
-* **Tasks:** 
+## Milestone 2: Core MCP Client Handshake (Days 3–4)
 
-  * Program the conditional project query tool loop.
-  * Implement the fallback creation engine that executes when a lookup queries zero results.
-  * Create the execution pipeline that grabs parent page references and passes them inside relational child objects.
-* **Exit Gate:** Executing the script with a novel project string cleanly populates both tables with an explicit structural database reference bond.
+### Tasks
 
-### Milestone 4: Omnichannel Client Integrations (Days 8-11)
+- Establish a local Node/Python developer workspace with the official MCP SDK.
+- Initialize the pre-built `@modelcontextprotocol/server-notion` via an internal pipeline process.
+- Write a basic test client (`test_mcp.py`) to connect via standard I/O streams.
 
-* **Tasks:** 
+### Exit Gate
 
-  * Implement the background message loop listeners (aiogram for Telegram and discord.py for Discord).
-  * Build the context parser hooks for parsing raw text and scraping media URLs.
-  * Wire up the chosen large language model tool-calling interface (Claude 3.5 or GPT-4o) using the local system prompt definitions.
-* **Exit Gate:** Live text strings sent into a Telegram chat window or Discord channel trigger the agent to intelligently classify context fields, execute structural tool actions, and ping back a confirmation message.
+Execution logs successfully print discovered server tools and run a non-relational test page creation entry inside the workspace.
 
-### Milestone 5: Historical Backlog Migration (Days 12-13)
+---
 
+<<<<<<< HEAD
 ### Stage 3: Discord Connector
 
 - [ ] Create a Discord application + bot token.
@@ -218,20 +274,19 @@ The system development follows a strict dependencies waterfall workflow. Each mi
 
 **Exit criteria:** Both channels write into the same Notion database with correct `Source` tagging.
 * **Tasks:** 
+=======
+## Milestone 3: Dynamic Relational Intelligence (Days 5–7)
+>>>>>>> 0200c68 (Update README.md)
 
-  * Collect raw chat data dumps (Telegram JSON exports, WhatsApp structural TXT files, and Discord JSON tables).
-  * Run local regex parsing utilities to isolate links and historical note paragraphs.
-  * Implement a throttled execution runner that pushes the master backlog array into the tool ingestion loop while applying origin application source badges.
-* **Exit Gate:** Your backlog is successfully absorbed, transforming raw message files into chronologically sorted Kanban cards across your distinct project dashboard tabs.
+### Tasks
 
-### Milestone 6: Live Production Deployment (Day 14)
+- Program the conditional project query tool loop.
+- Implement the fallback creation engine that executes when a lookup queries zero results.
+- Create the execution pipeline that grabs parent page references and passes them inside relational child objects.
 
-* **Tasks:** 
+### Exit Gate
 
-  * Package the Python service files and the running Node runtime together using a multi-stage Dockerfile.
-  * Deploy the application image to a dedicated cloud virtual private server (VPS).
-  * Set up system process monitoring logs to manage persistent webhook states.
-* **Exit Gate:** The application runs fully detached, offering sub-second omnichannel processing directly from mobile and desktop endpoints.
+Executing the script with a novel project string cleanly populates both tables with an explicit structural database reference bond.
 
 ### Stage 4: Historical Backlog Migration
 
@@ -242,18 +297,15 @@ The system development follows a strict dependencies waterfall workflow. Each mi
 
 **Exit criteria:** Old messages populate Notion cards without hitting rate limits or duplicating entries.
 ### 🛠️ Execution Checklist
+---
 
-### Phase 1: Environment & Token Provisioning
+## Milestone 4: Omnichannel Client Integrations (Days 8–11)
 
-* [ ] Create **Master Projects** Database in Notion.
-* [ ] Create **Master Kanban Tasks** Database in Notion.
-* [ ] Establish a Relation field from Tasks to Projects.
-* [ ] Set up an Internal Integration Token (ntn_...) via Notion Developer Portal.
-* [ ] Link the Internal Integration to both Notion databases via the UI interface.
-* [ ] Register a new bot via Telegram's @BotFather and secure the API HTTP Token.
-* [ ] Create a Discord application portal account and acquire a Bot Secret Token.
+### Tasks
 
-### Phase 2: Local MCP Core Setup
+- Implement the background message loop listeners (aiogram for Telegram and `discord.py` for Discord).
+- Build the context parser hooks for parsing raw text and scraping media URLs.
+- Wire up the chosen large language model tool-calling interface (Claude 3.5 or GPT-4o) using the local system prompt definitions.
 
 ### Stage 5: Deployment
 
@@ -313,8 +365,67 @@ References:
 * [ ] Run pip install mcp inside a local python virtual environment.
 * [ ] Code a local handshake verification script (test_mcp.py) to trace active Node processes.
 * [ ] Successfully fetch available tool arrays (notion_create_database_page, notion_query_database) using client standard I/O stream connections.
+### Exit Gate
 
-### Phase 3: Relational Tool Construction
+Live text strings sent into a Telegram chat window or Discord channel trigger the agent to intelligently classify context fields, execute structural tool actions, and ping back a confirmation message.
 
 * [ ] Create JSON query parameters to find identical title parameters in the Projects Index database.
 * [ ] Write logic tree: parse unique Notion Page IDs from search matching sequences.
+---
+
+## Milestone 5: Historical Backlog Migration (Days 12–13)
+
+### Tasks
+
+- Collect raw chat data dumps (Telegram JSON exports, WhatsApp structural TXT files, and Discord JSON tables).
+- Run local regex parsing utilities to isolate links and historical note paragraphs.
+- Implement a throttled execution runner that pushes the master backlog array into the tool ingestion loop while applying origin application source badges.
+
+### Exit Gate
+
+Your backlog is successfully absorbed, transforming raw message files into chronologically sorted Kanban cards across your distinct project dashboard tabs.
+
+---
+
+## Milestone 6: Live Production Deployment (Day 14)
+
+### Tasks
+
+- Package the Python service files and the running Node runtime together using a multi-stage Dockerfile.
+- Deploy the application image to a dedicated cloud virtual private server (VPS).
+- Set up system process monitoring logs to manage persistent webhook states.
+
+### Exit Gate
+
+The application runs fully detached, offering sub-second omnichannel processing directly from mobile and desktop endpoints.
+
+---
+
+# 🛠️ Execution Checklist
+
+## Phase 1: Environment & Token Provisioning
+
+- [ ] Create **Master Projects** Database in Notion.
+- [ ] Create **Master Kanban Tasks** Database in Notion.
+- [ ] Establish a Relation field from Tasks to Projects.
+- [ ] Set up an Internal Integration Token (`ntn_...`) via the Notion Developer Portal.
+- [ ] Link the Internal Integration to both Notion databases via the UI interface.
+- [ ] Register a new bot via Telegram's **@BotFather** and secure the API HTTP Token.
+- [ ] Create a Discord application portal account and acquire a Bot Secret Token.
+
+---
+
+## Phase 2: Local MCP Core Setup
+
+- [ ] Install Node.js runtime and Python 3.11+ on the local developer machine.
+- [ ] Run `npx -y @modelcontextprotocol/server-notion` to ensure library accessibility.
+- [ ] Run `pip install mcp` inside a local Python virtual environment.
+- [ ] Code a local handshake verification script (`test_mcp.py`) to trace active Node processes.
+- [ ] Successfully fetch available tool arrays (`notion_create_database_page`, `notion_query_database`) using client standard I/O stream connections.
+
+---
+
+## Phase 3: Relational Tool Construction
+
+- [ ] Create JSON query parameters to find identical title parameters in the Projects Index database.
+- [ ] Write a logic tree to parse unique Notion Page IDs from search matching sequences.
