@@ -143,6 +143,8 @@ Start flat. Migrate to relational later only if you find you actually need per-p
 - [ ] Get Gemini API key from Google AI Studio.
 - [ ] Register Telegram bot token.
 
++ To deploy coduck_bot.py into vercel for serverless use.
+
 ### Phase 2 — Telegram MVP
 - [ ] Build `aiogram` listener.
 - [ ] Wire LLM classification prompt.
