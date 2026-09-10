@@ -1,0 +1,10 @@
+{
+  "name": "notion-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Node bridge for Notion API calls, invoked by the Python bot as a subprocess",
+  "main": "notion_service.js",
+  "dependencies": {
+    "@notionhq/client": "^2.2.15"
+  }
+}

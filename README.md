@@ -92,6 +92,9 @@ Start flat. Migrate to relational later only if you find you actually need per-p
   - Calls `notion-client` to insert a new page into the flat database.
   - Replies in Telegram with a confirmation.
 
+  resources:
+  https://pydantic.dev/docs/validation/latest/concepts/json_schema/
+
 **Exit criteria:** Sending a message to your Telegram bot creates a correctly-tagged card in Notion within a few seconds.
 
 ---
