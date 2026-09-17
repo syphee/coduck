@@ -1,12 +1,29 @@
 from pydantic import BaseModel, Field
-
+from typing import Literal
 import subprocess
 import json
 
+class TaskItem(BaseModel):
+    title: str = Field(description="A specific, actionable subtask — concrete enough to act on immediately")
+
+
 
 class ParsedTask(BaseModel):
-    project: str = Field(description="The project name the task belongs to, e.g. 'HydroGrow'")
-    task: str = Field(description="A short, action-oriented description of the task")
+    intent: Literal["create","update","none"] = Field(
+        description=(
+            "'create' if this message describes something to track or plan (a task, bookmark, reminder, project idea). "
+            "'update' if the message clearly refers to something already in the existing task list (e.g., 'mark X as done', 'I finished the design task', 'rename the research task to...'). Match it to the correct task_id from the list provided—never invent an ID that wasn't given to you. If no existing task matches well, treat it as intent='create' instead. "
+            "'none' for greetings, small talk, or general questions that aren't asking to create or track anything."
+        )
+    )
+    project: str | None = Field(
+        default=None,
+        description="The project this belongs to. Null if intent is 'none'."
+    )
+    tasks: list[TaskItem] = Field(
+        default_factory=list,
+        description="One or more concrete subtasks. If the request is broad or high-level, break it down into the real steps an expert would actually take — don't just restate the prompt as a single task. If it's already specific, a single task is fine."
+    )
     url: str | None = Field(default=None, description="A URL mentioned in the message, if any")
 
 

@@ -10,6 +10,11 @@ from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 from aiogram.types import Message
 
+with open("system_instruction.txt", "r") as file:
+    coduck_system_instruction = file.read()
+    
+
+
 from google import genai
 
 from notionController import ParsedTask,validateProject,add_task_via_notion_js
@@ -27,7 +32,7 @@ client = genai.Client()
 @dp.message(Command("start"))
 async def command_start_handler(message: Message) -> None:
 
-    await message.answer("Hello! I'm a bot created with aiogram. Coduck.")
+    await message.answer("wassup nigga im ur personal assistant ask me any questions or let me structure out your vague tasks king")
 
 def build_notion_properties(parsed: ParsedTask, project_id: str) -> dict:
     return {
@@ -49,7 +54,7 @@ async def query_handler(message: Message) -> None:
         interaction = client.interactions.create(
             model="gemini-3.5-flash-lite",
             input=USER_INPUT,
-            system_instruction="You extract task info from messages.",
+            system_instruction=coduck_system_instruction,
             response_format={
                 "type": "text",
                 "mime_type": "application/json",
@@ -58,14 +63,34 @@ async def query_handler(message: Message) -> None:
         )
         print(f"[RAW GEMINI OUTPUT] {interaction.output_text!r}")
 
+        # parsed = ParsedTask.model_validate_json(interaction.output_text)
+        # print(f"[PARSED] {parsed}")
+
+        # notion_payload = build_notion_properties(parsed, project_id="TEMP_PLACEHOLDER_ID")
+        # print("[NOTION PAYLOAD]")
+        # print(json.dumps(notion_payload, indent=2))
+
+        # await message.answer(f"Added '{parsed.task}' to {parsed.project}")
+
         parsed = ParsedTask.model_validate_json(interaction.output_text)
         print(f"[PARSED] {parsed}")
 
-        notion_payload = build_notion_properties(parsed, project_id="TEMP_PLACEHOLDER_ID")
-        print("[NOTION PAYLOAD]")
-        print(json.dumps(notion_payload, indent=2))
+        if parsed.intent == "none":
+            interaction = client.interactions.create(
+                model="gemini-3.5-flash-lite",
+                input=USER_INPUT
+            )
+            print(interaction.output_text)
+            await message.answer(interaction.output_text)
 
-        await message.answer(f"Added '{parsed.task}' to {parsed.project}")
+        if parsed.intent == "create":
+            #result = create_tasks(parsed.project, [t.title for t in parsed.tasks])
+            task_list = "\n".join(f"• {t.title}" for t in parsed.tasks)
+            await message.answer(f"Added to {parsed.project}:\n{task_list}")
+
+        elif parsed.intent == "update":
+            #result = update_tasks([u.model_dump(exclude_none=True) for u in parsed.updates])
+            await message.answer(f"Updated {len(parsed.updates)} task(s).")
 
     except Exception as e:
         print(f"[ERROR] {type(e).__name__}: {e}")
