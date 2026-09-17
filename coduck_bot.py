@@ -22,7 +22,6 @@ from notionController import ParsedTask,validateProject,add_task_via_notion_js
 load_dotenv()
 
 TOKEN = getenv("coduck_bot")
-print(TOKEN)
 
 dp = Dispatcher()
 
