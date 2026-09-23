@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+<<<<<<< HEAD
 from typing import Literal
 import subprocess
 import json
@@ -24,6 +25,16 @@ class ParsedTask(BaseModel):
         default_factory=list,
         description="One or more concrete subtasks. If the request is broad or high-level, break it down into the real steps an expert would actually take — don't just restate the prompt as a single task. If it's already specific, a single task is fine."
     )
+=======
+
+import subprocess
+import json
+
+
+class ParsedTask(BaseModel):
+    project: str = Field(description="The project name the task belongs to, e.g. 'HydroGrow'")
+    task: str = Field(description="A short, action-oriented description of the task")
+>>>>>>> 52a0e54 (feat: add Gemini formatting of notion actions)
     url: str | None = Field(default=None, description="A URL mentioned in the message, if any")
 
 

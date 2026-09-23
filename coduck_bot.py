@@ -31,7 +31,22 @@ client = genai.Client()
 @dp.message(Command("start"))
 async def command_start_handler(message: Message) -> None:
 
+<<<<<<< HEAD
     await message.answer("wassup nigga im ur personal assistant ask me any questions or let me structure out your vague tasks king")
+
+def build_notion_properties(parsed: ParsedTask, project_id: str) -> dict:
+    return {
+        "Task": {
+            "title": [{"text": {"content": parsed.task}}]
+        },
+        "Project": {
+            "relation": [{"id": project_id}]
+        },
+    }
+
+=======
+    await message.answer("Hello! I'm a bot created with aiogram. Coduck.")
+>>>>>>> 52a0e54 (feat: add Gemini formatting of notion actions)
 
 def build_notion_properties(parsed: ParsedTask, project_id: str) -> dict:
     return {
@@ -53,7 +68,11 @@ async def query_handler(message: Message) -> None:
         interaction = client.interactions.create(
             model="gemini-3.5-flash-lite",
             input=USER_INPUT,
+<<<<<<< HEAD
             system_instruction=coduck_system_instruction,
+=======
+            system_instruction="You extract task info from messages.",
+>>>>>>> 52a0e54 (feat: add Gemini formatting of notion actions)
             response_format={
                 "type": "text",
                 "mime_type": "application/json",
@@ -62,6 +81,7 @@ async def query_handler(message: Message) -> None:
         )
         print(f"[RAW GEMINI OUTPUT] {interaction.output_text!r}")
 
+<<<<<<< HEAD
         # parsed = ParsedTask.model_validate_json(interaction.output_text)
         # print(f"[PARSED] {parsed}")
 
@@ -90,6 +110,16 @@ async def query_handler(message: Message) -> None:
         elif parsed.intent == "update":
             #result = update_tasks([u.model_dump(exclude_none=True) for u in parsed.updates])
             await message.answer(f"Updated {len(parsed.updates)} task(s).")
+=======
+        parsed = ParsedTask.model_validate_json(interaction.output_text)
+        print(f"[PARSED] {parsed}")
+
+        notion_payload = build_notion_properties(parsed, project_id="TEMP_PLACEHOLDER_ID")
+        print("[NOTION PAYLOAD]")
+        print(json.dumps(notion_payload, indent=2))
+
+        await message.answer(f"Added '{parsed.task}' to {parsed.project}")
+>>>>>>> 52a0e54 (feat: add Gemini formatting of notion actions)
 
     except Exception as e:
         print(f"[ERROR] {type(e).__name__}: {e}")
