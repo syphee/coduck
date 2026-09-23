@@ -11,6 +11,7 @@ const fetchQuery = async (query) => {
     }),
   });
 
+  
   console.log(`[RESPONSE]:${JSON.stringify(response)}\n`);
 
   if (!response.ok) {

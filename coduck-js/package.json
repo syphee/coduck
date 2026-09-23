@@ -9,8 +9,10 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "start:dev": "nodemon dist/bot.js",
-    "dev": "\"concurrently \"npm:watch\" \"npm:start:dev\""
+    "start": "node dist/coduck_bot.js",
+    "start:dev": "nodemon dist/coduck_bot.js",
+    "start:api": "nodemon dist/api/coduckAPI.js",
+    "app": "concurrently \"npm:watch\" \"npm:start:dev\" \"npm:start:api\""
   },
   "dependencies": {
     "dotenv": "^18.0.3",

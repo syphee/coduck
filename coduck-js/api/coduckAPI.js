@@ -15,6 +15,7 @@ app.post("/api/chat", async (req, res) => {
       });
     }
 
+    
     // Call Gemini here
     const response = await callGemini(query);
 
