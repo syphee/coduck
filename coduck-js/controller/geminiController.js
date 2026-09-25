@@ -13,12 +13,9 @@ const ai = new GoogleGenAI({});
 // coduck system instruction
 import fs from "fs";
 import { taskQuerySchema } from "../schema/coduck_schema.js";
-const instructionFile = "system_instructions/coduck_tasks_instruction.txt";
-const textFilePath = [
-  path.resolve(__dirname, `../${instructionFile}`),
-  path.resolve(__dirname, `../../${instructionFile}`),
-].find((candidate) => fs.existsSync(candidate));
 
+const instructionFile = path.resolve(__dirname, "../system_instructions/coduck_tasks_instruction.txt");
+const textFilePath = fs.existsSync(instructionFile) ? instructionFile : null;
 if (!textFilePath) {
   throw new Error(`Missing system instruction file: ${instructionFile}`);
 }
