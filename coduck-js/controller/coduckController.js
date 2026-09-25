@@ -8,7 +8,7 @@ dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 // Normal Message Query
 const fetchQuery = async (query) => {
   console.log(`[QUERY]:${query}\n`);
-  const API_URL = process.env.VERCEL_URL || "http://localhost:3000";
+  const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
   const response = await fetch(`${API_URL}/api/chat`, {
     method: "POST",
     headers: {
