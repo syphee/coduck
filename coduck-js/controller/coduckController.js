@@ -11,7 +11,7 @@ const fetchQuery = async (query) => {
   const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
 
   try {
-    const response = await fetch(`${API_URL}api/chat`, {
+    const response = await fetch(`${API_URL}/api/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
