@@ -1,6 +1,7 @@
 // api/server.js
 import express from "express";
-import { callGemini } from "../controller/coduckController.js";
+import {taskQuery,generalQuery} from "../controller/geminiController.js";
+
 const app = express();
 
 app.use(express.json());
@@ -8,6 +9,7 @@ app.use(express.json());
 app.post("/api/chat", async (req, res) => {
   try {
     const  query  = req.body.message;
+    console.log(`[CODUCK_API:POST /api/chat]:${query}\n`);
 
     if (!query) {
       return res.status(400).json({
@@ -17,7 +19,7 @@ app.post("/api/chat", async (req, res) => {
 
     
     // Call Gemini here
-    const response = await callGemini(query);
+    const response = await taskQuery(query);
 
     res.json({
       reply: response,

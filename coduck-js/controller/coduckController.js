@@ -1,3 +1,5 @@
+
+// Normal Message Query
 const fetchQuery = async (query) => {
   console.log(`[QUERY]:${query}\n`);
 
@@ -22,12 +24,6 @@ const fetchQuery = async (query) => {
   return data.reply;
 };
 
-const callGemini = async (query) => {
-  await new Promise((resolve) => {
-    setTimeout(resolve, 2000);
-  });
 
-  return query;
-};
 
-export { fetchQuery, callGemini };
+export { fetchQuery };
