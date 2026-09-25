@@ -9,28 +9,31 @@ dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 const fetchQuery = async (query) => {
   console.log(`[QUERY]:${query}\n`);
   const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
-  const response = await fetch(`${API_URL}api/chat`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      message: query,
-    }),
-  });
 
-  
-  console.log(`[RESPONSE]:${JSON.stringify(response)}\n`);
+  try {
+    const response = await fetch(`${API_URL}api/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: query,
+      }),
+    });
 
-  if (!response.ok) {
-    console.log(`[ERROR]:${response.status} - ${response.statusText}\n`);
-    throw new Error(`API returned ${response.status}`);
+    console.log(`[RESPONSE]:${JSON.stringify(response)}\n`);
+
+    // if (!response.ok) {
+    //   console.log(`[ERROR]:${response.status} - ${response.statusText}\n`);
+    //   throw new Error(`API returned ${response.status}`);
+    // }
+
+    const data = await response.json();
+    return data.reply;
+  } catch (error) {
+    console.error(`[ERROR]:${error}\n`);
+    throw error;
   }
-
-  const data = await response.json();
-  return data.reply;
 };
-
-
 
 export { fetchQuery };
