@@ -23,6 +23,7 @@ const fetchQuery = async (query) => {
   console.log(`[RESPONSE]:${JSON.stringify(response)}\n`);
 
   if (!response.ok) {
+    console.log(`[ERROR]:${response.status} - ${response.statusText}\n`);
     throw new Error(`API returned ${response.status}`);
   }
 
