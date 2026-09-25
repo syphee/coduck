@@ -3,7 +3,7 @@
 import { Bot,webhookCallback } from "grammy";
 import dotenv from "dotenv";
 import * as path from "path";
-import { fetchQuery } from "./controller/coduckController.js";
+import { fetchQuery } from "../controller/coduckController.js";
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -52,4 +52,4 @@ bot.on("message", async (ctx) => {
 
 
 // Export the webhook adapter for Vercel Serverless
-export default webhookCallback(bot, "std/http");
+export default webhookCallback(bot, "https");
