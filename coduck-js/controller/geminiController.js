@@ -83,7 +83,7 @@ const generalQuery = async (query) => {
     console.log(`[GEMINI_CONTROLLER:GENERAL_QUERY]:${query}\n`);
 
     const interaction = await ai.interactions.create({
-      model: "gemini-3.8-flash",
+      model: "gemini-3.5-flash-lite",
       input: query,
     });
 
