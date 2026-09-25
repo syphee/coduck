@@ -1,6 +1,6 @@
 // to run npx tsc everytime..
 
-import { Bot } from "grammy";
+import { Bot,webhookCallback } from "grammy";
 import dotenv from "dotenv";
 import * as path from "path";
 import { fetchQuery } from "./controller/coduckController.js";
@@ -48,4 +48,8 @@ bot.on("message", async (ctx) => {
   }
 });
 
-bot.start();
+// bot.start();
+
+
+// Export the webhook adapter for Vercel Serverless
+export default webhookCallback(bot, "std/http");

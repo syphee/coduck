@@ -33,6 +33,10 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log("API running on port 3000");
-});
+if (process.env.VERCEL !== "1") {
+  app.listen(3000, () => {
+    console.log("API running on port 3000");
+  });
+}
+
+export default app;
