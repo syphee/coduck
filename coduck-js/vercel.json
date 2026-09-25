@@ -1,7 +1,14 @@
 {
   "version": 2,
-
+  "outputDirectory": ".",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api/bot" }
+    { 
+      "source": "/api/chat", 
+      "destination": "/api/chat" 
+    },
+    { 
+      "source": "/((?!api/chat).*)" , 
+      "destination": "/api/bot" 
+    }
   ]
 }
