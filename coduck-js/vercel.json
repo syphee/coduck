@@ -2,13 +2,13 @@
   "version": 2,
   "outputDirectory": ".",
   "rewrites": [
-    { 
-      "source": "/api/chat", 
-      "destination": "/api/chat" 
+    {
+      "source": "/api/chat",
+      "destination": "/api/coduckAPI"
     },
-    { 
-      "source": "/((?!api/chat).*)" , 
-      "destination": "/api/bot" 
+    {
+      "source": "/((?!api/chat|api/coduckAPI).*)" ,
+      "destination": "/api/bot"
     }
   ]
 }
