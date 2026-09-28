@@ -23,10 +23,10 @@ const fetchQuery = async (query) => {
 
     console.log(`[RESPONSE]:${JSON.stringify(response)}\n`);
 
-    // if (!response.ok) {
-    //   console.log(`[ERROR]:${response.status} - ${response.statusText}\n`);
-    //   throw new Error(`API returned ${response.status}`);
-    // }
+    if (!response.ok) {
+     console.log(`[ERROR]:${response.status} - ${response.statusText}\n`);
+    throw new Error(`API returned ${response.status}`);
+    }
 
     const data = await response.json();
     return data.reply;
