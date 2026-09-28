@@ -8,7 +8,7 @@
                             },
                                 {
                                       "source": "/((?!api/chat|api/coduckAPI).*)",
-                                            "destination": "/api/coduck_bot.js"
+                                            "destination": "/api/coduck_bot.ts"
                                                 }
                                                   ]
                                                   }
