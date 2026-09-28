@@ -5,7 +5,7 @@
     {
       "source": "/api/chat",
       "destination": "/api/coduckAPI.js"
-    },
-    { "source": "/", "destination": "/api/coduckAPI.js" }
+    }
+  
   ]
 }
