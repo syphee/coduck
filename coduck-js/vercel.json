@@ -1,15 +1,25 @@
 {
     "version": 2,
       "cleanUrls": true,
-        "rewrites": [
+        "builds": [
             {
-                  "source": "/api/chat",
-                        "destination": "/api/coduckAPI"
+                  "src": "api/**/*.js",
+                        "use": "@vercel/node"
                             },
                                 {
-                                      "source": "/",
-                                            "destination": "/api/coduckAPI"
+                                      "src": "api/**/*.ts",
+                                            "use": "@vercel/node"
                                                 }
-                                                  ]
-                                                  }
+                                                  ],
+                                                    "rewrites": [
+                                                        {
+                                                              "source": "/api/chat",
+                                                                    "destination": "/api/coduckAPI"
+                                                                        },
+                                                                            {
+                                                                                  "source": "/",
+                                                                                        "destination": "/api/coduckAPI"
+                                                                                            }
+                                                                                              ]
+                                                                                              }
 
