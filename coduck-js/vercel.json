@@ -1,6 +1,15 @@
 {
     "version": 2,
       "outputDirectory": ".",
-            "cleanUrls": true
-    
-}
+        "rewrites": [
+            {
+                  "source": "/api/chat",
+                        "destination": "/api/coduckAPI.js"
+                            },
+                                {
+                                      "source": "/((?!api/chat).*)",
+                                            "destination": "/api/coduck_bot.js"
+                                                }
+                                                  ]
+                                                  }
+
