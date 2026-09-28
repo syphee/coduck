@@ -4,10 +4,10 @@
   "rewrites": [
     {
       "source": "/api/chat",
-      "destination": "/api/coduckAPI"
+      "destination": "/api/coduckAPI.js"
     },
     {
-      "source": "/((?!api/chat|api/coduckAPI).*)" ,
+      "source": "/((?!api/chat|api/coduckAPI.js).*)" ,
       "destination": "/api/bot"
     }
   ]
