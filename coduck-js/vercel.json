@@ -1,25 +1,10 @@
 {
-    "version": 2,
-      "cleanUrls": true,
-        "builds": [
-            {
-                  "src": "api/**/*.js",
-                        "use": "@vercel/node"
-                            },
-                                {
-                                      "src": "api/**/*.ts",
-                                            "use": "@vercel/node"
-                                                }
-                                                  ],
-                                                    "rewrites": [
-                                                        {
-                                                              "source": "/api/chat",
-                                                                    "destination": "/api/coduckAPI"
-                                                                        },
-                                                                            {
-                                                                                  "source": "/",
-                                                                                        "destination": "/api/coduckAPI"
-                                                                                            }
-                                                                                              ]
-                                                                                              }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/api/chat",
+      "destination": "/api/coduckAPI"
+    }
+  ]
+}
 
