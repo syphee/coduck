@@ -14,8 +14,6 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const coduck_key: string = process.env.coduck_bot!;
 const gemini_key: string = process.env.GEMINI_API_KEY!;
 
-console.log("coduck_bot key: " + coduck_key);
-console.log("gemini_api_key: " + gemini_key);
 const bot = new Bot(coduck_key);
 
 bot.command("start", (ctx) => ctx.reply("Welcome! Up and running."));

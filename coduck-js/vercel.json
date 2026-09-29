@@ -4,6 +4,14 @@
     {
       "source": "/api/chat",
       "destination": "/api/coduckAPI"
+    },
+    {
+      "source": "/telegram/webhook",
+      "destination": "/api/coduck_bot"
+    },
+    {
+      "source": "/",
+      "destination": "/api/coduck_bot"
     }
   ]
 }
