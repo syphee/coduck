@@ -12,7 +12,7 @@
     },
     {
       "source": "/",
-      "destination": "/api/bot"
+      "destination": "/api/coduck_bot"
     }
   ]
 }
