@@ -5,7 +5,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
-import Client from "@notionhq/client"
+import {Client} from "@notionhq/client"
 
 // Initializing a client
 const notion = new Client({
