@@ -74,7 +74,7 @@ const taskQuery = async (query) => {
 const createTaskResponse = async (parsedResult) => {
   
   // ingest to notion and return telegram text
-  const task_list = parsedResult.tasks.map(t,index => {
+  const task_list = parsedResult.tasks.map(t => {
     // format reply text to telegram
     let taskString = `• ${t.title}\n`;
     let taskGoal = t.project_goal
