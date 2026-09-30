@@ -8,9 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const coduck_key = process.env.coduck_bot;
-const gemini_key = process.env.gemini_api_key;
-console.log("coduck_bot key: " + coduck_key);
-console.log("gemini_api_key: " + gemini_key);
+const gemini_key = process.env.GEMINI_API_KEY;
 const bot = new Bot(coduck_key);
 bot.command("start", (ctx) => ctx.reply("Welcome! Up and running."));
 // Normal message handler

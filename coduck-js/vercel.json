@@ -8,11 +8,11 @@
     },
     {
       "source": "/telegram/webhook",
-      "destination": "/api/coduck_bot"
+      "destination": "/api/coduck_bot.ts"
     },
     {
       "source": "/",
-      "destination": "/api/coduck_bot"
+      "destination": "/api/coduck_bot.ts"
     }
   ]
 }
