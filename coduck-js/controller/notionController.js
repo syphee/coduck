@@ -9,7 +9,7 @@ import {Client} from "@notionhq/client"
 
 // Initializing a client
 const notion = new Client({
-    auth: process.env.NOTION_TOKEN,
+    auth: process.env.NOTION_API_KEY,
 });
 
 // Get the database name from the form
