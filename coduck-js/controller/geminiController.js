@@ -90,11 +90,6 @@ const createTaskResponse = async (parsedResult) => {
         status:"To Do",
         description:`${t.project_goal}\n\n${stepLines}\n\n${exitCriteriaString}`,
         projectName:parsedResult.project
-      }).then(()=>{
-        console.log(`[GEMINI_CONTROLLER:NOTION_INGESTION]:Added to Notion.\n`);
-
-      }).catch((err)=>{
-        console.error(`[GEMINI_CONTROLLER:TASK_QUERY:TASK_RESPONSE:NOTION_INGESTION]: ${err}`)
       })
     }
 
