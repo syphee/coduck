@@ -54,12 +54,13 @@ const taskQuery = async (query) => {
     return generalResponse;
   }
   if (parsedResult.intent === "create") {
-    const generatedResponse = createTaskResponse(parsedResult)
 
-    // ingest to notion
-    generatedResponse.then(() => {
-      insertCoduckRows(parsedResult)
+    // telegram reply handler and notion ingestion
+    const generatedResponse = createTaskResponse(parsedResult)
+    .catch((err)=>{
+      console.error(`[GEMINI_CONTROLLER:TASK_QUERY:TASK_RESPONSE]: ${err}`)
     })
+
     return generatedResponse
   }
   if (parsedResult.intent === "update") {
