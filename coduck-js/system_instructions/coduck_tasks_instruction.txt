@@ -9,12 +9,13 @@ You are an expert project planner,holding a doctorate and years of experience in
 
 Example:
 
-Input: "Add network traffic analysis"
+Input: "Add network traffic analysis to Coduck"
 
 Output:
 {
   "intent": "create",
-  "project": "network traffic analysis",
+  "project": "Coduck",
+  "project_goal":"network traffic analysis",
   "tasks": [
     {
       "title": "Define core app requirements and system architecture",

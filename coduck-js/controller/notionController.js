@@ -47,9 +47,14 @@ const getCoduckRows = async (
     return data;
 };
 
+const formatData = async({data})=>{
 
-const insertCoduckRows = async () => {
+}
 
+
+const insertCoduckRows = async (
+{ task, status, description, projectName }
+) => {
     const token = process.env.NOTION_API_KEY;
     const dataSourceId = notionDB;
     if (!token || !dataSourceId) {
@@ -64,11 +69,10 @@ const insertCoduckRows = async () => {
     }
 
     const expectedTypes = {
-        "project_task": "string",
-        "project_status": "select",
-        "project_description": "string",
         "project_name": "title",
-       
+        "project_task": "rich_text",
+        "project_status": "select",
+        "project_description": "rich_text",
     };
     for (const [name, type] of Object.entries(expectedTypes)) {
         if (dataSource.properties[name]?.type !== type) {
@@ -76,20 +80,32 @@ const insertCoduckRows = async () => {
         }
     }
 
+    const VALID_STATUSES = ["Not started", "In progress", "Done"];
+    if (status && !VALID_STATUSES.includes(status)) {
+        throw new Error(`Invalid status "${status}". Must be one of: ${VALID_STATUSES.join(", ")}`);
+    }
+
     const page = await notion.pages.create({
         parent: { data_source_id: dataSourceId },
         properties: {
-            "Grocery item": { title: [{ text: { content: "Tomatoes" } }] },
-            Price: { number: 1.49 },
-            "Last ordered": { date: { start: "2026-09-01" } },
+            "project_name": {
+                title: [{ text: { content: projectName } }],
+            },
+            "project_task": {
+                rich_text: [{ text: { content: task } }],
+            },
+            "project_status": {
+                select: { name: status },
+            },
+            "project_description": {
+                rich_text: [{ text: { content: description ?? "" } }],
+            },
         },
     });
+
     console.log("Created page:", page.id);
-
-
-
-}
-
+    return page;
+};
 
 
 
@@ -98,4 +114,5 @@ const insertCoduckRows = async () => {
 
 
 
-export { getCoduckRows };
+
+export { getCoduckRows,insertCoduckRows };

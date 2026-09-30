@@ -23,6 +23,9 @@ if (!textFilePath) {
 // zod imports 
 import { z } from "zod";
 
+//controller imports
+import { insertCoduckRows } from "./notionController.js";
+
 
 
 const CODUCK_SYSTEM_INSTRUCTION = fs.readFileSync(textFilePath, "utf8");
@@ -46,33 +49,59 @@ const taskQuery = async (query) => {
   const parsedResult = JSON.parse(result);
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY:RAW GEMINI OUTPUT] ${JSON.stringify(parsedResult)}`);
 
-  if(parsedResult.intent === "none") {
+  if (parsedResult.intent === "none") {
     const generalResponse = await generalQuery(query);
     return generalResponse;
   }
-  if(parsedResult.intent === "create") {
-    const task_list = parsedResult.tasks.map(t => {
+  if (parsedResult.intent === "create") {
+    const generatedResponse = createTaskResponse(parsedResult)
+
+    // ingest to notion
+    generatedResponse.then(() => {
+      insertCoduckRows(parsedResult)
+    })
+    return generatedResponse
+  }
+  if (parsedResult.intent === "update") {
+    return `Updated ${parsedResult.updates.length} task(s).`;
+  } else {
+    throw new Error(`Unexpected intent: ${parsedResult}`);
+  }
+
+};
+
+const createTaskResponse = async (parsedResult) => {
+  
+  // ingest to notion and return telegram text
+  const task_list = parsedResult.tasks.map(t,index => {
+    // format reply text to telegram
     let taskString = `• ${t.title}\n`;
+    let taskGoal = t.project_goal
     let exitCriteriaString = `[Exit Criteria]: ${t.exit_criteria}`;
     // Check if steps exist for this specific task and append them
     if (t.steps && Array.isArray(t.steps)) {
       const stepLines = t.steps.map(step => `    - ${step}`).join("\n");
       taskString += `\n${stepLines}`;
-    }
-    taskString += `\n\n${exitCriteriaString}\n`;
 
-    
+      // add data to notion. this adds page per page
+      ingestToNotion({
+        task:t.title,
+        status:"To Do",
+        description:`${t.project_goal}\n\n${stepLines}\n\n${exitCriteriaString}`,
+        projectName:parsedResult.project
+      })
+    }
+
+    taskString += `\n\n${exitCriteriaString}\n`;
     return taskString;
   }).join("\n\n");
-    return `Added to ${parsedResult.project}:\n\n${task_list}`;
-  }
-  if(parsedResult.intent === "update") {
-    return `Updated ${parsedResult.updates.length} task(s).`;
-  }else{
-    throw new Error(`Unexpected intent: ${parsedResult}`);
-  }
+  
+  return `Added to ${parsedResult.project}:\n\n${task_list}`;
+}
 
-};
+const ingestToNotion = (data)=>{
+  insertCoduckRows({data})
+}
 
 // anything other than a normal message query will be handled by this function
 const generalQuery = async (query) => {
