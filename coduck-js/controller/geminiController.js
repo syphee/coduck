@@ -101,7 +101,9 @@ const createTaskResponse = async (parsedResult) => {
 }
 
 const ingestToNotion = (data)=>{
-  insertCoduckRows({data})
+  insertCoduckRows({data}).catch((err)=>{
+    console.error(`[GEMINI_CONTROLLER:TASK_QUERY:TASK_RESPONSE:NOTION_INGESTION]: ${err}`)
+  })
 }
 
 // anything other than a normal message query will be handled by this function
