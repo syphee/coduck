@@ -95,7 +95,7 @@ const insertCoduckRows = async (
                 rich_text: [{ text: { content: task } }],
             },
             "project_status": {
-                select: { name: status },
+                status: { name: status },
             },
             "project_description": {
                 rich_text: [{ text: { content: description ?? "" } }],
