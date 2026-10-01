@@ -89,7 +89,7 @@ const createTaskResponse = async (parsedResult) => {
     await insertCoduckRows({
       task: t.title,
       status: "Not started",
-      description: [t.project_goal, stepLines, exitCriteriaString]
+      description: [parsedResult.project_goal, stepLines, exitCriteriaString]
         .filter(Boolean)
         .join("\n\n"),
       projectName: parsedResult.project,
