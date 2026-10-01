@@ -14,19 +14,20 @@ const ai = new GoogleGenAI({});
 import fs from "fs";
 import { taskQuerySchema } from "../schema/coduck_schema.js";
 
-const instructionFile = path.resolve(__dirname, "../system_instructions/coduck_tasks_instruction.txt");
+const instructionFile = path.resolve(
+  __dirname,
+  "../system_instructions/coduck_tasks_instruction.txt"
+);
 const textFilePath = fs.existsSync(instructionFile) ? instructionFile : null;
 if (!textFilePath) {
   throw new Error(`Missing system instruction file: ${instructionFile}`);
 }
 
-// zod imports 
+// zod imports
 import { z } from "zod";
 
-//controller imports
+// controller imports
 import { insertCoduckRows } from "./notionController.js";
-
-
 
 const CODUCK_SYSTEM_INSTRUCTION = fs.readFileSync(textFilePath, "utf8");
 
@@ -45,67 +46,64 @@ const taskQuery = async (query) => {
       schema: SCHEMA,
     },
   });
+
   const result = interaction.output_text;
   const parsedResult = JSON.parse(result);
-  console.log(`[GEMINI_CONTROLLER:TASK_QUERY:RAW GEMINI OUTPUT] ${JSON.stringify(parsedResult)}`);
+  console.log(
+    `[GEMINI_CONTROLLER:TASK_QUERY:RAW GEMINI OUTPUT] ${JSON.stringify(parsedResult)}`
+  );
 
   if (parsedResult.intent === "none") {
-    const generalResponse = await generalQuery(query);
-    return generalResponse;
+    return await generalQuery(query);
   }
 
-if (parsedResult.intent === "create") {
-  try {
-    return await createTaskResponse(parsedResult);
-  } catch (err) {
-    console.error(`[GEMINI_CONTROLLER:TASK_QUERY:NOTION_INGESTION]: ${err}`);
-    return "I understood the request, but saving to Notion failed. Check the server logs.";
+  if (parsedResult.intent === "create") {
+    try {
+      return await createTaskResponse(parsedResult);
+    } catch (err) {
+      console.error(`[GEMINI_CONTROLLER:TASK_QUERY:NOTION_INGESTION]: ${err}`);
+      return "I understood the request, but saving to Notion failed. Check the server logs.";
+    }
   }
-}
-  
+
   if (parsedResult.intent === "update") {
     return `Updated ${parsedResult.updates.length} task(s).`;
-  } else {
-    throw new Error(`Unexpected intent: ${parsedResult}`);
   }
 
+  throw new Error(`Unexpected intent: ${parsedResult.intent}`);
 };
 
+// Inserts each task into Notion (sequentially, to respect rate limits)
+// and returns the text reply for Telegram.
 const createTaskResponse = async (parsedResult) => {
-  
-  // ingest to notion and return telegram text
-  const task_list = parsedResult.tasks.map(t => {
-    // format reply text to telegram
-    let taskString = `• ${t.title}\n`;
-    let taskGoal = t.project_goal
-    let exitCriteriaString = `[Exit Criteria]: ${t.exit_criteria}`;
-    // Check if steps exist for this specific task and append them
-    if (t.steps && Array.isArray(t.steps)) {
-      const stepLines = t.steps.map(step => `    - ${step}`).join("\n");
-      taskString += `\n${stepLines}`;
+  const taskBlocks = [];
 
-      // add data to notion. this adds page per page
-      ingestToNotion({
-        task:t.title,
-        status:"To Do",
-        description:`${t.project_goal}\n\n${stepLines}\n\n${exitCriteriaString}`,
-        projectName:parsedResult.project
-      })
-    }
+  for (const t of parsedResult.tasks) {
+    const stepLines =
+      Array.isArray(t.steps) && t.steps.length
+        ? t.steps.map((step) => `    - ${step}`).join("\n")
+        : "";
+    const exitCriteriaString = `[Exit Criteria]: ${t.exit_criteria}`;
 
-    taskString += `\n\n${exitCriteriaString}\n`;
-    return taskString;
-  }).join("\n\n");
-  
-  return `Added to ${parsedResult.project}:\n\n${task_list}`;
+    // awaited, so any failure propagates to the try/catch in taskQuery
+    await insertCoduckRows({
+      task: t.title,
+      status: "Not started",
+      description: [t.project_goal, stepLines, exitCriteriaString]
+        .filter(Boolean)
+        .join("\n\n"),
+      projectName: parsedResult.project,
+    });
 
+    taskBlocks.push(
+      [`• ${t.title}`, stepLines, exitCriteriaString]
+        .filter(Boolean)
+        .join("\n\n")
+    );
+  }
 
-
-const ingestToNotion = (data)=>{
-  insertCoduckRows({data}).catch((err)=>{
-    console.error(`[GEMINI_CONTROLLER:TASK_QUERY:TASK_RESPONSE:NOTION_INGESTION]: ${err}`)
-  })
-}
+  return `Added to ${parsedResult.project}:\n\n${taskBlocks.join("\n\n")}`;
+};
 
 // anything other than a normal message query will be handled by this function
 const generalQuery = async (query) => {
