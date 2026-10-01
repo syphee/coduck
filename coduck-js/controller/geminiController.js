@@ -53,16 +53,16 @@ const taskQuery = async (query) => {
     const generalResponse = await generalQuery(query);
     return generalResponse;
   }
-  if (parsedResult.intent === "create") {
 
-    // telegram reply handler and notion ingestion
-    const generatedResponse = createTaskResponse(parsedResult)
-    .catch((err)=>{
-      console.error(`[GEMINI_CONTROLLER:TASK_QUERY:TASK_RESPONSE]: ${err}`)
-    })
-
-    return generatedResponse
+if (parsedResult.intent === "create") {
+  try {
+    return await createTaskResponse(parsedResult);
+  } catch (err) {
+    console.error(`[GEMINI_CONTROLLER:TASK_QUERY:NOTION_INGESTION]: ${err}`);
+    return "I understood the request, but saving to Notion failed. Check the server logs.";
   }
+}
+  
   if (parsedResult.intent === "update") {
     return `Updated ${parsedResult.updates.length} task(s).`;
   } else {
@@ -98,7 +98,8 @@ const createTaskResponse = async (parsedResult) => {
   }).join("\n\n");
   
   return `Added to ${parsedResult.project}:\n\n${task_list}`;
-}
+
+
 
 const ingestToNotion = (data)=>{
   insertCoduckRows({data}).catch((err)=>{
