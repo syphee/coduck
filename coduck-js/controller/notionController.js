@@ -71,7 +71,7 @@ const insertCoduckRows = async (
     const expectedTypes = {
         "project_name": "title",
         "project_task": "rich_text",
-        "project_status": "select",
+        "project_status": "status",
         "project_description": "rich_text",
     };
     for (const [name, type] of Object.entries(expectedTypes)) {
