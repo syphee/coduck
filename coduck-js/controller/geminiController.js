@@ -87,7 +87,7 @@ const createTaskResponse = async (parsedResult) => {
 
     // awaited, so any failure propagates to the try/catch in taskQuery
     await insertCoduckRows({
-      task: t.title,
+      task: parsedResult.title,
       status: "Not started",
       description: [parsedResult.project_goal, stepLines, exitCriteriaString]
         .filter(Boolean)
