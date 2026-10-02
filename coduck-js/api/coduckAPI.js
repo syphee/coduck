@@ -9,8 +9,9 @@ app.use(express.json());
 app.post("/api/chat", async (req, res) => {
   try {
     const  query  = req.body.message;
-    console.log(`[CODUCK_API:POST /api/chat]:${query}\n`);
-
+    const userID = req.body.userID;
+    console.log(`[CODUCK_API:POST /api/chat QUERY]:${query}\n`);
+    console.log(`[CODUCK_API:POST /api/chat USER_ID]:${userID}\n`);
     if (!query) {
       return res.status(400).json({
         error: "message is required",
@@ -19,7 +20,7 @@ app.post("/api/chat", async (req, res) => {
 
     
     // Call Gemini here
-    const response = await taskQuery(query);
+    const response = await taskQuery(query, userID);
 
     res.json({
       reply: response,

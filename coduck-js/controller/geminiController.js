@@ -31,12 +31,45 @@ import { insertCoduckRows } from "./notionController.js";
 
 const CODUCK_SYSTEM_INSTRUCTION = fs.readFileSync(textFilePath, "utf8");
 
+// Conversation memory: one chain of interaction IDs per chat, per kind of call.
+// previous_interaction_id carries conversation history only, so
+// system_instruction and response_format are re-sent on every call.
+// In-memory: chains are lost when the bot restarts.
+const chains = new Map();
+
+const callGemini = async (chainKey, params) => {
+  const previous = chains.get(chainKey);
+  try {
+    const interaction = await ai.interactions.create({
+      ...params,
+      ...(previous ? { previous_interaction_id: previous } : {}),
+    });
+    chains.set(chainKey, interaction.id);
+    return interaction;
+  } catch (err) {
+    if (!previous) throw err;
+    // The stored interaction may have expired: start a fresh chain
+    console.warn(`[GEMINI_CONTROLLER:CHAIN_RESET] ${chainKey}: ${err.message}`);
+    chains.delete(chainKey);
+    const interaction = await ai.interactions.create(params);
+    chains.set(chainKey, interaction.id);
+    return interaction;
+  }
+};
+
+// reset chat context
+const resetChat = (chatId) => {
+  chains.delete(`task:${chatId}`);
+  chains.delete(`general:${chatId}`);
+};
+
 // Task Generation Query
-const taskQuery = async (query) => {
-  console.log(`[GEMINI_CONTROLLER:TASK_QUERY]:${query}\n`);
+const taskQuery = async (query, userID) => {
+  console.log(`[GEMINI_CONTROLLER:TASK_QUERY QUERY]:${query}\n`);
+  console.log(`[GEMINI_CONTROLLER:TASK_QUERY USER_ID]:${userID}\n`);
 
   const SCHEMA = z.toJSONSchema(taskQuerySchema);
-  const interaction = await ai.interactions.create({
+  const interaction = await callGemini(`task:${userID}`, {
     model: "gemini-3.5-flash-lite",
     input: query,
     system_instruction: CODUCK_SYSTEM_INSTRUCTION,
@@ -54,7 +87,7 @@ const taskQuery = async (query) => {
   );
 
   if (parsedResult.intent === "none") {
-    return await generalQuery(query);
+    return await generalQuery(query, chatId);
   }
 
   if (parsedResult.intent === "create") {
@@ -106,11 +139,11 @@ const createTaskResponse = async (parsedResult) => {
 };
 
 // anything other than a normal message query will be handled by this function
-const generalQuery = async (query) => {
+const generalQuery = async (query, chatId) => {
   try {
     console.log(`[GEMINI_CONTROLLER:GENERAL_QUERY]:${query}\n`);
 
-    const interaction = await ai.interactions.create({
+    const interaction = await callGemini(`general:${chatId}`, {
       model: "gemini-3.5-flash-lite",
       input: query,
     });
@@ -121,4 +154,4 @@ const generalQuery = async (query) => {
   }
 };
 
-export { taskQuery, generalQuery };
+export  { taskQuery, generalQuery, resetChat };
