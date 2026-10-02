@@ -1,6 +1,6 @@
 // api/server.js
 import express from "express";
-import {taskQuery,generalQuery} from "../controller/geminiController.js";
+import {taskQuery,generalQuery,resetChat} from "../controller/geminiController.js";
 
 const app = express();
 
@@ -34,6 +34,30 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
+if (process.env.VERCEL !== "1") {
+  app.listen(3000, () => {
+    console.log("API running on port 3000");
+  });
+}
+
+// clear context  
+app.post("/api/reset", (req, res) => {
+  const userID = req.body.userID;
+  console.log(`[CODUCK_API:POST /api/reset USER_ID]:${userID}\n`);
+ 
+  if (userID === undefined || userID === null) {
+    return res.status(400).json({
+      error: "userID is required",
+    });
+  }
+ 
+  resetChat(userID);
+ 
+  res.json({
+    reply: "Started a fresh conversation.",
+  });
+});
+ 
 if (process.env.VERCEL !== "1") {
   app.listen(3000, () => {
     console.log("API running on port 3000");

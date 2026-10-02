@@ -3,8 +3,7 @@
 import { Bot,webhookCallback } from "grammy";
 import dotenv from "dotenv";
 import * as path from "path";
-import { fetchQuery } from "../controller/coduckController.js";
-import { resetChat } from "../controller/geminiController.js";
+import { fetchQuery,resetQuery } from "../controller/coduckController.js";
 
 import { fileURLToPath } from 'url';
 
@@ -21,8 +20,13 @@ const bot = new Bot(coduck_key);
 bot.command("start", (ctx) => ctx.reply("Welcome! Up and running."));
 
 bot.command("new", async (ctx) => {
-  resetChat?.(ctx.chat.id);
-  await ctx.reply("Started a fresh conversation.");
+  try {
+    await resetQuery(ctx.chat.id);
+    await ctx.reply("Started a fresh conversation.");
+  } catch (error) {
+    console.error(error);
+    await ctx.reply("❌ Couldn't reset the conversation. Try again.");
+  }
 });
 
 // Normal message handler

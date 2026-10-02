@@ -1,19 +1,21 @@
 // api/server.js
 import express from "express";
-import { taskQuery, generalQuery } from "../controller/geminiController.js";
+import { taskQuery, generalQuery, resetChat } from "../controller/geminiController.js";
 const app = express();
 app.use(express.json());
 app.post("/api/chat", async (req, res) => {
     try {
         const query = req.body.message;
-        console.log(`[CODUCK_API:POST /api/chat]:${query}\n`);
+        const userID = req.body.userID;
+        console.log(`[CODUCK_API:POST /api/chat QUERY]:${query}\n`);
+        console.log(`[CODUCK_API:POST /api/chat USER_ID]:${userID}\n`);
         if (!query) {
             return res.status(400).json({
                 error: "message is required",
             });
         }
         // Call Gemini here
-        const response = await taskQuery(query);
+        const response = await taskQuery(query, userID);
         res.json({
             reply: response,
         });
@@ -24,6 +26,25 @@ app.post("/api/chat", async (req, res) => {
             error: "Failed to generate response",
         });
     }
+});
+if (process.env.VERCEL !== "1") {
+    app.listen(3000, () => {
+        console.log("API running on port 3000");
+    });
+}
+// clear context  
+app.post("/api/reset", (req, res) => {
+    const userID = req.body.userID;
+    console.log(`[CODUCK_API:POST /api/reset USER_ID]:${userID}\n`);
+    if (userID === undefined || userID === null) {
+        return res.status(400).json({
+            error: "userID is required",
+        });
+    }
+    resetChat(userID);
+    res.json({
+        reply: "Started a fresh conversation.",
+    });
 });
 if (process.env.VERCEL !== "1") {
     app.listen(3000, () => {
