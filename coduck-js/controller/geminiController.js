@@ -87,7 +87,7 @@ const taskQuery = async (query, userID) => {
   );
 
   if (parsedResult.intent === "none") {
-    return await generalQuery(query, chatId);
+    return await generalQuery(query, userID);
   }
 
   if (parsedResult.intent === "create") {
