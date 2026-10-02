@@ -13,6 +13,10 @@
     {
       "source": "/",
       "destination": "/api/coduck_bot"
+    },
+    {
+      "source": "/api/reset",
+      "destination": "/api/coduckAPI"
     }
   ]
 }
