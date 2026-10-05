@@ -1,6 +1,6 @@
 // api/server.js
 import express from "express";
-import * as multer from "multer";
+import multer from "multer";
 import { taskQuery, generalQuery, resetChat } from "../controller/geminiController.js";
 
 const app = express();
