@@ -17,6 +17,11 @@ const gemini_key: string = process.env.GEMINI_API_KEY!;
 
 const bot = new Bot(coduck_key);
 
+bot.use(async (ctx, next) => {
+  console.info(`[TELEGRAM_WEBHOOK] update_id=${ctx.update.update_id}`);
+  await next();
+});
+
 bot.command("start", (ctx) => ctx.reply("Welcome! Up and running."));
 
 bot.command("new", async (ctx) => {
@@ -153,4 +158,6 @@ bot.on("message", async (ctx) => {
 
 
 // Export the webhook adapter for Vercel Serverless
-export default webhookCallback(bot, "https");
+export default webhookCallback(bot, "https", {
+  timeoutMilliseconds: 50_000,
+});
