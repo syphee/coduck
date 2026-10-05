@@ -1,15 +1,19 @@
 // api/server.js
 import express from "express";
+import * as multer from "multer";
 import { taskQuery, generalQuery, resetChat } from "../controller/geminiController.js";
 
 const app = express();
 
-app.use(express.json());
-
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage:storage,
+  limits:{fileSize:50*1024*1024}
+})
 app.post("/api/chat", async (req, res) => {
   try {
     const query = req.body.message;
-    const voiceMemo = req.body.voiceMemo;
+    const voiceMemo = req.file.buffer;
     const userID = req.body.userID;
     let response;
     console.log(`[CODUCK_API:POST /api/chat QUERY]:${query}\n`);
@@ -20,7 +24,7 @@ app.post("/api/chat", async (req, res) => {
       });
     }
 
-
+    
     // Call Gemini here
     if (query) {
       response = await taskQuery(query, userID);
@@ -40,6 +44,9 @@ app.post("/api/chat", async (req, res) => {
     });
   }
 });
+
+app.use(express.json());
+
 
 if (process.env.VERCEL !== "1") {
   app.listen(3000, () => {

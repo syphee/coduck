@@ -49,9 +49,7 @@ const fetchVoiceQuery = async(voiceQuery,userID)=>{
   try {
     const response = await fetch(`${API_URL}/api/chat`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+     
       body:formData,
     });
 
