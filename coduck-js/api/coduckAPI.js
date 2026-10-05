@@ -10,6 +10,9 @@ const upload = multer({
   storage:storage,
   limits:{fileSize:50*1024*1024}
 })
+
+app.use(express.json());
+
 app.post("/api/chat", async (req, res) => {
   try {
     const query = req.body.message || null;
@@ -39,8 +42,6 @@ app.post("/api/chat", async (req, res) => {
     });
   }
 });
-
-app.use(express.json());
 
 
 if (process.env.VERCEL !== "1") {
