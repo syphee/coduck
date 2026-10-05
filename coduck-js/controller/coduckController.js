@@ -37,27 +37,23 @@ const fetchQuery = async (query, userID) => {
   }
 };
 
-const fetchVoiceQuery = async(voiceQuery,userID)=>{
+const fetchVoiceQuery = async (voiceQuery, userID, mimeType = "audio/ogg") => {
   const formData = new FormData();
-  const voiceMemo = new Blob([voiceQuery],{type:'audio/ogg'})
-  formData.append('voiceMemo',voiceMemo,'telegram_voice_prompt.ogg')
-  formData.append('userID',userID)
-  
+  const voiceMemo = new Blob([voiceQuery], { type: mimeType });
+  formData.append("voiceMemo", voiceMemo, "telegram_voice_prompt.ogg");
+  formData.append("userID", String(userID));
 
   const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
 
   try {
     const response = await fetch(`${API_URL}/api/chat`, {
       method: "POST",
-     
-      body:formData,
+      body: formData,
     });
 
-    console.log(`[RESPONSE]:${JSON.stringify(response)}\n`);
-
     if (!response.ok) {
-     console.log(`[ERROR]:${response.status} - ${response.statusText}\n`);
-    throw new Error(`API returned ${response.status}`);
+      const details = await response.text();
+      throw new Error(`API returned ${response.status}: ${details}`);
     }
 
     const data = await response.json();

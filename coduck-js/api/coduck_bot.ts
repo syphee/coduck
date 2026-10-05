@@ -74,8 +74,23 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
   try {
     const fileId = media.file_id;
     const file = await ctx.api.getFile(fileId);
+    if (!file.file_path) {
+      throw new Error("Telegram did not provide a file path for the voice memo.");
+    }
 
-    const transcribedMemo = await fetchVoiceQuery(file, userID);
+    const fileResponse = await fetch(
+      `https://api.telegram.org/file/bot${coduck_key}/${file.file_path}`
+    );
+    if (!fileResponse.ok) {
+      throw new Error(`Telegram file download failed with status ${fileResponse.status}.`);
+    }
+
+    const audioBytes = new Uint8Array(await fileResponse.arrayBuffer());
+    const transcribedMemo = await fetchVoiceQuery(
+      audioBytes,
+      userID,
+      media.mime_type ?? "audio/ogg"
+    );
 
     await ctx.reply(`[Transcribed Message]\n\n`)
     for (const part of splitChunks(transcribedMemo)) {
@@ -83,7 +98,7 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
     }
 
     const processedMemo = await ctx.reply("⏳ Processing your query...")
-    const result = await fetchQuery(transcribedMemo)
+    const result = await fetchQuery(transcribedMemo, userID)
     await ctx.api.editMessageText(
       ctx.chat.id,
       processedMemo.message_id,

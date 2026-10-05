@@ -67,12 +67,10 @@ const resetChat = (chatId) => {
 // purely transcribing audio, no task querying processing here
 const transcribeAudio = async(voiceMemo,userID)=>{
   try{
-    let reply = `[Transcribed Audio]\n\n`;
+    console.log(`[GEMINI_CONTROLLER:TASK_QUERY VOICE_MEMO EXISTS?]:${Boolean(voiceMemo)}\n`);
+    console.log(`[GEMINI_CONTROLLER:TASK_QUERY USER_ID]:${userID}\n`);
 
-  console.log(`[GEMINI_CONTROLLER:TASK_QUERY VOICE_MEMO EXISTS?]:${voiceMemo ? true : false}\n`);
-  console.log(`[GEMINI_CONTROLLER:TASK_QUERY USER_ID]:${userID}\n`);
-
-  const base64 = voiceMemo.buffer.toString("base64");
+    const base64 = voiceMemo.buffer.toString("base64");
 
     const response = await ai.models.generateContent({
       model: "gemini-3.5-transcribe",
@@ -80,7 +78,7 @@ const transcribeAudio = async(voiceMemo,userID)=>{
         {
           role: "user",
           parts: [
-            { inlineData: { mimeType: voiceMemo.mime_type ?? "audio/ogg", data: base64 } },
+            { inlineData: { mimeType: voiceMemo.mimetype ?? "audio/ogg", data: base64 } },
           ],
         },
       ],
@@ -96,7 +94,7 @@ const transcribeAudio = async(voiceMemo,userID)=>{
 
     return text
   }catch(err){
-    throw new Error(`Failed to generate response: ${err}`);
+    throw new Error(`Failed to transcribe voice memo: ${err instanceof Error ? err.message : String(err)}`);
   }
   
 }
@@ -129,20 +127,15 @@ const splitChunks = (text,limit = 4000) =>{
 
 // Task Generation Query
 const taskQuery = async (query, userID,transcribe) => {
-  console.log(`[GEMINI_CONTROLLER:TASK_QUERY QUERY]:${query}\n`);
+  console.log(`[GEMINI_CONTROLLER:TASK_QUERY QUERY]:${transcribe ? "[voice memo]" : query}\n`);
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY USER_ID]:${userID}\n`);
 
-  let input;
-  if(transcribe){
-    input = transcribeAudio(query)
-  }else{
-    input = query
-  }
+  const input = transcribe ? await transcribeAudio(query, userID) : query;
 
   const SCHEMA = z.toJSONSchema(taskQuerySchema);
   const interaction = await callGemini(`task:${userID}`, {
     model: "gemini-3.5-flash-lite",
-    input: query,
+    input,
     system_instruction: CODUCK_SYSTEM_INSTRUCTION,
     response_format: {
       type: "text",
@@ -158,7 +151,7 @@ const taskQuery = async (query, userID,transcribe) => {
   );
 
   if (parsedResult.intent === "none") {
-    return await generalQuery(query, userID);
+    return await generalQuery(input, userID);
   }
 
   if (parsedResult.intent === "create") {
