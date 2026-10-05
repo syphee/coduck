@@ -12,8 +12,8 @@ const upload = multer({
 })
 app.post("/api/chat", async (req, res) => {
   try {
-    const query = req.body.message;
-    const voiceMemo = req.file.buffer;
+    const query = req.body.message || null;
+    const voiceMemo = req.file.buffer || null;
     const userID = req.body.userID;
     let response;
     console.log(`[CODUCK_API:POST /api/chat QUERY]:${query}\n`);
