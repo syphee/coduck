@@ -90,7 +90,13 @@ const transcribeAudio = async(voiceMemo,userID)=>{
       },
     });
     
-    const text = response.text?.trim() || "";
+    const transcriptParts =
+      response.candidates?.flatMap((candidate) => candidate.content?.parts ?? []) ?? [];
+    const text = transcriptParts
+      .map((part) => part.audioTranscription?.text ?? part.text ?? "")
+      .map((partText) => partText.trim())
+      .filter(Boolean)
+      .join(" ");
 
     return text
   }catch(err){
