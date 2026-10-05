@@ -1,7 +1,7 @@
 // api/server.js
 import express from "express";
 import multer from "multer";
-import { taskQuery, generalQuery, resetChat } from "../controller/geminiController.js";
+import { taskQuery, transcribeAudio, resetChat } from "../controller/geminiController.js";
 
 const app = express();
 
@@ -26,10 +26,9 @@ app.post("/api/chat",upload.single('voiceMemo'), async (req, res) => {
     
     // Call Gemini here
     if (query != null) {
-      response = await taskQuery(query, userID,false);
-    }
-    if (voiceMemo != null) {
-      response = await taskQuery(voiceMemo, userID,true);
+      response = await taskQuery(query, userID);
+    } else if (voiceMemo != null) {
+      response = await transcribeAudio(voiceMemo, userID);
     }
 
     res.json({

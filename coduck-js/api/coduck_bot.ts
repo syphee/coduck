@@ -69,7 +69,7 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
     return ctx.reply("That file is over 20 MB, which Telegram bots can't download.");
   }
 
-  await ctx.reply("⏳ Transcribing your voice memo...");
+  const transcribingMessage = await ctx.reply("⏳ Transcribing your voice memo...");
 
   try {
     const fileId = media.file_id;
@@ -91,14 +91,23 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
       userID,
       media.mime_type ?? "audio/ogg"
     );
+    const transcript = transcribedMemo.trim();
+    if (!transcript) {
+      await ctx.api.editMessageText(
+        ctx.chat.id,
+        transcribingMessage.message_id,
+        "I couldn't hear any speech in that recording. Please try again."
+      );
+      return;
+    }
 
-    await ctx.reply(`[Transcribed Message]\n\n`)
-    for (const part of splitChunks(transcribedMemo)) {
-      ctx.reply(part)
+    await ctx.reply("[Transcribed Message]");
+    for (const part of splitChunks(transcript)) {
+      await ctx.reply(part);
     }
 
     const processedMemo = await ctx.reply("⏳ Processing your query...")
-    const result = await fetchQuery(transcribedMemo, userID)
+    const result = await fetchQuery(transcript, userID)
     await ctx.api.editMessageText(
       ctx.chat.id,
       processedMemo.message_id,

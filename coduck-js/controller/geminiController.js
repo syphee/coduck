@@ -90,7 +90,7 @@ const transcribeAudio = async(voiceMemo,userID)=>{
       },
     });
     
-    const text = response.text?.trim() || "[empty transcript]";
+    const text = response.text?.trim() || "";
 
     return text
   }catch(err){
@@ -126,16 +126,14 @@ const splitChunks = (text,limit = 4000) =>{
 }
 
 // Task Generation Query
-const taskQuery = async (query, userID,transcribe) => {
-  console.log(`[GEMINI_CONTROLLER:TASK_QUERY QUERY]:${transcribe ? "[voice memo]" : query}\n`);
+const taskQuery = async (query, userID) => {
+  console.log(`[GEMINI_CONTROLLER:TASK_QUERY QUERY]:${query}\n`);
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY USER_ID]:${userID}\n`);
-
-  const input = transcribe ? await transcribeAudio(query, userID) : query;
 
   const SCHEMA = z.toJSONSchema(taskQuerySchema);
   const interaction = await callGemini(`task:${userID}`, {
     model: "gemini-3.5-flash-lite",
-    input,
+    input: query,
     system_instruction: CODUCK_SYSTEM_INSTRUCTION,
     response_format: {
       type: "text",
@@ -151,7 +149,7 @@ const taskQuery = async (query, userID,transcribe) => {
   );
 
   if (parsedResult.intent === "none") {
-    return await generalQuery(input, userID);
+    return await generalQuery(query, userID);
   }
 
   if (parsedResult.intent === "create") {
@@ -218,4 +216,4 @@ const generalQuery = async (query, chatId) => {
   }
 };
 
-export  { taskQuery, generalQuery, resetChat };
+export { taskQuery, generalQuery, resetChat, transcribeAudio };
