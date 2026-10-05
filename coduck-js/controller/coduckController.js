@@ -37,6 +37,39 @@ const fetchQuery = async (query, userID) => {
   }
 };
 
+const fetchVoiceQuery = async(voiceQuery,userID)=>{
+  const formData = new FormData();
+  const voiceMemo = new Blob([voiceQuery],{type:'audio/ogg'})
+  formData.append('voiceMemo',voiceMemo,'telegram_voice_prompt.ogg')
+  formData.append('userID',userID)
+  
+
+  const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
+
+  try {
+    const response = await fetch(`${API_URL}/api/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body:formData,
+    });
+
+    console.log(`[RESPONSE]:${JSON.stringify(response)}\n`);
+
+    if (!response.ok) {
+     console.log(`[ERROR]:${response.status} - ${response.statusText}\n`);
+    throw new Error(`API returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.reply;
+  } catch (error) {
+    console.error(`[ERROR]:${error}\n`);
+    throw error;
+  }
+}
+
 // clear context
 const resetQuery = async (userID) => {
   const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
@@ -57,4 +90,4 @@ const resetQuery = async (userID) => {
   return data.reply;
 };
 
-export { fetchQuery,resetQuery };
+export { fetchQuery,resetQuery,fetchVoiceQuery };

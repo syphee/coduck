@@ -63,6 +63,70 @@ const resetChat = (chatId) => {
   chains.delete(`general:${chatId}`);
 };
 
+
+// purely transcribing audio, no task querying processing here
+const transcribeAudio = async(voiceMemo,userID)=>{
+  try{
+    let reply = `[Transcribed Audio]\n\n`;
+
+  console.log(`[GEMINI_CONTROLLER:TASK_QUERY VOICE_MEMO EXISTS?]:${voiceMemo ? true : false}\n`);
+  console.log(`[GEMINI_CONTROLLER:TASK_QUERY USER_ID]:${userID}\n`);
+
+  const base64 = Buffer.from(await voiceMemo.arrayBuffer()).toString("base64");
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-transcribe",
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { inlineData: { mimeType: media.mime_type ?? "audio/ogg", data: base64 } },
+          ],
+        },
+      ],
+      config: {
+        audioTranscriptionConfig: {
+          mode: "SMART",     // removes filler words + formats text; use "VERBATIM" for exact words
+          languageCodes: [], // auto-detect; or e.g. ["en-US"] if you know the language
+        },
+      },
+    });
+    
+    const text = response.text?.trim() || "[empty transcript]";
+
+    return text
+  }catch(err){
+    throw new Error(`Failed to generate response: ${err}`);
+  }
+  
+}
+
+const splitChunks = (text,limit = 4000) =>{
+  if(!text) return [];
+  if(text.length <= limit) return [text]
+
+  const chunks = []
+  let index = 0
+
+  while(index < text.length){
+    if(index + limit >= text.length){
+      chunks.push(text.slice(index))
+      break;
+    }
+
+    let endPos = index + limit
+    const lastSpace = text.lastIndexOf(' ',end)
+
+    if (lastSpace > index){
+      endPos = lastSpace
+    }
+
+    chunks.push(text.slice(index,endPos).trim())
+    index = endPos + 1
+  }
+  return chunks
+}
+
 // Task Generation Query
 const taskQuery = async (query, userID) => {
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY QUERY]:${query}\n`);

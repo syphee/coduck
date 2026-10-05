@@ -1,9 +1,9 @@
 // to run npx tsc everytime..
 
-import { Bot,webhookCallback } from "grammy";
+import { Bot, webhookCallback } from "grammy";
 import dotenv from "dotenv";
 import * as path from "path";
-import { fetchQuery,resetQuery } from "../controller/coduckController.js";
+import { fetchQuery, resetQuery, fetchVoiceQuery } from "../controller/coduckController.js";
 
 import { fileURLToPath } from 'url';
 
@@ -29,6 +29,73 @@ bot.command("new", async (ctx) => {
   }
 });
 
+const splitChunks = (text, limit = 4000) => {
+  if (!text) return [];
+  if (text.length <= limit) return [text]
+
+  const chunks = []
+  let index = 0
+
+  while (index < text.length) {
+    if (index + limit >= text.length) {
+      chunks.push(text.slice(index))
+      break;
+    }
+
+    let endPos = index + limit
+    const lastSpace = text.lastIndexOf(' ', end)
+
+    if (lastSpace > index) {
+      endPos = lastSpace
+    }
+
+    chunks.push(text.slice(index, endPos).trim())
+    index = endPos + 1
+  }
+  return chunks
+}
+
+
+
+
+
+
+bot.on(["message:voice", "message:audio"], async (ctx) => {
+  const media = ctx.message.voice ?? ctx.message.audio;
+  const userID = ctx.chat.id
+
+  // Bot API can only download files up to 20 MB
+  if (media.file_size && media.file_size > 20 * 1024 * 1024) {
+    return ctx.reply("That file is over 20 MB, which Telegram bots can't download.");
+  }
+
+  await ctx.reply("⏳ Transcribing your voice memo...");
+
+  try {
+    const fileId = media.file_id;
+    const file = await ctx.api.getFile(fileId);
+
+    const transcribedMemo = await fetchVoiceQuery(file, userID);
+
+    await ctx.reply(`[Transcribed Message]\n\n`)
+    for (const part of splitChunks(transcribedMemo)) {
+      ctx.reply(part)
+    }
+
+    const processedMemo = await ctx.reply("⏳ Processing your query...")
+    const result = await fetchQuery(transcribedMemo)
+    await ctx.api.editMessageText(
+      ctx.chat.id,
+      processedMemo.message_id,
+      String(result)
+    );
+
+  } catch (err) {
+    console.error(err);
+    await ctx.reply("Sorry, transcription failed. Try again in a moment.");
+  }
+});
+
 // Normal message handler
 bot.on("message", async (ctx) => {
   const loadingText = await ctx.reply("⏳ Processing your message...");
@@ -40,8 +107,8 @@ bot.on("message", async (ctx) => {
       return;
     }
 
-    
-    const result = await fetchQuery(userInput,userID);
+
+    const result = await fetchQuery(userInput, userID);
 
     await ctx.api.editMessageText(
       ctx.chat.id,
