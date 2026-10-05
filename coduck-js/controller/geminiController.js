@@ -128,9 +128,16 @@ const splitChunks = (text,limit = 4000) =>{
 }
 
 // Task Generation Query
-const taskQuery = async (query, userID) => {
+const taskQuery = async (query, userID,transcribe) => {
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY QUERY]:${query}\n`);
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY USER_ID]:${userID}\n`);
+
+  let input;
+  if(transcribe){
+    input = transcribeAudio(query)
+  }else{
+    input = query
+  }
 
   const SCHEMA = z.toJSONSchema(taskQuerySchema);
   const interaction = await callGemini(`task:${userID}`, {

@@ -26,10 +26,10 @@ app.post("/api/chat",upload.single('voiceMemo'), async (req, res) => {
     
     // Call Gemini here
     if (query != null) {
-      response = await taskQuery(query, userID);
+      response = await taskQuery(query, userID,false);
     }
     if (voiceMemo != null) {
-      response = await taskQuery(voiceMemo, userID);
+      response = await taskQuery(voiceMemo, userID,true);
     }
 
     res.json({
