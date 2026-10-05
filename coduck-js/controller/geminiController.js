@@ -80,7 +80,7 @@ const transcribeAudio = async(voiceMemo,userID)=>{
         {
           role: "user",
           parts: [
-            { inlineData: { mimeType: media.mime_type ?? "audio/ogg", data: base64 } },
+            { inlineData: { mimeType: voiceMemo.mime_type ?? "audio/ogg", data: base64 } },
           ],
         },
       ],
