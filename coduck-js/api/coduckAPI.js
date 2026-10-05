@@ -20,6 +20,7 @@ app.post("/api/chat",upload.single('voiceMemo'), async (req, res) => {
     const userID = req.body.userID;
     let response;
     console.log(`[CODUCK_API:POST /api/chat QUERY]:${query}\n`);
+    console.log(`[CODUCK_API:POST /api/chat VOICE MEMO]:${voiceMemo}\n`);
     console.log(`[CODUCK_API:POST /api/chat USER_ID]:${userID}\n`);
 
     
