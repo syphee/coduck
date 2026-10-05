@@ -13,10 +13,10 @@ const upload = multer({
 
 app.use(express.json());
 
-app.post("/api/chat", async (req, res) => {
+app.post("/api/chat",upload.single('voiceMemo'), async (req, res) => {
   try {
     const query = req.body.message || null;
-    const voiceMemo = req.file.buffer || null;
+    const voiceMemo = req.file || null;
     const userID = req.body.userID;
     let response;
     console.log(`[CODUCK_API:POST /api/chat QUERY]:${query}\n`);
