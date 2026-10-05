@@ -72,7 +72,7 @@ const transcribeAudio = async(voiceMemo,userID)=>{
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY VOICE_MEMO EXISTS?]:${voiceMemo ? true : false}\n`);
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY USER_ID]:${userID}\n`);
 
-  const base64 = Buffer.from(await voiceMemo.arrayBuffer()).toString("base64");
+  const base64 = voiceMemo.buffer.toString("base64");
 
     const response = await ai.models.generateContent({
       model: "gemini-3.5-transcribe",
