@@ -26,12 +26,12 @@ bot.command("help", async (ctx) => {
   try {
     
     await ctx.reply(
-      `[Available Commands]\n
-      /start - Ping the bot\n
-      /new - Clears chat history of the bot, removing message context.\n\n
+      `[Available Commands]
+      /start - Ping the bot
+      /new - Clears chat history of the bot, removing message context.\n
       
-      [Usage]\n
-      Start by querying anything, or to orchestrate a task.\n
+      [Usage]
+      Start by querying anything, or to orchestrate a task.
       Examples: "Generate a Lasagna Recipe", "What is the current weather now?"," Add UI to Coduck" etc.
       `
     );
