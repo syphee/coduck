@@ -26,14 +26,14 @@ bot.command("help", async (ctx) => {
   try {
     
     await ctx.reply(
-      `[Available Commands]
-      /start - Ping the bot
-      /new - Clears chat history of the bot, removing message context.\n
+`[Available Commands]
+/start - Ping the bot
+/new - Clears chat history of the bot, removing message context.\n
       
-      [Usage]
-      Start by querying anything, or to orchestrate a task.
-      Examples: "Generate a Lasagna Recipe", "What is the current weather now?"," Add UI to Coduck" etc.
-      `
+[Usage]
+Start by querying anything, or to orchestrate a task.
+Examples: "Generate a Lasagna Recipe", "What is the current weather now?"," Add UI to Coduck" etc.
+`
     );
   } catch (error) {
     console.error(error);
