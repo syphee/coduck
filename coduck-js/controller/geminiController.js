@@ -35,6 +35,11 @@ const CODUCK_SYSTEM_INSTRUCTION = fs.readFileSync(textFilePath, "utf8");
 // previous_interaction_id carries conversation history only, so
 // system_instruction and response_format are re-sent on every call.
 // In-memory: chains are lost when the bot restarts.
+
+// chainkeys:
+// taskQuery - task:<hash>
+// generalQuery - general:<hash>
+
 const chains = new Map();
 
 const callGemini = async (chainKey, params) => {
@@ -59,7 +64,7 @@ const callGemini = async (chainKey, params) => {
 
 // reset chat context
 const resetChat = (chatId) => {
-  chains.delete(`task:${chatId}`);
+  //chains.delete(`task:${chatId}`);
   chains.delete(`general:${chatId}`);
 };
 
@@ -137,7 +142,9 @@ const taskQuery = async (query, userID) => {
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY USER_ID]:${userID}\n`);
 
   const SCHEMA = z.toJSONSchema(taskQuerySchema);
-  const interaction = await callGemini(`task:${userID}`, {
+
+
+  const interaction = await callGemini(`general:${userID}`, {
     model: "gemini-3.5-flash-lite",
     input: query,
     system_instruction: CODUCK_SYSTEM_INSTRUCTION,
