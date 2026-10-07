@@ -36,6 +36,9 @@ const CODUCK_SYSTEM_INSTRUCTION = fs.readFileSync(textFilePath, "utf8");
 // system_instruction and response_format are re-sent on every call.
 // In-memory: chains are lost when the bot restarts.
 
+// bot only retains history of related chainKeys, i.e if user query is related to
+// tasking, it will only belong in the "tasking" chain. if user query is related to 
+// general questions, it will only belong in the "general" chain
 // chainkeys:
 // taskQuery - task:<hash>
 // generalQuery - general:<hash>
