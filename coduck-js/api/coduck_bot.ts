@@ -22,6 +22,25 @@ bot.use(async (ctx, next) => {
   await next();
 });
 
+bot.command("help", async (ctx) => {
+  try {
+    
+    await ctx.reply(
+      `[Available Commands]\n
+      /start - Ping the bot\n
+      /new - Clears chat history of the bot, removing message context.\n\n
+      
+      [Usage]\n
+      Start by querying anything, or to orchestrate a task.\n
+      Examples: "Generate a Lasagna Recipe", "What is the current weather now?"," Add UI to Coduck" etc.
+      `
+    );
+  } catch (error) {
+    console.error(error);
+    await ctx.reply("❌ Couldn't execute. Try again.");
+  }
+});
+
 bot.command("start", (ctx) => ctx.reply("Welcome! Up and running."));
 
 bot.command("new", async (ctx) => {
