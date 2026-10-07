@@ -151,6 +151,14 @@ const taskQuery = async (query, userID) => {
     model: "gemini-3.5-flash-lite",
     input: query,
     system_instruction: CODUCK_SYSTEM_INSTRUCTION,
+    tools:[
+      {
+        "type":"url_context"
+      },
+      {
+        "type":"google_search"
+      }
+    ],
     response_format: {
       type: "text",
       mime_type: "application/json",
@@ -224,6 +232,14 @@ const generalQuery = async (query, chatId) => {
     const interaction = await callGemini(`general:${chatId}`, {
       model: "gemini-3.5-flash-lite",
       input: query,
+      tools:[
+      {
+        "type":"url_context"
+      },
+      {
+        "type":"google_search"
+      }
+    ],
     });
 
     return interaction.output_text;
