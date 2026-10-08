@@ -262,14 +262,6 @@ const generalQuery = async (query, chatId) => {
       model: "gemini-3.5-flash-lite",
       //model: "gemini-3.1-flash-lite",
       input: query,
-
-      tools: [
-        (hasURL ? (
-        {
-          "type": "url_context"
-        }
-        ) : {})
-      ],
     });
     }
     
