@@ -148,8 +148,8 @@ const taskQuery = async (query, userID) => {
 
 
   const interaction = await callGemini(`general:${userID}`, {
-   // model: "gemini-3.5-flash-lite",
-    model: "gemini-3.1-flash-lite",
+   model: "gemini-3.5-flash-lite",
+   // model: "gemini-3.1-flash-lite",
     input: query,
     system_instruction: CODUCK_SYSTEM_INSTRUCTION,
     tools:[
@@ -231,8 +231,8 @@ const generalQuery = async (query, chatId) => {
     console.log(`[GEMINI_CONTROLLER:GENERAL_QUERY]:${query}\n`);
 
     const interaction = await callGemini(`general:${chatId}`, {
-      //model: "gemini-3.5-flash-lite",
-      model: "gemini-3.1-flash-lite",
+      model: "gemini-3.5-flash-lite",
+      //model: "gemini-3.1-flash-lite",
       input: query,
       tools:[
       {
