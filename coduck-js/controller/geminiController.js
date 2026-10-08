@@ -147,17 +147,17 @@ const taskQuery = async (query, userID) => {
   const SCHEMA = z.toJSONSchema(taskQuerySchema);
 
   const hasURL = /https?:\/\/\S+/.test(query)
-  const interaction = await callGemini(`general:${userID}`, {
+  let interaction;
+  if(hasURL){
+    interaction = await callGemini(`general:${userID}`, {
     model: "gemini-3.5-flash-lite",
     // model: "gemini-3.1-flash-lite",
     input: query,
     system_instruction: CODUCK_SYSTEM_INSTRUCTION,
     tools: [
-        (hasURL ? (
         {
           "type": "url_context"
         }
-        ) : {})
       ],
     response_format: {
       type: "text",
@@ -165,6 +165,20 @@ const taskQuery = async (query, userID) => {
       schema: SCHEMA,
     },
   });
+  }else{
+    interaction = await callGemini(`general:${userID}`, {
+    model: "gemini-3.5-flash-lite",
+    // model: "gemini-3.1-flash-lite",
+    input: query,
+    system_instruction: CODUCK_SYSTEM_INSTRUCTION,
+    response_format: {
+      type: "text",
+      mime_type: "application/json",
+      schema: SCHEMA,
+    },
+  });
+  }
+  
 
   const result = interaction.output_text;
   const parsedResult = JSON.parse(result);
@@ -230,7 +244,21 @@ const generalQuery = async (query, chatId) => {
     console.log(`[GEMINI_CONTROLLER:GENERAL_QUERY]:${query}\n`);
 
     const hasURL = /https?:\/\/\S+/.test(query)
-    const interaction = await callGemini(`general:${chatId}`, {
+    let interaction;
+    if(hasURL){
+      interaction = await callGemini(`general:${chatId}`, {
+      model: "gemini-3.5-flash-lite",
+      //model: "gemini-3.1-flash-lite",
+      input: query,
+
+      tools: [
+        {
+          "type": "url_context"
+        }
+      ],
+    });
+    }else{
+      interaction = await callGemini(`general:${chatId}`, {
       model: "gemini-3.5-flash-lite",
       //model: "gemini-3.1-flash-lite",
       input: query,
@@ -243,6 +271,8 @@ const generalQuery = async (query, chatId) => {
         ) : {})
       ],
     });
+    }
+    
 
     return interaction.output_text;
   } catch (error) {
