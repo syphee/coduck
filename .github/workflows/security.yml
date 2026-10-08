@@ -38,7 +38,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        language:: ['javascript','typescript']
+        language: ['javascript','typescript']
     steps:
       - uses: actions/checkout@v4
       - name: init CodeQL
