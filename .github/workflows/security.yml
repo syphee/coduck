@@ -15,7 +15,7 @@ jobs:
           node-version: 'latest'
       - name: Install dependencies for coduck-js
         run: npm ci
-        working-directory: ~/coduck-js/
+        working-directory: ./coduck-js
       - name: Audit
         run: npm audit --audit-level=high
 
