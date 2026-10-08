@@ -1,0 +1,47 @@
+name: Security Scanning
+on:
+  push:
+    branches: [main,dev]
+  pull_request:
+    branches: [main,dev]
+jobs:
+  dependency-scan:
+    name: Dependency / Module vulnerability scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/steup-node@v4
+        with:
+          node-version: 'package.json'
+      - name: Install dependencies
+        run: npm ci
+      - name: Audit
+        run: npm audit --audit-level=high
+
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  code-scan:
+    name: code analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    strategy:
+      matrix:
+        language:: ['javascript','typescript']
+    steps:
+      - uses: actions/checkout@v4
+      - name: init CodeQL
+        uses:github/codeql-action/init@v3
+        with:
+          languages: ${{matrix.language}}
