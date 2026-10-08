@@ -67,7 +67,7 @@ const splitChunks = (text, limit = 4000) => {
     }
 
     let endPos = index + limit
-    const lastSpace = text.lastIndexOf(' ', end)
+    const lastSpace = text.lastIndexOf(' ', endPos)
 
     if (lastSpace > index) {
       endPos = lastSpace
