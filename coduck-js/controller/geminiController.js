@@ -201,9 +201,9 @@ const createTaskResponse = async (parsedResult) => {
   for (const t of parsedResult.tasks) {
     const stepLines =
       Array.isArray(t.steps) && t.steps.length
-        ? t.steps.map((step) => `    - ${step}`).join("\n")
+        ? t.steps.map((step,index) => `[${index + 1}]\t${step}`).join("\n")
         : "";
-    const exitCriteriaString = `[Exit Criteria]: ${t.exit_criteria}`;
+    const exitCriteriaString = `[Exit Criteria]:\t${t.exit_criteria}`;
 
     // awaited, so any failure propagates to the try/catch in taskQuery
     await insertCoduckRows({
@@ -238,9 +238,6 @@ const generalQuery = async (query, chatId) => {
       {
         "type":"url_context"
       },
-      {
-        "type":"google_search"
-      }
     ],
     });
 
