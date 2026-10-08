@@ -73,8 +73,8 @@ const resetChat = (chatId) => {
 
 
 // purely transcribing audio, no task querying processing here
-const transcribeAudio = async(voiceMemo,userID)=>{
-  try{
+const transcribeAudio = async (voiceMemo, userID) => {
+  try {
     console.log(`[GEMINI_CONTROLLER:TASK_QUERY VOICE_MEMO EXISTS?]:${Boolean(voiceMemo)}\n`);
     console.log(`[GEMINI_CONTROLLER:TASK_QUERY USER_ID]:${userID}\n`);
 
@@ -97,7 +97,7 @@ const transcribeAudio = async(voiceMemo,userID)=>{
         },
       },
     });
-    
+
     const transcriptParts =
       response.candidates?.flatMap((candidate) => candidate.content?.parts ?? []) ?? [];
     const text = transcriptParts
@@ -107,33 +107,33 @@ const transcribeAudio = async(voiceMemo,userID)=>{
       .join(" ");
 
     return text
-  }catch(err){
+  } catch (err) {
     throw new Error(`Failed to transcribe voice memo: ${err instanceof Error ? err.message : String(err)}`);
   }
-  
+
 }
 
-const splitChunks = (text,limit = 4000) =>{
-  if(!text) return [];
-  if(text.length <= limit) return [text]
+const splitChunks = (text, limit = 4000) => {
+  if (!text) return [];
+  if (text.length <= limit) return [text]
 
   const chunks = []
   let index = 0
 
-  while(index < text.length){
-    if(index + limit >= text.length){
+  while (index < text.length) {
+    if (index + limit >= text.length) {
       chunks.push(text.slice(index))
       break;
     }
 
     let endPos = index + limit
-    const lastSpace = text.lastIndexOf(' ',end)
+    const lastSpace = text.lastIndexOf(' ', end)
 
-    if (lastSpace > index){
+    if (lastSpace > index) {
       endPos = lastSpace
     }
 
-    chunks.push(text.slice(index,endPos).trim())
+    chunks.push(text.slice(index, endPos).trim())
     index = endPos + 1
   }
   return chunks
@@ -148,16 +148,16 @@ const taskQuery = async (query, userID) => {
 
 
   const interaction = await callGemini(`general:${userID}`, {
-   model: "gemini-3.5-flash-lite",
-   // model: "gemini-3.1-flash-lite",
+    model: "gemini-3.5-flash-lite",
+    // model: "gemini-3.1-flash-lite",
     input: query,
     system_instruction: CODUCK_SYSTEM_INSTRUCTION,
-    tools:[
+    tools: [
       {
-        "type":"url_context"
+        "type": "url_context"
       },
       {
-        "type":"google_search"
+        "type": "google_search"
       }
     ],
     response_format: {
@@ -201,7 +201,7 @@ const createTaskResponse = async (parsedResult) => {
   for (const t of parsedResult.tasks) {
     const stepLines =
       Array.isArray(t.steps) && t.steps.length
-        ? t.steps.map((step,index) => `[${index + 1}]\t${step}`).join("\n")
+        ? t.steps.map((step, index) => `[${index + 1}]\t${step}`).join("\n")
         : "";
     const exitCriteriaString = `[Exit Criteria]:\t${t.exit_criteria}`;
 
@@ -230,15 +230,19 @@ const generalQuery = async (query, chatId) => {
   try {
     console.log(`[GEMINI_CONTROLLER:GENERAL_QUERY]:${query}\n`);
 
+    const hasURL = /https?:\/\/\S+/.test(query)
     const interaction = await callGemini(`general:${chatId}`, {
       model: "gemini-3.5-flash-lite",
       //model: "gemini-3.1-flash-lite",
       input: query,
-      tools:[
-      {
-        "type":"url_context"
-      },
-    ],
+
+      tools: [
+        (hasURL ? (
+        {
+          "type": "url_context"
+        }
+        ) : {})
+      ],
     });
 
     return interaction.output_text;
