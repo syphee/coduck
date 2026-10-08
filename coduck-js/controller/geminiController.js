@@ -146,20 +146,19 @@ const taskQuery = async (query, userID) => {
 
   const SCHEMA = z.toJSONSchema(taskQuerySchema);
 
-
+  const hasURL = /https?:\/\/\S+/.test(query)
   const interaction = await callGemini(`general:${userID}`, {
     model: "gemini-3.5-flash-lite",
     // model: "gemini-3.1-flash-lite",
     input: query,
     system_instruction: CODUCK_SYSTEM_INSTRUCTION,
     tools: [
-      {
-        "type": "url_context"
-      },
-      {
-        "type": "google_search"
-      }
-    ],
+        (hasURL ? (
+        {
+          "type": "url_context"
+        }
+        ) : {})
+      ],
     response_format: {
       type: "text",
       mime_type: "application/json",
