@@ -45,7 +45,17 @@ Examples: "Generate a Lasagna Recipe", "What is the current weather now?"," Add 
   }
 });
 
-bot.command("start", (ctx) => ctx.reply("Welcome! Up and running."));
+bot.command("start", (ctx) => ctx.reply(
+`[Available Commands]
+/start - Ping the bot
+/notion - Link your notion account to allow Coduck to insert tasks.
+/new - Clears chat history of the bot, removing message context.\n
+      
+[Usage]
+Start by querying anything, or to orchestrate a task.
+Examples: "Generate a Lasagna Recipe", "What is the current weather now?"," Add UI to Coduck" etc.
+`
+));
 
 bot.command("new", async (ctx) => {
   try {
@@ -129,9 +139,8 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
       return;
     }
 
-    await ctx.reply("[Transcribed Message]");
     for (const part of splitChunks(transcript)) {
-      await ctx.reply(part);
+      await ctx.reply(`[Transcribed Message]:${part}`);
     }
 
     const processedMemo = await ctx.reply("⏳ Processing your query...")
