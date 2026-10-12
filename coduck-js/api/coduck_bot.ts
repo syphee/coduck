@@ -22,6 +22,10 @@ bot.use(async (ctx, next) => {
   await next();
 });
 
+bot.catch((error)=>{
+  console.error(`[ CODUCK_BOT:ERROR ]:${error}`)
+})
+
 bot.command("help", async (ctx) => {
   try {
     
