@@ -22,16 +22,55 @@ bot.use(async (ctx, next) => {
   await next();
 });
 
-bot.catch((error)=>{
+bot.catch((error) => {
   console.error(`[ CODUCK_BOT:ERROR ]:${error}`)
 })
 
+
+// to setup user's chosen table for tasks insertion
+// should launch after doing /notion
+// will prompt user for database id
+// this will only work, and should only work when user has already logged into
+// notion. 
+
+// will add a "choose table" command once i settle this backbone
+bot.command("setup", (ctx) => {
+  try {
+    const userID = ctx.from.id;
+    
+
+  } catch (err) {
+
+  }
+
+
+});
+
+// to make user login into their notion account so they can do /setup
+// redirects user to login notion, to make user login, set token
+// into supabase.
+//
+// supabase will contain tele user id, notion user token, and database id
+// callback will be t.me after logon
+bot.command("notion", (ctx) => {
+  try {
+    const userID = ctx.from.id;
+    
+
+  } catch (err) {
+
+  }
+
+
+});
+
 bot.command("help", async (ctx) => {
   try {
-    
+
     await ctx.reply(
-`[Available Commands]
+      `[Available Commands]
 /start - Ping the bot
+/notion - Link your notion account to allow Coduck to insert tasks.
 /new - Clears chat history of the bot, removing message context.\n
       
 [Usage]
@@ -46,7 +85,7 @@ Examples: "Generate a Lasagna Recipe", "What is the current weather now?"," Add 
 });
 
 bot.command("start", (ctx) => ctx.reply(
-`[Available Commands]
+  `[Available Commands]
 /start - Ping the bot
 /notion - Link your notion account to allow Coduck to insert tasks.
 /new - Clears chat history of the bot, removing message context.\n
@@ -140,7 +179,7 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
     }
 
     for (const part of splitChunks(transcript)) {
-      await ctx.reply(`[Transcribed Message]:${part}`);
+      await ctx.reply(`[Transcribed Message] : ${part}`);
     }
 
     const processedMemo = await ctx.reply("⏳ Processing your query...")
