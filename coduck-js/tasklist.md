@@ -44,3 +44,18 @@ bot.command("notion", (ctx) => {
 
 
 });
+
+
+
+
+[flow of notion + telegram link]
+
+- tele to redirect user to Notion oauth public integrations link with userid payload
+- once user verifies, redirect url will hit the API to write the tele userid and oauth token
+into supabase
+[expected outcome] 
+after setting up, once user starts a taskQuery prompt, should insert into their notion table.
+
+[additional comments]
+- will have to write the API in mind such that it will be compatible with other platforms as well (whatsapp,discord etc.), not just telegram
+
