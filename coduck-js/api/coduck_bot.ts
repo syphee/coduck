@@ -244,4 +244,6 @@ bot.on("message", async (ctx) => {
 
 
 // Export the webhook adapter for Vercel Serverless
-export default webhookCallback(bot, "https");
+export default webhookCallback(bot, "https", {
+  timeoutMilliseconds: 50_000,
+});
