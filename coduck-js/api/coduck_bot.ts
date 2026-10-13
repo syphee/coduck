@@ -27,10 +27,10 @@ bot.catch((error) => {
 })
 
 bot.api.setMyCommands([
-  {command:"start",description:"Ping the bot"},
-  {command:"notion",description:"Link your notion account to allow Coduck to insert tasks."},
-  {command:"new",description:"Clears chat history of the bot, removing message context."},
-  {command:"help",description:"Display available commands and usage of Coduck."}
+  { command: "start", description: "Ping the bot" },
+  { command: "notion", description: "Link your notion account to allow Coduck to insert tasks." },
+  { command: "new", description: "Clears chat history of the bot, removing message context." },
+  { command: "help", description: "Display available commands and usage of Coduck." }
 ])
 
 
@@ -44,7 +44,7 @@ bot.api.setMyCommands([
 bot.command("setup", (ctx) => {
   try {
     const userID = ctx.from.id;
-    
+
 
   } catch (err) {
 
@@ -62,7 +62,7 @@ bot.command("setup", (ctx) => {
 bot.command("notion", (ctx) => {
   try {
     const userID = ctx.from.id;
-    
+
 
   } catch (err) {
 
@@ -139,6 +139,14 @@ const splitChunks = (text, limit = 4000) => {
   return chunks
 }
 
+// handle unknown cmds sent by user
+bot.use(async (ctx, next) => {
+  if (ctx.message?.text?.startsWith("/")) {
+    console.error(`[ CODUCK_BOT:ERROR ]: Unknown Command ${ctx.message?.text}`)
+    return;
+  }
+  await next();
+})
 
 
 
