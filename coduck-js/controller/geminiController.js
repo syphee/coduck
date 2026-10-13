@@ -31,6 +31,10 @@ import { insertCoduckRows } from "./notionController.js";
 
 const CODUCK_SYSTEM_INSTRUCTION = fs.readFileSync(textFilePath, "utf8");
 
+//"gemini-3.5-flash-lite"
+//"gemini-3.1-flash-lite"
+const CODUCK_MODEL = "gemini-3.1-flash-lite"
+
 // Conversation memory: one chain of interaction IDs per chat, per kind of call.
 // previous_interaction_id carries conversation history only, so
 // system_instruction and response_format are re-sent on every call.
@@ -150,7 +154,7 @@ const taskQuery = async (query, userID) => {
   let interaction;
   if(hasURL){
     interaction = await callGemini(`general:${userID}`, {
-    model: "gemini-3.5-flash-lite",
+    model: CODUCK_MODEL,
     // model: "gemini-3.1-flash-lite",
     input: query,
     system_instruction: CODUCK_SYSTEM_INSTRUCTION,
@@ -167,7 +171,7 @@ const taskQuery = async (query, userID) => {
   });
   }else{
     interaction = await callGemini(`general:${userID}`, {
-    model: "gemini-3.5-flash-lite",
+    model: CODUCK_MODEL,
     // model: "gemini-3.1-flash-lite",
     input: query,
     system_instruction: CODUCK_SYSTEM_INSTRUCTION,
@@ -247,7 +251,7 @@ const generalQuery = async (query, chatId) => {
     let interaction;
     if(hasURL){
       interaction = await callGemini(`general:${chatId}`, {
-      model: "gemini-3.5-flash-lite",
+      model: CODUCK_MODEL,
       //model: "gemini-3.1-flash-lite",
       input: query,
 
@@ -259,7 +263,7 @@ const generalQuery = async (query, chatId) => {
     });
     }else{
       interaction = await callGemini(`general:${chatId}`, {
-      model: "gemini-3.5-flash-lite",
+      model: CODUCK_MODEL,
       //model: "gemini-3.1-flash-lite",
       input: query,
     });
