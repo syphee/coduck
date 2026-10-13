@@ -26,6 +26,13 @@ bot.catch((error) => {
   console.error(`[ CODUCK_BOT:ERROR ]:${error}`)
 })
 
+bot.api.setMyCommands([
+  {command:"start",description:"Ping the bot"},
+  {command:"notion",description:"Link your notion account to allow Coduck to insert tasks."},
+  {command:"new",description:"Clears chat history of the bot, removing message context."},
+  {command:"help",description:"Display available commands and usage of Coduck."}
+])
+
 
 // to setup user's chosen table for tasks insertion
 // should launch after doing /notion
