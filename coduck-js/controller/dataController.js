@@ -10,7 +10,7 @@ const getAllCoduckUsers = async () => {
 
     return output
   } catch (err) {
-    console.err(err)
+    console.error(err)
   }
 }
 
