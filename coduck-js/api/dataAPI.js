@@ -25,3 +25,5 @@ app.get("/api/data",async(req,res)=>{
     console.log(`[coduckAPI:POST /api/data NEONDB]:${err}`)
   }
 })
+
+export default app
