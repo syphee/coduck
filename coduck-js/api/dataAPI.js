@@ -5,6 +5,7 @@ import { getAllCoduckUsers,pingCoduckDB } from "../controller/dataController.js"
 app.get("/api/data/allUsers", async (req, res) => {
   try {
     const result = await getAllCoduckUsers()
+    console.log(`[dataAPI:GET /api/data/allUsers NEONDB Result]: ${result}`)
     if (result) {
       console.log(result)
       return res.status(200).json({
@@ -27,6 +28,7 @@ app.get("/api/data/allUsers", async (req, res) => {
 app.get("/api/data/ping", async (req, res) => {
   try {
     const result = await pingCoduckDB()
+    onsole.log(`[dataAPI:GET /api/data/ping NEONDB Result]: ${result}`)
     if (result) {
       return res.status(200).json({
         status: "success",
