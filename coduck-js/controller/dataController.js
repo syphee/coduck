@@ -5,7 +5,7 @@ const getAllCoduckUsers = async () => {
   try {
     const query = await sql
       `select * from coduck.notion_users;`;
-    const output = JSON.stringify(query);
+    const output = query;
     console.log(`[dataController getAllCoduckUsers Result]: ${output}`)
 
     return output
