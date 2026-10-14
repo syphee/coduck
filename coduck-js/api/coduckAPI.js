@@ -63,7 +63,7 @@ const NeonRequestHandler = async () => {
   return version
 };
 
-app.post("/api/data",async(req,res)=>{
+app.get("/api/data",async(req,res)=>{
   try{
     const result = NeonRequestHandler()
     if(result){
