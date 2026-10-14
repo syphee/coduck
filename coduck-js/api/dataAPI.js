@@ -15,8 +15,9 @@ const getAllCoduckUsers = async () => {
 
 app.get("/api/data/allUsers", async (req, res) => {
   try {
-    const result = getAllCoduckUsers()
+    const result = await getAllCoduckUsers()
     if (result) {
+      console.log(result)
       res.status(200).json({
         status:"success",
         comment:`Get all users success. Returned ${result.length} rows.`,
@@ -43,7 +44,7 @@ const pingCoduckDB = async () => {
 };
 app.get("/api/data/ping", async (req, res) => {
   try {
-    const result = pingCoduckDB()
+    const result = await pingCoduckDB()
     if (result) {
       res.send(200)
     }
