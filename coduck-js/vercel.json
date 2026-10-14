@@ -27,7 +27,7 @@
     },
     {
       "source":"/api/data",
-      "destination":"/api/coduckAPI"
+      "destination":"/api/dataAPI"
     }
   ]
 }

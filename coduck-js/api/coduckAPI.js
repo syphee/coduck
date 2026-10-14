@@ -56,6 +56,26 @@ if (process.env.VERCEL !== "1") {
   });
 }
 
+
+
+// clear context  
+app.post("/api/reset", (req, res) => {
+  const userID = req.body.userID;
+  console.log(`[CODUCK_API:POST /api/reset USER_ID]:${userID}\n`);
+
+  if (userID === undefined || userID === null) {
+    return res.status(400).json({
+      error: "userID is required",
+    });
+  }
+
+  resetChat(userID);
+
+  res.json({
+    reply: "Started a fresh conversation.",
+  });
+});
+
 const NeonRequestHandler = async () => {
   const result = await sql`SELECT version()`;
   const { version } = result[0];
@@ -77,26 +97,6 @@ app.get("/api/data",async(req,res)=>{
     console.log(`[coduckAPI:POST /api/data NEONDB]:${err}`)
   }
 })
-
-
-
-// clear context  
-app.post("/api/reset", (req, res) => {
-  const userID = req.body.userID;
-  console.log(`[CODUCK_API:POST /api/reset USER_ID]:${userID}\n`);
-
-  if (userID === undefined || userID === null) {
-    return res.status(400).json({
-      error: "userID is required",
-    });
-  }
-
-  resetChat(userID);
-
-  res.json({
-    reply: "Started a fresh conversation.",
-  });
-});
 
 if (process.env.VERCEL !== "1") {
   app.listen(3000, () => {
