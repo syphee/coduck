@@ -22,7 +22,7 @@ const pingCoduckDB = async () => {
     const { version } = query[0];
     console.log(`[dataController getAllCoduckUsers Result]: ${version}`)
 
-    return output
+    return version
   } catch (err) {
     console.error(err)
   }
