@@ -243,30 +243,35 @@ const createTaskResponse = async (parsedResult) => {
 };
 
 // anything other than a normal message query will be handled by this function
+
 const generalQuery = async (query, chatId) => {
   try {
     console.log(`[GEMINI_CONTROLLER:GENERAL_QUERY]: ${query}\n`);
 
-const hasURL = /https?:\(\/\/\S+/.\)test(query);
-    
-    // Base configuration options shared by both paths
+    const hasURL = /https?:\/\/\S+/.test(query);
+
     const config = {
       model: CODUCK_MODEL,
       input: query,
     };
 
-    // Inject url_context tool only if a URL is detected
     if (hasURL) {
       config.tools = [{ type: "url_context" }];
     }
 
-    const interaction = await callGemini(`general:${chatId}`, config);
-    return interaction.output_text;
+    const interaction = await callGemini(
+      `general:${chatId}`,
+      config
+    );
 
+    return interaction.output_text;
   } catch (error) {
-    throw new Error(`Failed to generate response: ${error.message}`);
+    throw new Error(
+      `Failed to generate response: ${error.message}`
+    );
   }
 };
 
+    
 
 export { taskQuery, generalQuery, resetChat, transcribeAudio };
