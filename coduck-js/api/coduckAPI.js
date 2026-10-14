@@ -5,6 +5,12 @@ import { taskQuery, transcribeAudio, resetChat } from "../controller/geminiContr
 
 const app = express();
 
+const http = require("http");
+const { neon } = require("@neondatabase/serverless");
+
+const sql = neon(process.env.NEON_DATABASE_URL);
+
+
 const storage = multer.memoryStorage();
 const upload = multer({
   storage:storage,
@@ -50,6 +56,30 @@ if (process.env.VERCEL !== "1") {
     console.log("API running on port 3000");
   });
 }
+
+const NeonRequestHandler = async () => {
+  const result = await sql`SELECT version()`;
+  const { version } = result[0];
+  return version
+};
+
+app.post("/api/data",async(req,res)=>{
+  try{
+    const result = NeonRequestHandler()
+    if(result){
+      res.send(200)
+    } 
+    else{
+      res.send(404)
+      throw new Error(`[coduckAPI:POST /api/data NEONDB]: Connection Not Established.`)
+    }
+  }catch(err){
+    res.send(500)
+    console.log(`[coduckAPI:POST /api/data NEONDB]:${err}`)
+  }
+})
+
+
 
 // clear context  
 app.post("/api/reset", (req, res) => {

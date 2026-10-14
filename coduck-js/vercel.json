@@ -7,10 +7,7 @@
     }
   },
   "rewrites": [
-    {
-      "source": "/api/chat",
-      "destination": "/api/coduckAPI"
-    },
+
     {
       "source": "/telegram/webhook",
       "destination": "/api/coduck_bot"
@@ -19,9 +16,18 @@
       "source": "/",
       "destination": "/api/coduck_bot"
     },
+    
+    {
+      "source": "/api/chat",
+      "destination": "/api/coduckAPI"
+    },
     {
       "source": "/api/reset",
       "destination": "/api/coduckAPI"
+    },
+    {
+      "source":"/api/data",
+      "destination":"/api/coduckAPI"
     }
   ]
 }
