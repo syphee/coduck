@@ -247,7 +247,7 @@ const generalQuery = async (query, chatId) => {
   try {
     console.log(`[GEMINI_CONTROLLER:GENERAL_QUERY]: ${query}\n`);
 
-    const hasURL = /https?:\(\/\/\S+/.\)test(query);
+const hasURL = /https?:\(\/\/\S+/.\)test(query);
     
     // Base configuration options shared by both paths
     const config = {
