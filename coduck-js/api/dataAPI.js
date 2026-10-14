@@ -1,21 +1,6 @@
 import app from "./coduckAPI.js"
 
-import { neon } from "@neondatabase/serverless"
-const sql = neon(process.env.NEON_DATABASE_URL);
-
-
-
-
-const getAllCoduckUsers = async () => {
-  try {
-    const query = await sql
-      `select * from coduck.notion_users;`;
-    const { output } = query;
-    return output
-  } catch (err) {
-    console.err(err)
-  }
-}
+import { getAllCoduckUsers,pingCoduckDB } from "../controller/dataController.js"
 
 app.get("/api/data/allUsers", async (req, res) => {
   try {
@@ -39,17 +24,6 @@ app.get("/api/data/allUsers", async (req, res) => {
   }
 })
 
-const pingCoduckDB = async () => {
-  try {
-    const query = await sql
-      `SELECT version()`;
-    const { output } = query[0];
-    return output
-  } catch (err) {
-    console.err(err)
-  }
-
-};
 app.get("/api/data/ping", async (req, res) => {
   try {
     const result = await pingCoduckDB()
