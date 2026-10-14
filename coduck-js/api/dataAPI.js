@@ -19,8 +19,8 @@ app.get("/api/data/allUsers", async (req, res) => {
     if (result) {
       res.status(200).json({
         status:"success",
-        comment:"Get all users success.",
-        data:JSON.stringify(result)
+        comment:`Get all users success. Returned ${result.length} rows.`,
+        data:JSON.stringify(result.rows)
       })
     }
     else {
