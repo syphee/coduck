@@ -11,7 +11,7 @@ app.get("/api/data/allUsers", async (req, res) => {
       return res.status(200).json({
         status: "success",
         comment: `Get all users success. Returned ${result.length} rows.`,
-        data: JSON.stringify(result.rows)
+        data: result
       })
     }
     else {
@@ -21,7 +21,7 @@ app.get("/api/data/allUsers", async (req, res) => {
       })
     }
   } catch (err) {
-    throw new Error(`[coduckAPI:POST /api/data NEONDB]: Connection Not Established. Reason:${err}`)
+    throw new Error(`[dataAPI:POST /api/data NEONDB]: Connection Not Established. Reason:${err}`)
   }
 })
 
@@ -43,7 +43,7 @@ app.get("/api/data/ping", async (req, res) => {
     }
   } catch (err) {
     res.send(500)
-    console.log(`[coduckAPI:POST /api/data NEONDB]:${err}`)
+    console.log(`[dataAPI:POST /api/data NEONDB]:${err}`)
   }
 })
 
