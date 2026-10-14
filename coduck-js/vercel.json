@@ -26,9 +26,15 @@
       "destination": "/api/coduckAPI"
     },
     {
-      "source":"/api/data",
+      "source":"/api/data/ping",
+      "destination":"/api/dataAPI"
+    },
+    {
+      "source":"/api/data/allUsers",
       "destination":"/api/dataAPI"
     }
+    
+
   ]
 }
 
