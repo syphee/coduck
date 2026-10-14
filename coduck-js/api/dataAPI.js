@@ -22,14 +22,14 @@ app.get("/api/data/allUsers", async (req, res) => {
     const result = await getAllCoduckUsers()
     if (result) {
       console.log(result)
-      res.status(200).json({
+      return res.status(200).json({
         status: "success",
         comment: `Get all users success. Returned ${result.length} rows.`,
         data: JSON.stringify(result.rows)
       })
     }
     else {
-      res.status(404).json({
+      return res.status(404).json({
         status: "fail",
         comment: "Get all users failed.",
       })
@@ -54,11 +54,16 @@ app.get("/api/data/ping", async (req, res) => {
   try {
     const result = await pingCoduckDB()
     if (result) {
-      res.send(200)
+      return res.status(200).json({
+        status: "success",
+        comment: "Coduck DB connection established.",
+      })
     }
     else {
-      res.send(404)
-      throw new Error(`[coduckAPI:POST /api/data NEONDB]: Connection Not Established.`)
+      return res.status(404).json({
+        status: "fail",
+        comment: "Coduck DB connection failed.",
+      })
     }
   } catch (err) {
     res.send(500)
