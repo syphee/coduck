@@ -16,17 +16,15 @@ const notionAuth = async (auth, platform) => {
         //   `select * from coduck.notion_users;`;
         //const output = query;
 
-        const output = notionOAuthCode
 
         const response = await notion.oauth.token({
             client_id: process.env.OAUTH_CLIENT_ID,
             client_secret: process.env.OAUTH_CLIENT_SECRET,
             grant_type: "authorization_code",
             code: notionOAuthCode,
-            redirect_uri: process.env.NOTION_REDIRECT_URI
+            redirect_uri: process.env.NOTION_REDIRECT_URI,
         })
 
-        console.log(`[authController notionAuth Auth Response]: ${output}`)
         console.log(`[authController notionAuth Generated Token]: ${response}`)
 
         return response
@@ -51,24 +49,78 @@ const getNotionUser = async (userID, platform) => {
     }
 }
 
-const registerUserToNotion = async (user_access_token, user_refresh_token, duplicated_template_id, workspace_id, workspace_name) => {
+
+// to make sure userID exists first so users cannot just append from URL
+const handleTelegramRegistration = async (userID) => {
+    const query = await sql
+        `INSERT INTO 
+            coduck.notion_users(
+                'userID',
+                platform
+            ) VALUES (
+                ${userID},
+                'telegram'
+            );`;
+    const output = query;
+
+    return output
+
+}
+
+
+// should be "Add more coduck boards to notion"(?) idk im just tired rn bru
+const registerUserToNotion = async (user_access_token, user_refresh_token, duplicated_template_id, workspace_id, workspace_name, platform, userID) => {
+    let query;
     try {
 
-        const query = await sql
-            `INSERT INTO 
-            coduck.notion_users(
-                user_access_token,
-                user_refresh_token,
-                duplicated_template_id,
-                workspace_id,
-                workspace_name
-            ) VALUES (
-                ${user_access_token},
-                ${user_refresh_token},
-                ${duplicated_template_id},
-                ${workspace_id},
-                ${workspace_name}
-            );`;
+        // handle telegram platforms
+        if (query == 'telegram') {
+            // last 2 values blank for now while i develop for telegram
+            query = await sql`
+    UPDATE coduck.notion_users 
+    SET
+        user_access_token = ${user_access_token},
+        user_refresh_token = ${user_refresh_token},
+        duplicated_template_id = ${duplicated_template_id},
+        workspace_id = ${workspace_id},
+        workspace_name = ${workspace_name}
+    WHERE "userID" = ${userID} 
+      AND platform = ${platform};
+`;
+
+        } else {
+            // last 2 values blank for now while i develop for telegram
+
+            // note that this will only allow 1 board, will add support for multiple boards in the future
+            const query = await sql`
+    INSERT INTO coduck.notion_users (
+        user_access_token,
+        user_refresh_token,
+        duplicated_template_id,
+        workspace_id,
+        workspace_name,
+        platform,
+        "userID"
+    ) VALUES (
+        ${user_access_token},
+        ${user_refresh_token},
+        ${duplicated_template_id},
+        ${workspace_id},
+        ${workspace_name},
+        ${platform},
+        ${userID}
+    )
+    ON CONFLICT ("userID") 
+    DO UPDATE SET 
+        user_access_token = EXCLUDED.user_access_token,
+        user_refresh_token = EXCLUDED.user_refresh_token,
+        duplicated_template_id = EXCLUDED.duplicated_template_id,
+        workspace_id = EXCLUDED.workspace_id,
+        workspace_name = EXCLUDED.workspace_name;
+`;
+
+        }
+
         const output = query;
 
         return output
@@ -94,4 +146,4 @@ const pingCoduckDB = async () => {
 
 };
 
-export { notionAuth,registerUserToNotion }
+export { notionAuth, registerUserToNotion, handleTelegramRegistration }

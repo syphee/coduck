@@ -53,11 +53,26 @@ bot.api.setMyCommands([
 // callback will be t.me after logon
 
 // to check if current user is already linked to notion, otherwise bring out URL
+// telegram users will have to call /notion first inorder to get access to their
+// tables
+
 bot.command("notion", async (ctx) => {
   try {
+    const userID = ctx.from?.id
+    // register userID into notion first
+    const response = await fetch(`${process.env.CODUCK_API_URL}/api/auth/telegram`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userID: userID,
+      }),
+    });
     
     const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
-    const keyboard = new InlineKeyboard().url("Link Notion", `${notionAuthURL}&state=telegram`);
+    const notionOAuthLinkParams = `${notionAuthURL}&state=telegram:${userID}`
+    const keyboard = new InlineKeyboard().url("Link Notion", notionOAuthLinkParams);
 
     await ctx.reply(
       "Click the button below to authenticate your Notion account:",
