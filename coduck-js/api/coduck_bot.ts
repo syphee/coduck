@@ -1,6 +1,6 @@
 // to run npx tsc everytime..
 
-import { Bot, webhookCallback } from "grammy";
+import { Bot, webhookCallback,InlineKeyboard } from "grammy";
 import dotenv from "dotenv";
 import * as path from "path";
 import { fetchQuery, resetQuery, fetchVoiceQuery } from "../controller/coduckController.js";
@@ -53,17 +53,36 @@ bot.api.setMyCommands([
 // callback will be t.me after logon
 bot.command("notion", async (ctx) => {
   try {
+    const keyboard = new InlineKeyboard().text("🔗 Link Notion", "auth_notion");
+
     await ctx.reply(
-      `<b>Notion Authentication</b>\n\n` +
-      `You will be redirected to Notion to complete your account linking.\n\n` +
-      `<a href="${process.env.NOTION_OAUTH_URL}">Link Notion</a>`,
-      { parse_mode: "HTML" }
+      "Click the button below to authenticate your Notion account:",
+      { reply_markup: keyboard }
     );
   } catch (err) {
     console.error(err);
-    await ctx.reply("❌ Couldn't execute. Try again.");
+    await ctx.reply("❌ Error initialization. Try again.");
   }
 });
+
+bot.callbackQuery("auth_notion", async (ctx) => {
+  try {
+    // This triggers the native modal popup window
+    await ctx.answerCallbackQuery({
+      text: "You will be redirected to Notion to complete your account linking.",
+      show_alert: true,
+      url: process.env.NOTION_OAUTH_URL 
+    });
+  } catch (err) {
+    console.error(err);
+    await ctx.answerCallbackQuery({
+      text: "❌ Error fetching authentication link.",
+      show_alert: true
+    });
+  }
+});
+
+
 
 
 bot.command("help", async (ctx) => {
