@@ -53,7 +53,7 @@ const formatData = async({data})=>{
 
 
 const insertCoduckRows = async (
-{ task, status, description, projectName }
+{ task, status, description, projectName,auth }
 ) => {
     const token = process.env.NOTION_API_KEY;
     const dataSourceId = notionDB;

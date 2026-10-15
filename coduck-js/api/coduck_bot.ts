@@ -57,7 +57,7 @@ bot.command("notion", async (ctx) => {
   try {
     
     const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
-    const keyboard = new InlineKeyboard().url("Link Notion", notionAuthURL);
+    const keyboard = new InlineKeyboard().url("Link Notion", `${notionAuthURL}&state=telegram`);
 
     await ctx.reply(
       "Click the button below to authenticate your Notion account:",
