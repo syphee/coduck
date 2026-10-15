@@ -69,8 +69,8 @@ bot.command("notion", async (ctx) => {
         userID: userID,
       }),
     });
-    
-    const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
+    if(response){
+         const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
     const notionOAuthLinkParams = `${notionAuthURL}&state=telegram:${userID}`
     const keyboard = new InlineKeyboard().url("Link Notion", notionOAuthLinkParams);
 
@@ -78,6 +78,10 @@ bot.command("notion", async (ctx) => {
       "Click the button below to authenticate your Notion account:",
       { reply_markup: keyboard }
     );
+    }else{
+      await ctx.reply("Notion has been linked.");
+    }
+ 
   } catch (err) {
     console.error(err);
     await ctx.reply("❌ Error initialization. Try again.");
