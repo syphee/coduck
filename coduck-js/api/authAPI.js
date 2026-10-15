@@ -14,37 +14,40 @@ app.get("/api/auth", async (req, res) => {
     const result = await notionAuth(notionOAuthCode)
     console.log(`[authAPI:GET /api/auth Notion Result]: ${result}`)
     if (result) {
+      try {
+        const { user_access_token,
+          user_refresh_token,
+          duplicated_template_id,
+          workspace_id,
+          workspace_name } = result
 
-      const { user_access_token,
-        user_refresh_token,
-        duplicated_template_id,
-        workspace_id,
-        workspace_name } = result
+        //insert info to db
+        await registerUserToNotion(user_access_token,
+          user_refresh_token,
+          duplicated_template_id,
+          workspace_id,
+          workspace_name)
 
-      //insert info to db
-      await registerUserToNotion(user_access_token,
-        user_refresh_token,
-        duplicated_template_id,
-        workspace_id,
-        workspace_name)
-
-        // has been inserted to neon
-        .then((resolved) => {
-          return res.status(200).json({
-            status: "success",
-            comment: "Successfully linked notion account."
-          })
-        },
-
-          // has not been inserted to neon
-          (rejected) => {
-            return res.status(404).json({
-              status: "fail",
-              comment: "Notion Account linking to Coduck servers was unsuccessful.",
-              reason: rejected
+          // has been inserted to neon
+          .then((resolved) => {
+            return res.status(200).json({
+              status: "success",
+              comment: "Successfully linked notion account."
             })
-          })
+          },
 
+            // has not been inserted to neon
+            (rejected) => {
+              return res.status(404).json({
+                status: "fail",
+                comment: "Notion Account linking to Coduck servers was unsuccessful.",
+                reason: rejected
+              })
+            })
+
+      } catch (err) {
+        console.error(`[authAPI:GET /api/auth Register to Coduck error] :${err}`)
+      }
     }
     else {
       return res.status(404).json({
