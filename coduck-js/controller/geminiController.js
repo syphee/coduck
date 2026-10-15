@@ -152,37 +152,37 @@ const taskQuery = async (query, userID) => {
 
   const hasURL = /https?:\/\/\S+/.test(query)
   let interaction;
-  if(hasURL){
+  if (hasURL) {
     interaction = await callGemini(`general:${userID}`, {
-    model: CODUCK_MODEL,
-    // model: "gemini-3.1-flash-lite",
-    input: query,
-    system_instruction: CODUCK_SYSTEM_INSTRUCTION,
-    tools: [
+      model: CODUCK_MODEL,
+      // model: "gemini-3.1-flash-lite",
+      input: query,
+      system_instruction: CODUCK_SYSTEM_INSTRUCTION,
+      tools: [
         {
           "type": "url_context"
         }
       ],
-    response_format: {
-      type: "text",
-      mime_type: "application/json",
-      schema: SCHEMA,
-    },
-  });
-  }else{
+      response_format: {
+        type: "text",
+        mime_type: "application/json",
+        schema: SCHEMA,
+      },
+    });
+  } else {
     interaction = await callGemini(`general:${userID}`, {
-    model: CODUCK_MODEL,
-    // model: "gemini-3.1-flash-lite",
-    input: query,
-    system_instruction: CODUCK_SYSTEM_INSTRUCTION,
-    response_format: {
-      type: "text",
-      mime_type: "application/json",
-      schema: SCHEMA,
-    },
-  });
+      model: CODUCK_MODEL,
+      // model: "gemini-3.1-flash-lite",
+      input: query,
+      system_instruction: CODUCK_SYSTEM_INSTRUCTION,
+      response_format: {
+        type: "text",
+        mime_type: "application/json",
+        schema: SCHEMA,
+      },
+    });
   }
-  
+
 
   const result = interaction.output_text;
   const parsedResult = JSON.parse(result);
@@ -272,6 +272,6 @@ const generalQuery = async (query, chatId) => {
   }
 };
 
-    
+
 
 export { taskQuery, generalQuery, resetChat, transcribeAudio };

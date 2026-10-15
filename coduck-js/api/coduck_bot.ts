@@ -60,7 +60,8 @@ bot.command("notion", async (ctx) => {
       { parse_mode: "HTML" },
     )
   } catch (err) {
-
+    console.error(err);
+    await ctx.reply("❌ Couldn't execute. Try again.");
   }
 
 
