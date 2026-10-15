@@ -53,7 +53,8 @@ bot.api.setMyCommands([
 // callback will be t.me after logon
 bot.command("notion", async (ctx) => {
   try {
-    const keyboard = new InlineKeyboard().text("🔗 Link Notion", "auth_notion");
+    const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
+    const keyboard = new InlineKeyboard().url("Link Notion", notionAuthURL);
 
     await ctx.reply(
       "Click the button below to authenticate your Notion account:",
@@ -64,25 +65,6 @@ bot.command("notion", async (ctx) => {
     await ctx.reply("❌ Error initialization. Try again.");
   }
 });
-
-bot.callbackQuery("auth_notion", async (ctx) => {
-  try {
-    // This triggers the native modal popup window
-    await ctx.answerCallbackQuery({
-      text: "You will be redirected to Notion to complete your account linking.",
-      show_alert: true,
-      url: process.env.NOTION_OAUTH_URL 
-    });
-  } catch (err) {
-    console.error(err);
-    await ctx.answerCallbackQuery({
-      text: "❌ Error fetching authentication link.",
-      show_alert: true
-    });
-  }
-});
-
-
 
 
 bot.command("help", async (ctx) => {
