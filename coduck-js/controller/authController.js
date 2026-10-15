@@ -57,7 +57,7 @@ const registerUserToNotion = async (user_access_token, user_refresh_token, dupli
         const query = await sql
             `INSERT INTO 
             coduck.notion_users(
-                'user_access_token',
+                user_access_token,
                 user_refresh_token,
                 duplicated_template_id,
                 workspace_id,
