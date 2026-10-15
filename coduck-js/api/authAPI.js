@@ -6,7 +6,7 @@ import { neon } from "@neondatabase/serverless"
 const sql = neon(process.env.NEON_DATABASE_URL);
 
 // notion auth
-app.post("/api/auth", async (req, res) => {
+app.get("/api/auth", async (req, res) => {
   try {
     const notionOAuthCode = req.query.code
     const result = notionAuth(notionOAuthCode)
