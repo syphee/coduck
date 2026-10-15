@@ -51,6 +51,8 @@ bot.api.setMyCommands([
 //
 // neon will contain tele user id, notion user token, and database id
 // callback will be t.me after logon
+
+// to check if current user is already linked to notion, otherwise bring out URL
 bot.command("notion", async (ctx) => {
   try {
     const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`

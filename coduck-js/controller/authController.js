@@ -15,12 +15,15 @@ const response = await notion.oauth.token({
 })
 
 
-const notionAuth = async () => {
+const notionAuth = async (auth) => {
   try {
-    const query = await sql
-      `select * from coduck.notion_users;`;
-    const output = query;
-    console.log(`[dataController getAllCoduckUsers Result]: ${output}`)
+    const notionOAuthCode = auth
+    // const query = await sql
+    //   `select * from coduck.notion_users;`;
+    //const output = query;
+
+    const output = notionOAuthCode
+    console.log(`[authController notionAuth Result]: ${output}`)
 
     return output
   } catch (err) {
