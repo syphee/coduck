@@ -9,7 +9,7 @@ const sql = neon(process.env.NEON_DATABASE_URL);
 app.get("/api/auth", async (req, res) => {
   try {
     const notionOAuthCode = req.query.code
-    const result = notionAuth(notionOAuthCode)
+    const result = await notionAuth(notionOAuthCode)
     console.log(`[authAPI:GET /api/auth Notion Result]: ${result}`)
     if (result) {
       return res.status(200).json({
