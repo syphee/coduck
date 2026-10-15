@@ -52,7 +52,8 @@ const getNotionUser = async (userID, platform) => {
 
 // to make sure userID exists first so users cannot just append from URL
 const handleTelegramRegistration = async (userID) => {
-    const query = await sql
+    try{
+        const query = await sql
         `INSERT INTO 
             coduck.notion_users(
                 'userID',
@@ -65,6 +66,11 @@ const handleTelegramRegistration = async (userID) => {
 
     return output
 
+    }catch(err){
+        console.error(`[authController Telegram userID Registration error]: ${err}`)
+
+    }
+    
 }
 
 

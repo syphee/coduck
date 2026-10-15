@@ -70,7 +70,7 @@ app.get("/api/auth", async (req, res) => {
   }
 })
 
-app.get("/api/auth/telegram", async (req, res) => {
+app.post("/api/auth/telegram", async (req, res) => {
   try {
     const userID = req.body.userID
     const result = await handleTelegramRegistration(userID)
