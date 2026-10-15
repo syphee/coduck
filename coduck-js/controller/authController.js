@@ -9,7 +9,7 @@ const notion = new Client()
 
 
 
-const notionAuth = async (auth) => {
+const notionAuth = async (auth, platform) => {
     try {
         const notionOAuthCode = auth
         // const query = await sql
@@ -35,6 +35,50 @@ const notionAuth = async (auth) => {
     }
 }
 
+// to decode jwt here
+const getNotionUser = async (userID, platform) => {
+    try {
+
+        const query = await sql
+            `select user_access_token,duplicated_template_id,workspace_id from coduck.notion_users where "userID" = ${userID} and "platform" = ${platform};`;
+        const output = query;
+
+        return output
+
+    } catch (error) {
+        console.error(`[authController notionAuth Auth Response]: ${output}`)
+
+    }
+}
+
+const registerUserToNotion = async (user_access_token, user_refresh_token, duplicated_template_id, workspace_id, workspace_name) => {
+    try {
+
+        const query = await sql
+            `INSERT INTO 
+            coduck.notion_users(
+                'user_access_token',
+                user_refresh_token,
+                duplicated_template_id,
+                workspace_id,
+                workspace_name
+            ) VALUES (
+                ${user_access_token},
+                ${user_refresh_token},
+                ${duplicated_template_id},
+                ${workspace_id},
+                ${workspace_name}
+            );`;
+        const output = query;
+
+        return output
+
+    } catch (error) {
+        console.error(`[authController notionAuth Auth Response]: ${output}`)
+
+    }
+}
+
 
 const pingCoduckDB = async () => {
     try {
@@ -50,4 +94,4 @@ const pingCoduckDB = async () => {
 
 };
 
-export { notionAuth }
+export { notionAuth,registerUserToNotion }
