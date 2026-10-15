@@ -247,4 +247,7 @@ const loadingText = await ctx.reply("⏳ Processing your message...");
 // timeoutMilliseconds: 50_000,
 //});
 
-   export default webhookCallback(bot, "https", { onTimeout: "return" });
+   export default webhookCallback(bot, "https", {
+  timeoutMilliseconds: 50_000,
+  onTimeout: "return",
+});
