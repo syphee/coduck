@@ -40,30 +40,25 @@ bot.api.setMyCommands([
 // this will only work, and should only work when user has already logged into
 // notion. 
 
-// will add a "choose table" command once i settle this backbone
-bot.command("setup", (ctx) => {
-  try {
-    const userID = ctx.from.id;
+// // will add a "choose table" command once i settle this backbone
+// bot.command("setup", (ctx) => {
 
-
-  } catch (err) {
-
-  }
-
-
-});
+// });
 
 // to make user login into their notion account so they can do /setup
 // redirects user to login notion, to make user login, set token
-// into supabase.
+// into neon.
 //
-// supabase will contain tele user id, notion user token, and database id
+// neon will contain tele user id, notion user token, and database id
 // callback will be t.me after logon
-bot.command("notion", (ctx) => {
+bot.command("notion", async (ctx) => {
   try {
-    const userID = ctx.from.id;
-
-
+    await ctx.reply(
+      `<h1>Notion Authentication</h1>
+       <text>You will be redirected to Notion to complete your account linking.</text>
+       <a href="${process.env.NOTION_OAUTH_URL}">Link Notion</a>.`,
+      { parse_mode: "HTML" },
+    )
   } catch (err) {
 
   }

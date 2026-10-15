@@ -1,30 +1,30 @@
 import app from "./coduckAPI.js"
 
-import {neon} from "@neondatabase/serverless"
+import { notionAuth } from "../controller/authController.js";
+import { neon } from "@neondatabase/serverless"
+
 const sql = neon(process.env.NEON_DATABASE_URL);
 
-
-const NeonRequestHandler = async () => {
-  const result = await sql`SELECT version()`;
-  const { version } = result[0];
-  return version
-};
-
-
-
-app.get("/api/auth",async(req,res)=>{
-  try{
-    const result = NeonRequestHandler()
-    if(result){
-      res.send(200)
-    } 
-    else{
-      res.send(404)
-      throw new Error(`[coduckAPI:POST /api/data NEONDB]: Connection Not Established.`)
+// notion auth
+app.get("/api/auth", async (req, res) => {
+  try {
+    const result = notionAuth()
+    console.log(`[authAPI:GET /api/auth Notion Result]: ${result}`)
+    if (result) {
+      return res.status(200).json({
+        status: "success",
+        comment: "Successfully linked notion account.",
+      })
     }
-  }catch(err){
+    else {
+      return res.status(404).json({
+        status: "fail",
+        comment: "Notion Account linking was unsuccessful.",
+      })
+    }
+  } catch (err) {
     res.send(500)
-    console.log(`[coduckAPI:POST /api/data NEONDB]:${err}`)
+    console.log(`[authAPI:POST /api/auth ]:${err}`)
   }
 })
 

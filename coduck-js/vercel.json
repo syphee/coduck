@@ -25,6 +25,7 @@
       "source": "/api/reset",
       "destination": "/api/coduckAPI"
     },
+
     {
       "source":"/api/data/ping",
       "destination":"/api/dataAPI"
@@ -32,6 +33,11 @@
     {
       "source":"/api/data/allUsers",
       "destination":"/api/dataAPI"
+    },
+
+    {
+      "source":"/api/auth",
+      "destination":"/api/authAPI"
     }
     
 
