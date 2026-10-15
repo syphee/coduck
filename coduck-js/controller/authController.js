@@ -17,12 +17,13 @@ const notionAuth = async (auth) => {
         //const output = query;
 
         const output = notionOAuthCode
+
         const response = await notion.oauth.token({
             client_id: process.env.OAUTH_CLIENT_ID,
             client_secret: process.env.OAUTH_CLIENT_SECRET,
             grant_type: "authorization_code",
             code: notionOAuthCode,
-            redirect_uri: process.env.NOTION_OAUTH_URL
+            redirect_uri: process.env.NOTION_REDIRECT_URI
         })
 
         console.log(`[authController notionAuth Auth Response]: ${output}`)

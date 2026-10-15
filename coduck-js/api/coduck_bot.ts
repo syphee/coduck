@@ -55,6 +55,7 @@ bot.api.setMyCommands([
 // to check if current user is already linked to notion, otherwise bring out URL
 bot.command("notion", async (ctx) => {
   try {
+    
     const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
     const keyboard = new InlineKeyboard().url("Link Notion", notionAuthURL);
 
