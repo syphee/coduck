@@ -51,6 +51,8 @@ const getNotionUser = async (userID, platform) => {
 
 
 // to make sure userID exists first so users cannot just append from URL
+
+// to fix Account already linked fix
 const handleTelegramRegistration = async (userID) => {
     try{
         const query = await sql
