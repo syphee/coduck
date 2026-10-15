@@ -54,18 +54,17 @@ bot.api.setMyCommands([
 bot.command("notion", async (ctx) => {
   try {
     await ctx.reply(
-      `<h1>Notion Authentication</h1>
-       <text>You will be redirected to Notion to complete your account linking.</text>
-       <a href="${process.env.NOTION_OAUTH_URL}">Link Notion</a>.`,
-      { parse_mode: "HTML" },
-    )
+      `<b>Notion Authentication</b>\n\n` +
+      `You will be redirected to Notion to complete your account linking.\n\n` +
+      `<a href="${process.env.NOTION_OAUTH_URL}">Link Notion</a>`,
+      { parse_mode: "HTML" }
+    );
   } catch (err) {
     console.error(err);
     await ctx.reply("❌ Couldn't execute. Try again.");
   }
-
-
 });
+
 
 bot.command("help", async (ctx) => {
   try {
