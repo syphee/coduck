@@ -38,6 +38,10 @@
     {
       "source":"/api/auth",
       "destination":"/api/authAPI"
+    },
+    {
+      "source":"/api/auth/telegram",
+      "destination":"/api/authAPI"
     }
     
 
