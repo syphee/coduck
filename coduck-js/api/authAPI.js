@@ -22,7 +22,7 @@ app.get("/api/auth", async (req, res) => {
         workspace_name } = result
 
       //insert info to db
-      registerUserToNotion(user_access_token,
+      await registerUserToNotion(user_access_token,
         user_refresh_token,
         duplicated_template_id,
         workspace_id,
