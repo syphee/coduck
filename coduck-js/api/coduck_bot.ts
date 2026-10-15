@@ -212,9 +212,9 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
 
 // Normal message handler
 bot.on("message", async (ctx) => {
-  const loadingText = await ctx.reply("⏳ Processing your message...");
 
   try {
+const loadingText = await ctx.reply("⏳ Processing your message...");
     const userInput = ctx.message?.text;
     const userID = ctx.chat.id
     if (!userInput) {
