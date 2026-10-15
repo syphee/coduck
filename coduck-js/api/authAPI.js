@@ -72,25 +72,31 @@ app.get("/api/auth", async (req, res) => {
 
 app.post("/api/auth/telegram", async (req, res) => {
   try {
-    const userID = req.body.userID
-    const result = await handleTelegramRegistration(userID)
-    console.log(`[authAPI:GET /api/auth Notion Result]: ${result ? "success" : "failed"}`)
-    if(result){
-      return res.status(200).json({
+    const { userID } = req.body;
+
+    if (!userID) {
+      return res.status(400).json({
+        status: "failed",
+        comment: "Missing userID in request body."
+      });
+    }
+
+    // Await execution. If it fails, it will throw an error and skip to catch block.
+    await handleTelegramRegistration(userID);
+
+    return res.status(200).json({
       status: "success",
       comment: "Telegram userID successfully registered in Coduck Servers."
-      })
-    }else{
-      return res.status(404).json({
-      status: "failed",
-      comment: "Telegram userID registered in Coduck Servers failed."
-      })
-    }
+    });
     
   } catch (err) {
-    res.send(500)
-    console.log(`[authAPI:POST /api/auth ]:${err}`)
+    console.error(`[authAPI:POST /api/auth/telegram Error]:`, err);
+    // Fixed syntax error from res.send(500)
+    return res.status(500).json({ 
+      status: "error", 
+      message: err.message 
+    }); 
   }
-})
+});
 
 export default app

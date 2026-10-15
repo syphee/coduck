@@ -52,25 +52,23 @@ const getNotionUser = async (userID, platform) => {
 
 // to make sure userID exists first so users cannot just append from URL
 const handleTelegramRegistration = async (userID) => {
-    try{
-        const query = await sql
-        `INSERT INTO 
-            coduck.notion_users(
+    try {
+        // Storing large IDs as strings avoids numerical precision issues in JavaScript
+        const query = await sql`
+            INSERT INTO coduck.notion_users (
                 "userID",
                 platform
             ) VALUES (
-                ${userID},
+                ${userID.toString()},
                 'telegram'
-            );`;
-    const output = query;
-
-    return output
-
-    }catch(err){
-        console.error(`[authController Telegram userID Registration error]: ${err}`)
-        throw err
+            )
+            ON CONFLICT ("userID") DO NOTHING;
+        `;
+        return query;
+    } catch (err) {
+        console.error(`[authController Telegram userID Registration error]:`, err);
+        throw err; // Crucial for passing the error up to the Express catch block
     }
-    
 }
 
 
