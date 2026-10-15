@@ -56,7 +56,7 @@ const handleTelegramRegistration = async (userID) => {
         const query = await sql
         `INSERT INTO 
             coduck.notion_users(
-                'userID',
+                "userID",
                 platform
             ) VALUES (
                 ${userID},
@@ -68,7 +68,7 @@ const handleTelegramRegistration = async (userID) => {
 
     }catch(err){
         console.error(`[authController Telegram userID Registration error]: ${err}`)
-
+        throw err
     }
     
 }
