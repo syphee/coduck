@@ -15,15 +15,15 @@ app.get("/api/auth", async (req, res) => {
     console.log(`[authAPI:GET /api/auth Notion Result]: ${result}`)
     if (result) {
       try {
-        const { user_access_token,
-          user_refresh_token,
+        const { access_token,
+          refresh_token,
           duplicated_template_id,
           workspace_id,
           workspace_name } = result
 
         //insert info to db
-        await registerUserToNotion(user_access_token,
-          user_refresh_token,
+        await registerUserToNotion(access_token,
+          refresh_token,
           duplicated_template_id,
           workspace_id,
           workspace_name)
