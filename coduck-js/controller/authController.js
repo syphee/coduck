@@ -61,7 +61,7 @@ SELECT ${userID}, 'telegram'
 WHERE EXISTS (
     SELECT 1 
     FROM coduck.notion_users 
-    WHERE "userID" = ${userID} AND access_token IS NULL
+    WHERE "userID" = ${userID} AND user_access_token IS NULL
 )
 OR NOT EXISTS (
     SELECT 1 
