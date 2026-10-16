@@ -59,7 +59,7 @@ const handleTelegramRegistration = async (userID) => {
 const query1 = await sql`
 SELECT * 
 FROM coduck.notion_users 
-WHERE "userID" = ${userID} 
+WHERE "userID" = '${userID}' 
   AND (user_access_token IS NOT NULL OR user_access_token != '');
 `
 if(query1.rowCount > 0){
