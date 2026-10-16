@@ -75,7 +75,7 @@ ${userID},
 'telegram'
 );`;
 
-    const output = query;
+    const output = query2;
 
     return output
 
