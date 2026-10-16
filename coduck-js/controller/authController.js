@@ -57,9 +57,20 @@ const handleTelegramRegistration = async (userID) => {
     try{
         const query = await sql
         `INSERT INTO coduck.notion_users ("userID", platform) 
-      VALUES (${userID}, 'telegram') 
-      ON CONFLICT ("userID") DO NOTHING 
-      RETURNING *;`;
+SELECT ${userID}, 'telegram'
+WHERE EXISTS (
+    SELECT 1 
+    FROM coduck.notion_users 
+    WHERE "userID" = ${userID} AND access_token IS NULL
+)
+OR NOT EXISTS (
+    SELECT 1 
+    FROM coduck.notion_users 
+    WHERE "userID" = ${userID}
+)
+ON CONFLICT ("userID") DO NOTHING 
+RETURNING *;
+`;
     const output = query;
 
     return output
