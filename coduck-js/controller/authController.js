@@ -56,14 +56,10 @@ const getNotionUser = async (userID, platform) => {
 const handleTelegramRegistration = async (userID) => {
     try{
         const query = await sql
-        `INSERT INTO 
-            coduck.notion_users(
-                "userID",
-                platform
-            ) VALUES (
-                ${userID},
-                'telegram'
-            );`;
+        `INSERT INTO coduck.notion_users ("userID", platform) 
+      VALUES (${userID}, 'telegram') 
+      ON CONFLICT ("userID") DO NOTHING 
+      RETURNING *;`;
     const output = query;
 
     return output
