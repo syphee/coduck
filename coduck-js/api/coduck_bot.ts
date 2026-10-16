@@ -69,7 +69,7 @@ bot.command("notion", async (ctx) => {
         userID: userID,
       }),
     });
-    if(response.affectedRows == 1){
+    if(response){
          const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
     const notionOAuthLinkParams = `${notionAuthURL}&state=telegram:${userID}`
     const keyboard = new InlineKeyboard().url("Link Notion", notionOAuthLinkParams);
