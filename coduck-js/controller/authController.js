@@ -64,13 +64,15 @@ WHERE "userID" = ${userID}
 `
 if(query1.rowCount > 0){
  throw new Error("User has already been registered.)
-}
-        const query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(
+}else{
+const query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(
 ${userID},'telegram');`;
 
     const output = query2;
 
     return output
+}
+        
 
     }catch(err){
         console.error(`[authController Telegram userID Registration error]: ${err}`)
