@@ -55,22 +55,26 @@ const getNotionUser = async (userID, platform) => {
 // to fix Account already linked fix
 const handleTelegramRegistration = async (userID) => {
     try{
-        const query = await sql
-        `INSERT INTO coduck.notion_users ("userID", platform) 
-SELECT ${userID}, 'telegram'
-WHERE EXISTS (
-    SELECT 1 
-    FROM coduck.notion_users 
-    WHERE "userID" = ${userID} AND (user_access_token IS NULL OR user_access_token = '')
+
+const query1 = await sql`
+SELECT * 
+FROM coduck.notion_users 
+WHERE "userID" = ${userID} 
+  AND (user_access_token IS NOT NULL OR user_access_token != '');
+`
+if(query1.rowCount > 0){
+ throw new Error("User has already been registered.)
+}
+        const query2 = await sql`
+INSERT INTO coduck.notion_users(
+"userID",
+platform
 )
-OR NOT EXISTS (
-    SELECT 1 
-    FROM coduck.notion_users 
-    WHERE "userID" = ${userID}
-)
-ON CONFLICT ("userID") DO NOTHING 
-RETURNING *;
-`;
+VALUES(
+${userID},
+'telegram'
+);`;
+
     const output = query;
 
     return output
