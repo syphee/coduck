@@ -65,7 +65,7 @@ WHERE "userID" = ${userID}
 if(query1.rowCount > 0){
  throw new Error("User has already been registered.")
 }else{
-    console.log(`Rows : ${query1}`)
+    console.log(`Rows : ${JSON.stringify(query1)}`)
 const query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(${userID},'telegram');`;
 
     const output = query2;
