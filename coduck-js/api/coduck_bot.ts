@@ -1,6 +1,6 @@
 // to run npx tsc everytime..
 
-import { Bot, webhookCallback,InlineKeyboard } from "grammy";
+import { Bot, webhookCallback, InlineKeyboard } from "grammy";
 import dotenv from "dotenv";
 import * as path from "path";
 import { fetchQuery, resetQuery, fetchVoiceQuery } from "../controller/coduckController.js";
@@ -69,23 +69,23 @@ bot.command("notion", async (ctx) => {
         userID: userID,
       }),
     });
-    
+
     // if not linked yet
-    if(!response.linked){
-         const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
-    const notionOAuthLinkParams = `${notionAuthURL}&state=telegram:${userID}`
-    const keyboard = new InlineKeyboard().url("Link Notion", notionOAuthLinkParams);
+    if (!response.linked) {
+      const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
+      const notionOAuthLinkParams = `${notionAuthURL}&state=telegram:${userID}`
+      const keyboard = new InlineKeyboard().url("Link Notion", notionOAuthLinkParams);
 
-    await ctx.reply(
-      "Click the button below to authenticate your Notion account:",
-      { reply_markup: keyboard }
-    );
+      await ctx.reply(
+        "Click the button below to authenticate your Notion account:",
+        { reply_markup: keyboard }
+      );
 
-    // if already linked
-    }else if(response.linked){
+      // if already linked
+    } else if (response.linked) {
       await ctx.reply("Notion has been linked.");
     }
- 
+
   } catch (err) {
     console.error(err);
     await ctx.reply("❌ Error initialization. Try again.");
@@ -235,7 +235,7 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
 
 // Normal message handler
 bot.on("message", async (ctx) => {
-const loadingText = await ctx.reply("⏳ Processing your message...");
+  const loadingText = await ctx.reply("⏳ Processing your message...");
   try {
 
     const userInput = ctx.message?.text;
@@ -270,7 +270,7 @@ const loadingText = await ctx.reply("⏳ Processing your message...");
 // timeoutMilliseconds: 50_000,
 //});
 
-   export default webhookCallback(bot, "https", {
+export default webhookCallback(bot, "https", {
   timeoutMilliseconds: 50_000,
   onTimeout: "return",
 });
