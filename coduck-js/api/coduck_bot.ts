@@ -71,6 +71,7 @@ bot.command("notion", async (ctx) => {
     });
 
     // if not linked yet
+    console.log(`linked? ${response.linked}`)
     if (!response.linked) {
       const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
       const notionOAuthLinkParams = `${notionAuthURL}&state=telegram:${userID}`
