@@ -52,36 +52,63 @@ const getNotionUser = async (userID, platform) => {
 
 // to make sure userID exists first so users cannot just append from URL
 
+
 // to fix Account already linked fix
 const handleTelegramRegistration = async (userID) => {
-    try{
+    try {
 
-const query1 = await sql`
+        const query1 = await sql`
+SELECT * 
+FROM coduck.notion_users 
+WHERE "userID" = ${userID}
+  AND (user_access_token IS NOT NULL OR user_access_token != '');
+`
+        // return false if exists
+        if (query1[0].user_access_token != "" && query1[0].duplicated_template_id != "") {
+            return false
+        } else {
+            const query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(${userID},'telegram');`;
+
+            const output = query2;
+
+            return output
+        }
+
+
+    } catch (err) {
+        console.error(`[authController Telegram userID Registration error]: ${err}`)
+        throw err
+    }
+
+}
+
+const handleRemoveTelegramNotion = async (userID) => {
+    try {
+
+        const query1 = await sql`
 SELECT * 
 FROM coduck.notion_users 
 WHERE "userID" = ${userID}
   AND (user_access_token IS NOT NULL OR user_access_token != '');
 `
 
-if(query1.rowCount > 0){
- throw new Error("User has already been registered.")
-}else{
-    console.log(`Rows : ${JSON.stringify(query1)}`)
-const query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(${userID},'telegram');`;
+        if (query1[0].user_access_token != "" && query1[0].duplicated_template_id != "") {
+            return `Your telegram has been linked with notion.`
+        } else {
+            const query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(${userID},'telegram');`;
 
-    const output = query2;
+            const output = query2;
 
-    return output
-}
-        
+            return output
+        }
 
-    }catch(err){
+
+    } catch (err) {
         console.error(`[authController Telegram userID Registration error]: ${err}`)
         throw err
     }
-    
-}
 
+}
 
 // should be "Add more coduck boards to notion"(?) idk im just tired rn bru
 const registerUserToNotion = async (user_access_token, user_refresh_token, duplicated_template_id, workspace_id, workspace_name, platform, userID) => {
