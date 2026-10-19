@@ -65,14 +65,16 @@ WHERE "userID" = ${userID}
 `
         // return false if exists
         if (query1[0].user_access_token != "" && query1[0].duplicated_template_id != "") {
-            query1.exists = true
-            return query1;
+            return {
+                exists: true,
+                output: query1
+            }
         } else {
             let query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(${userID},'telegram');`;
-            query2.exists = false
-            const output = query2;
-
-            return output
+            return {
+                exists: false,
+                output: query2
+            }
         }
 
 
