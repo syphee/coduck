@@ -75,9 +75,10 @@ app.post("/api/auth/telegram", async (req, res) => {
     const userID = req.body.userID
     const result = await handleTelegramRegistration(userID)
     console.log(`[authAPI:GET /api/auth Notion Result]: ${result ? "success" : "failed"}`)
-    if(result){
+    if(result.exists){
       return res.status(200).json({
       status: "success",
+      linked:result.exists,
       comment: "Telegram userID successfully registered in Coduck Servers."
       })
     }else{

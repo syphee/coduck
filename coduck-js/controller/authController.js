@@ -53,11 +53,11 @@ const getNotionUser = async (userID, platform) => {
 // to make sure userID exists first so users cannot just append from URL
 
 
-// to fix Account already linked fix
+// checks for user if exists, if not insert
 const handleTelegramRegistration = async (userID) => {
     try {
 
-        const query1 = await sql`
+        let query1 = await sql`
 SELECT * 
 FROM coduck.notion_users 
 WHERE "userID" = ${userID}
@@ -65,10 +65,11 @@ WHERE "userID" = ${userID}
 `
         // return false if exists
         if (query1[0].user_access_token != "" && query1[0].duplicated_template_id != "") {
-            return false
+            query1.exists = true
+            return query1;
         } else {
-            const query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(${userID},'telegram');`;
-
+            let query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(${userID},'telegram');`;
+            query2.exists = false
             const output = query2;
 
             return output
