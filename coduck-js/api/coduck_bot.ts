@@ -68,6 +68,10 @@ bot.command("notion", async (ctx) => {
       body: JSON.stringify({
         userID: userID,
       }),
+
+      // rookie moment here totally did not spend an hour
+    }).then((res)=>{
+      return res.json()
     });
 
     // if not linked yet
