@@ -62,6 +62,7 @@ FROM coduck.notion_users
 WHERE "userID" = ${userID}
   AND (user_access_token IS NOT NULL OR user_access_token != '');
 `
+
 if(query1.rowCount > 0){
  throw new Error("User has already been registered.")
 }else{
