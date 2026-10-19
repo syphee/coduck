@@ -74,7 +74,7 @@ app.post("/api/auth/telegram", async (req, res) => {
   try {
     const userID = req.body.userID
     const result = await handleTelegramRegistration(userID)
-    console.log(`[authAPI:GET /api/auth Notion Result]: ${result ? "success" : "failed"}`)
+    console.log(`[authAPI:GET /api/auth Notion Result]: ${JSON.stringify(result)}`)
     if(result.exists){
       return res.status(200).json({
       status: "success",
