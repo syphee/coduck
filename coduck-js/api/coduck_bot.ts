@@ -77,7 +77,7 @@ bot.command("notion", async (ctx) => {
     }).then( async(data)=>{
        // if not linked yet
     console.log(`linked? ${data.linked}`)
-    if (!response.linked) {
+    if (!data.linked) {
       const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
       const notionOAuthLinkParams = `${notionAuthURL}&state=telegram:${userID}`
       const keyboard = new InlineKeyboard().url("Link Notion", notionOAuthLinkParams);
@@ -88,7 +88,7 @@ bot.command("notion", async (ctx) => {
       );
 
       // if already linked
-    } else if (response.linked) {
+    } else if (data.linked) {
       await ctx.reply("Notion has been linked.");
     }
 
