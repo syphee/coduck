@@ -72,10 +72,11 @@ bot.command("notion", async (ctx) => {
       // rookie moment here totally did not spend an hour
     }).then((res)=>{
       return res.json()
-    });
 
-    // if not linked yet
-    console.log(`linked? ${response.linked}`)
+    // 3 years of diploma experience gone
+    }).then((data)=>{
+       // if not linked yet
+    console.log(`linked? ${data.linked}`)
     if (!response.linked) {
       const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
       const notionOAuthLinkParams = `${notionAuthURL}&state=telegram:${userID}`
@@ -91,6 +92,9 @@ bot.command("notion", async (ctx) => {
       await ctx.reply("Notion has been linked.");
     }
 
+    });
+
+   
   } catch (err) {
     console.error(err);
     await ctx.reply("❌ Error initialization. Try again.");
