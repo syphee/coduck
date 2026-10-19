@@ -70,6 +70,9 @@ app.get("/api/auth", async (req, res) => {
   }
 })
 
+// to handle if user clicks on the same link, adding auth to unlinking account
+
+// api just basically to check if current user is existing in coduck
 app.post("/api/auth/telegram", async (req, res) => {
   try {
     const userID = req.body.userID

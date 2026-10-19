@@ -89,6 +89,13 @@ bot.command("notion", async (ctx) => {
 
       // if already linked
     } else if (data.linked) {
+
+      // to add "Unlink Notion btn"
+
+      // or maybe add an interface to allow user to switch between
+      // workspaces
+      // and add an unlink btn..
+      // this proj is getting way too complicated for a simple one
       await ctx.reply("Notion has been linked.");
     }
 
@@ -243,6 +250,9 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
 });
 
 // Normal message handler
+
+// to add auth for notion, to notify user that input is not being saved
+// unless notion is linked
 bot.on("message", async (ctx) => {
   const loadingText = await ctx.reply("⏳ Processing your message...");
   try {
