@@ -70,11 +70,11 @@ bot.command("notion", async (ctx) => {
       }),
 
       // rookie moment here totally did not spend an hour
-    }).then((res)=>{
+    }).then(async(res)=>{
       return res.json()
 
     // 3 years of diploma experience gone
-    }).then((data)=>{
+    }).then( async(data)=>{
        // if not linked yet
     console.log(`linked? ${data.linked}`)
     if (!response.linked) {
