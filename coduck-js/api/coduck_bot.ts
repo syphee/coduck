@@ -351,6 +351,5 @@ bot.on("message", async (ctx) => {
 
 export default webhookCallback(bot, "https", {
   timeoutMilliseconds: 50_000,
-  onTimeout: "return",
-  secretToken:process.env.TELEGRAM_SECRET_TOKEN
+  onTimeout: "return"
 });
