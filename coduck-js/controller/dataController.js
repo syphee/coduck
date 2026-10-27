@@ -1,6 +1,9 @@
 import { neon } from "@neondatabase/serverless"
 const sql = neon(process.env.NEON_DATABASE_URL);
 
+import { Client } from "@notionhq/client"
+
+
 const getAllCoduckUsers = async () => {
   try {
     const query = await sql
