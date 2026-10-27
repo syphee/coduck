@@ -1,6 +1,6 @@
 import app from "./coduckAPI.js"
 
-import { getAllCoduckUsers, pingCoduckDB } from "../controller/dataController.js"
+import { getAllCoduckUsers, pingCoduckDB,getUserSources } from "../controller/dataController.js"
 
 app.get("/api/data/allUsers", async (req, res) => {
   try {
