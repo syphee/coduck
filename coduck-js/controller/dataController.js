@@ -31,7 +31,7 @@ const getUserSources = async (userid) => {
     const userSources = await Promise.all(
       query.map(async (value) => {
         const notion = new Client({
-          auth: value.user_access_token,
+          auth: process.env.NOTION_API_KEY,
         });
 
         const dataSource = await notion.dataSources.retrieve({
