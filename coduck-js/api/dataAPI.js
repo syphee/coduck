@@ -27,7 +27,7 @@ app.get("/api/data/allUsers", async (req, res) => {
 
 
 // get all user's datasources
-app.get("/api/data/sources/", async (req, res) => {
+app.post("/api/data/sources/", async (req, res) => {
   try {
     const userID = req.body.userID
     const result = await getUserSources(userID)

@@ -86,8 +86,11 @@ bot.command("notion", async (ctx) => {
 
     });
 
+
+    //TODO setup of JWT
     const userSources = await fetch(`${process.env.CODUCK_API_URL}/api/data/sources`, {
-      method: "GET",
+      // post for testing for now
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -347,4 +350,5 @@ bot.on("message", async (ctx) => {
 export default webhookCallback(bot, "https", {
   timeoutMilliseconds: 50_000,
   onTimeout: "return",
+  secretToken:process.env.TELEGRAM_SECRET_TOKEN
 });
