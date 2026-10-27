@@ -201,7 +201,7 @@ const registerUserToNotion = async (user_access_token, user_refresh_token, dupli
         return output
 
     } catch (error) {
-        console.error(`[authController notionAuth Auth Response]: ${output}`)
+        console.error(`[authController notionAuth Auth Response]: ${error}`)
 
     }
 }
