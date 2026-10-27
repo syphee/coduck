@@ -1,21 +1,33 @@
 // api/server.js
 import express from "express";
-import { taskQuery, generalQuery, resetChat } from "../controller/geminiController.js";
+import multer from "multer";
+import { taskQuery, transcribeAudio, resetChat } from "../controller/geminiController.js";
 const app = express();
+import http from "http";
+import { neon } from "@neondatabase/serverless";
+const sql = neon(process.env.NEON_DATABASE_URL);
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 50 * 1024 * 1024 }
+});
 app.use(express.json());
-app.post("/api/chat", async (req, res) => {
+app.post("/api/chat", upload.single('voiceMemo'), async (req, res) => {
     try {
-        const query = req.body.message;
+        const query = req.body.message || null;
+        const voiceMemo = req.file || null;
         const userID = req.body.userID;
+        let response;
         console.log(`[CODUCK_API:POST /api/chat QUERY]:${query}\n`);
+        console.log(`[CODUCK_API:POST /api/chat VOICE MEMO]:${voiceMemo}\n`);
         console.log(`[CODUCK_API:POST /api/chat USER_ID]:${userID}\n`);
-        if (!query) {
-            return res.status(400).json({
-                error: "message is required",
-            });
-        }
         // Call Gemini here
-        const response = await taskQuery(query, userID);
+        if (query != null) {
+            response = await taskQuery(query, userID);
+        }
+        if (voiceMemo != null) {
+            response = await transcribeAudio(voiceMemo, userID);
+        }
         res.json({
             reply: response,
         });

@@ -24,9 +24,9 @@ const getUserSources = async (userid) => {
             from 
                 coduck.notion_users 
             where 
-                "userID" = ${userID};`;
+                "userID" = ${userid};`;
 
-    const sources = []
+    const userSources = []
     const user_sources_keypairs = query.map((value, index) => {
       const notion = new Client({
         auth: value[index].user_access_token
@@ -38,7 +38,7 @@ const getUserSources = async (userid) => {
 
       const title = dataSource.title.map((t) => t.plain_text).join("");
 
-      sources.push[{
+      userSources.push[{
         user_access_token: value[index].user_access_token,
         data_source_id: value[index].duplicated_template_id,
         data_source_name: title
@@ -46,11 +46,11 @@ const getUserSources = async (userid) => {
 
     })
 
-    return sources
+    return userSources
 
 
   } catch (error) {
-    console.error(`[authController notionAuth Auth Response]: ${output}`)
+    console.error(`[authController notionAuth Auth Response]: ${error}`)
 
   }
 }

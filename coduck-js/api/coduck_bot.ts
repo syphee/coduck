@@ -37,7 +37,9 @@ bot.api.setMyCommands([
   { command: "notion", description: "Link your notion account to allow Coduck to insert tasks." },
   { command: "new", description: "Clears chat history of the bot, removing message context." },
   { command: "help", description: "Display available commands and usage of Coduck." }
-])
+]).catch((error) => {
+  console.error("[CODUCK_BOT:SET_COMMANDS_ERROR]", error);
+});
 
 
 // to setup user's chosen table for tasks insertion
