@@ -14,6 +14,46 @@ const getAllCoduckUsers = async () => {
   }
 }
 
+const getUserSources = async (userid) => {
+  try {
+    const query = await sql
+      `select
+                user_access_token,
+                duplicated_template_id,
+                workspace_id 
+            from 
+                coduck.notion_users 
+            where 
+                "userID" = ${userID};`;
+
+    const sources = []
+    const user_sources_keypairs = query.map((value, index) => {
+      const notion = new Client({
+        auth: value[index].user_access_token
+      });
+
+      const dataSource = await notion.dataSources.retrieve({
+        data_source_id: value[index].duplicated_template_id,
+      });
+
+      const title = dataSource.title.map((t) => t.plain_text).join("");
+
+      sources.push[{
+        user_access_token: value[index].user_access_token,
+        data_source_id: value[index].duplicated_template_id,
+        data_source_name: title
+      }]
+
+    })
+
+    return sources
+
+
+  } catch (error) {
+    console.error(`[authController notionAuth Auth Response]: ${output}`)
+
+  }
+}
 
 const pingCoduckDB = async () => {
   try {
@@ -29,4 +69,4 @@ const pingCoduckDB = async () => {
 
 };
 
-export {getAllCoduckUsers,pingCoduckDB}
+export { getAllCoduckUsers, pingCoduckDB }

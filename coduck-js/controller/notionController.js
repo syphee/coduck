@@ -5,7 +5,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
-import {Client} from "@notionhq/client"
+import { Client } from "@notionhq/client"
 
 // Initializing a client
 const notion = new Client({
@@ -47,13 +47,13 @@ const getCoduckRows = async (
     return data;
 };
 
-const formatData = async({data})=>{
+const formatData = async ({ data }) => {
 
 }
 
 
 const insertCoduckRows = async (
-{ task, status, description, projectName,auth }
+    { task, status, description, projectName, auth }
 ) => {
     const token = process.env.NOTION_API_KEY;
     const dataSourceId = notionDB;
@@ -115,4 +115,4 @@ const insertCoduckRows = async (
 
 
 
-export { getCoduckRows,insertCoduckRows };
+export { getCoduckRows, insertCoduckRows };

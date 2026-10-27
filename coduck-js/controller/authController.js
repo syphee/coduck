@@ -38,7 +38,14 @@ const getNotionUser = async (userID, platform) => {
     try {
 
         const query = await sql
-            `select user_access_token,duplicated_template_id,workspace_id from coduck.notion_users where "userID" = ${userID} and "platform" = ${platform};`;
+            `select
+                user_access_token,
+                duplicated_template_id,
+                workspace_id 
+            from 
+                coduck.notion_users 
+            where 
+                "userID" = ${userID} and "platform" = ${platform};`;
         const output = query;
 
         return output
@@ -63,8 +70,8 @@ FROM coduck.notion_users
 WHERE "userID" = ${userID}
   AND (user_access_token IS NOT NULL OR user_access_token != '');
 `
-        // return false if exists
-        if (query1[0].user_access_token != "" && query1[0].duplicated_template_id != "") {
+        // return false if exists, will return data of user too
+        if (query1.length > 0) {
             return {
                 exists: true,
                 output: query1
@@ -121,16 +128,39 @@ const registerUserToNotion = async (user_access_token, user_refresh_token, dupli
         // handle telegram platforms
         if (query == 'telegram') {
             // last 2 values blank for now while i develop for telegram
-            query = await sql`
-    UPDATE coduck.notion_users 
-    SET
-        user_access_token = ${user_access_token},
-        user_refresh_token = ${user_refresh_token},
-        duplicated_template_id = ${duplicated_template_id},
-        workspace_id = ${workspace_id},
-        workspace_name = ${workspace_name}
-    WHERE "userID" = ${userID} 
-      AND platform = ${platform};
+
+            // commented out for testing
+            //             query = await sql`
+            //     UPDATE coduck.notion_users 
+            //     SET
+            //         user_access_token = ${user_access_token},
+            //         user_refresh_token = ${user_refresh_token},
+            //         duplicated_template_id = ${duplicated_template_id},
+            //         workspace_id = ${workspace_id},
+            //         workspace_name = ${workspace_name}
+            //     WHERE "userID" = ${userID} 
+            //       AND platform = ${platform};
+            // `;
+
+            // temp test
+            const query = await sql`
+    INSERT INTO coduck.notion_users (
+        user_access_token,
+        user_refresh_token,
+        duplicated_template_id,
+        workspace_id,
+        workspace_name,
+        platform,
+        "userID"
+    ) VALUES (
+        ${user_access_token},
+        ${user_refresh_token},
+        ${duplicated_template_id},
+        ${workspace_id},
+        ${workspace_name},
+        ${platform},
+        ${userID}
+    )
 `;
 
         } else {

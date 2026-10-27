@@ -34,6 +34,10 @@
       "source":"/api/data/allUsers",
       "destination":"/api/dataAPI"
     },
+    {
+      "source":"/api/data/sources",
+      "destination":"/api/dataAPI"
+    },
 
     {
       "source":"/api/auth",

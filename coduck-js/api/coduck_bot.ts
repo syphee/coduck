@@ -17,6 +17,12 @@ const gemini_key: string = process.env.GEMINI_API_KEY!;
 
 const bot = new Bot(coduck_key);
 
+const ACTIVE_DATASOURCE = [{
+  user_access_token: "",
+  data_source_id: "",
+  data_source_name: ""
+}]
+
 bot.use(async (ctx, next) => {
   console.info(`[TELEGRAM_WEBHOOK] update_id=${ctx.update.update_id}`);
   await next();
@@ -60,7 +66,7 @@ bot.command("notion", async (ctx) => {
   try {
     const userID = ctx.from?.id
     // register userID into notion first
-    const response = await fetch(`${process.env.CODUCK_API_URL}/api/auth/telegram`, {
+    const userExists = await fetch(`${process.env.CODUCK_API_URL}/api/auth/telegram`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -70,25 +76,51 @@ bot.command("notion", async (ctx) => {
       }),
 
       // rookie moment here totally did not spend an hour
-    }).then(async(res)=>{
+    }).then(async (res) => {
       return res.json()
 
-    // 3 years of diploma experience gone
-    }).then( async(data)=>{
-       // if not linked yet
-    console.log(`linked? ${data.linked}`)
-    if (!data.linked) {
+      // 3 years of diploma experience gone
+    }).then(async (data) => {
+      // if not linked yet
+      return data
+
+    });
+
+    const userSources = await fetch(`${process.env.CODUCK_API_URL}/api/data/sources`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userID: userID,
+      }),
+
+      // rookie moment here totally did not spend an hour
+    }).then(async (res) => {
+      return res.json()
+
+      // 3 years of diploma experience gone
+    }).then(async (data) => {
+
+      return data
+
+    });
+
+    console.log(`linked? ${userExists.linked}`)
+
+    // first time setup / no workspaces linked yet
+    if (!userExists.linked) {
       const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
       const notionOAuthLinkParams = `${notionAuthURL}&state=telegram:${userID}`
       const keyboard = new InlineKeyboard().url("Link Notion", notionOAuthLinkParams);
 
       await ctx.reply(
-        "Click the button below to authenticate your Notion account:",
+        "Click the button below to set up your Notion account!",
         { reply_markup: keyboard }
       );
 
-      // if already linked
-    } else if (data.linked) {
+      // if already linked / has existing workspaces
+    } else if (userExists.linked) {
 
       // to add "Unlink Notion btn"
 
@@ -96,12 +128,35 @@ bot.command("notion", async (ctx) => {
       // workspaces
       // and add an unlink btn..
       // this proj is getting way too complicated for a simple one
-      await ctx.reply("Notion has been linked.");
+      const notionAuthURL = `${process.env.NOTION_OAUTH_URL}`
+      const notionOAuthLinkParams = `${notionAuthURL}&state=telegram:${userID}`
+
+      const btns = new InlineKeyboard()
+        .url("Add Notion Source", notionOAuthLinkParams)
+        .row()
+        .url("Remove Notion Source", "www.google.com")
+        .row()
+        .url("Switch Source", "www.youtube.com")
+
+      const activeSource = userSources
+        .find(item => JSON.stringify(item) === JSON.stringify(ACTIVE_DATASOURCE));
+
+      await ctx.reply(
+        `
+      [Selected Source]
+        ${JSON.stringify(activeSource)}
+      [Linked Sources]
+      ${JSON.stringify(userSources)}
+      `,
+        { reply_markup: btns }
+
+
+
+      );
+
     }
 
-    });
-
-   
+    return
   } catch (err) {
     console.error(err);
     await ctx.reply("❌ Error initialization. Try again.");
