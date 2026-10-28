@@ -131,7 +131,7 @@ bot.command("notion", async (ctx) => {
         .row()
         .url("Switch Source", "www.youtube.com")
 
-      const activeSource = userSources
+      const activeSource = userSources.data
         .find(item => JSON.stringify(item) === JSON.stringify(ACTIVE_DATASOURCE));
 
       await ctx.reply(
