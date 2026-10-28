@@ -105,26 +105,13 @@ bot.command("notion", async (ctx) => {
       // if already linked / has existing workspaces
     } else if (userExists.linked) {
       //TODO setup of JWT
-      const userSources = await (fetch(`${process.env.CODUCK_API_URL}/api/data/sources`, {
-        // post for testing for now
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userID: userID,
-        }),
-
-        // rookie moment here totally did not spend an hour
-      }).then((res) => {
-        return res.json()
-
-        // 3 years of diploma experience gone
-      }).then((data) => {
-
-        return data
-
-      }));
+      const response = await fetch(`${process.env.CODUCK_API_URL}/api/data/sources`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userID })
+      });
+  
+  const userSources = await response.json();
 
       // to add "Unlink Notion btn"
 
