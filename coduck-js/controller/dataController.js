@@ -37,7 +37,7 @@ const getUserSources = async (userid) => {
         });
 
         const dataSource = await notion.databases.retrieve({
-          data_source_id: value.duplicated_template_id,
+          database_id: value.duplicated_template_id,
         });
 
         const title = dataSource.title
