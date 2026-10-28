@@ -108,7 +108,9 @@ bot.command("notion", async (ctx) => {
       const response = await fetch(`${process.env.CODUCK_API_URL}/api/data/sources`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userID })
+        body: JSON.stringify({
+          userID: userID,
+        }),
       });
   
   const userSources = await response.json();
