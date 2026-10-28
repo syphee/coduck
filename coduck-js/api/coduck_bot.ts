@@ -137,7 +137,7 @@ bot.command("notion", async (ctx) => {
       await ctx.reply(
         `
       [Selected Source]
-      Board Name : ${userSources[0].data_source_name}
+      Board Name : ${userSources.data[0].data_source_name}
       `
       //commented out for now for proof of concept
       //${JSON.stringify(activeSource)}
