@@ -144,7 +144,7 @@ bot.command("notion", async (ctx) => {
         +
         `
       [Linked Sources]
-      ${userSources.map((item,index)=>{
+      ${userSources.data.map((item,index)=>{
         return`${index + 1} - ${item.data_source_name}`
       })}
       `,
