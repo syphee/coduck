@@ -79,14 +79,22 @@ app.post("/api/auth/telegram", async (req, res) => {
     const result = await handleTelegramRegistration(userID)
     console.log(`[authAPI:GET /api/auth Notion Result]: ${JSON.stringify(result)}`)
     // console.log(`[authAPI:GET /api/auth Notion Result]: ${result.output[0] ? "success" : "failed"}`)
-    if (result.exists) {
+    if (result.exists == true) {
       return res.status(200).json({
         status: "success",
         linked: result.exists,
         comment: "Telegram userID successfully registered in Coduck Servers."
       })
-    } else {
-      return res.status(404).json({
+    }
+    else if(result.exists == false){
+      return res.status(200).json({
+        status: "failed",
+        linked: result.exists,
+        comment: "Telegram userID was not registered in Coduck Servers."
+      })
+    }
+     else {
+      return res.status(500).json({
         status: "failed",
         comment: "Telegram userID registered in Coduck Servers failed."
       })

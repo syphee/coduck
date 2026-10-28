@@ -77,7 +77,9 @@ WHERE "userID" = ${userID}
                 output: query1
             }
         } else {
+            // may have to comment this out
             let query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(${userID},'telegram');`;
+            
             return {
                 exists: false,
                 output: query2
@@ -185,14 +187,15 @@ const registerUserToNotion = async (user_access_token, user_refresh_token, dupli
         ${platform},
         ${userID}
     )
-    ON CONFLICT ("userID") 
-    DO UPDATE SET 
-        user_access_token = EXCLUDED.user_access_token,
-        user_refresh_token = EXCLUDED.user_refresh_token,
-        duplicated_template_id = EXCLUDED.duplicated_template_id,
-        workspace_id = EXCLUDED.workspace_id,
-        workspace_name = EXCLUDED.workspace_name;
-`;
+        `
+//     ON CONFLICT ("userID") 
+//     DO UPDATE SET 
+//         user_access_token = EXCLUDED.user_access_token,
+//         user_refresh_token = EXCLUDED.user_refresh_token,
+//         duplicated_template_id = EXCLUDED.duplicated_template_id,
+//         workspace_id = EXCLUDED.workspace_id,
+//         workspace_name = EXCLUDED.workspace_name;
+// `;
 
         }
 
