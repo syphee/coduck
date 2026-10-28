@@ -129,7 +129,7 @@ bot.command("notion", async (ctx) => {
         .row()
         .url("Remove Notion Source", "www.google.com")
         .row()
-        .url("Switch Source", "www.youtube.com")
+        .text("Select Source", "select-notion-source")
 
       const activeSource = userSources.data
         .find(item => JSON.stringify(item) === JSON.stringify(ACTIVE_DATASOURCE));
@@ -137,9 +137,16 @@ bot.command("notion", async (ctx) => {
       await ctx.reply(
         `
       [Selected Source]
-        ${JSON.stringify(activeSource)}
+      Board Name : ${userSources[0].data_source_name}
+      `
+      //commented out for now for proof of concept
+      //${JSON.stringify(activeSource)}
+        +
+        `
       [Linked Sources]
-      ${JSON.stringify(userSources)}
+      ${userSources.map((item,index)=>{
+        return`${index + 1} - ${item.data_source_name}`
+      })}
       `,
         { reply_markup: btns }
 
@@ -155,6 +162,10 @@ bot.command("notion", async (ctx) => {
     await ctx.reply("❌ Error initialization. Try again.");
   }
 });
+
+bot.callbackQuery("select-notion-source",async(ctx)=>{
+
+})
 
 
 bot.command("help", async (ctx) => {
