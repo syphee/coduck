@@ -78,11 +78,12 @@ bot.command("notion", async (ctx) => {
       }),
 
       // rookie moment here totally did not spend an hour
-    }).then(async (res) => {
+    }).then((res) => {
       return res.json()
 
       // 3 years of diploma experience gone
-    }).then(async (data) => {
+      // to research when to use async
+    }).then((data) => {
       // if not linked yet
       return data
 
@@ -115,11 +116,11 @@ bot.command("notion", async (ctx) => {
         }),
 
         // rookie moment here totally did not spend an hour
-      }).then(async (res) => {
+      }).then( (res) => {
         return res.json()
 
         // 3 years of diploma experience gone
-      }).then(async (data) => {
+      }).then( (data) => {
 
         return data
 
