@@ -36,7 +36,7 @@ const getUserSources = async (userid) => {
           auth: value.user_access_token,
         });
 
-        const dataSource = await notion.dataSources.retrieve({
+        const dataSource = await notion.databases.retrieve({
           data_source_id: value.duplicated_template_id,
         });
 
