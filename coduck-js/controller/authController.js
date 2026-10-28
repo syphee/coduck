@@ -51,7 +51,7 @@ const getNotionUser = async (userID, platform) => {
         return output
 
     } catch (error) {
-        console.error(`[authController notionAuth Auth Response]: ${output}`)
+        console.error(`[authController getNotionUser Error]: ${error}`)
 
     }
 }
@@ -78,8 +78,8 @@ WHERE "userID" = ${userID}
             }
         } else {
             // may have to comment this out
-            let query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(${userID},'telegram');`;
-            
+            //let query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(${userID},'telegram');`;
+
             return {
                 exists: false,
                 output: query2

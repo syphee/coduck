@@ -27,11 +27,13 @@ const getUserSources = async (userid) => {
       FROM coduck.notion_users
       WHERE "userID" = ${userid};
     `;
-
+    
+    console.log(`User Sources: ${JSON.stringify(query)}`)
+    
     const userSources = await Promise.all(
       query.map(async (value) => {
         const notion = new Client({
-          auth: process.env.NOTION_API_KEY,
+          auth: value.user_access_token,
         });
 
         const dataSource = await notion.dataSources.retrieve({
@@ -54,7 +56,7 @@ const getUserSources = async (userid) => {
     return userSources;
   } catch (error) {
     console.error(
-      `[authController notionAuth Auth Response]: ${error}`
+      `[dataController getUserSources error]: ${error}`
     );
 
     throw error;
