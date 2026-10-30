@@ -56,6 +56,40 @@ const getNotionUser = async (userID, platform) => {
     }
 }
 
+// upsert database_id to set user's active notion board
+const handleActiveUserNotionSource = async(userID)=>{
+      try {
+
+        let query1 = await sql`
+SELECT * 
+FROM coduck.notion_users 
+WHERE "userID" = ${userID}
+  AND (user_access_token IS NOT NULL OR user_access_token != '');
+`
+        // return false if exists, will return data of user too
+        if (query1.length > 0) {
+            return {
+                exists: true,
+                output: query1
+            }
+        } else {
+            // may have to comment this out
+            //let query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(${userID},'telegram');`;
+
+            return {
+                exists: false,
+                output: query2
+            }
+        }
+
+
+    } catch (err) {
+        console.error(`[authController handleActiveUserNotionSource error]: ${err}`)
+        throw err
+    }
+  
+}
+
 
 // to make sure userID exists first so users cannot just append from URL
 

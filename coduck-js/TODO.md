@@ -8,3 +8,12 @@ zzz
 
 Files involved:
 authController-registerUserToNotion
+
+
+[implement stateless architecture for linking active user-notion sources]
+Files involved:
+
+authController - UPSERT
+authAPI - endpoint for ^
+vercel.json - register as valid endpoint
+neondb - test constraints and upserts
