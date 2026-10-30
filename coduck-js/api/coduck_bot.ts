@@ -1,6 +1,8 @@
 // to run npx tsc everytime..
 
 import { Bot, webhookCallback, InlineKeyboard } from "grammy";
+import { Menu,MenuRange } from "@grammyjs/menu";
+
 import dotenv from "dotenv";
 import * as path from "path";
 import { fetchQuery, resetQuery, fetchVoiceQuery } from "../controller/coduckController.js";
@@ -137,7 +139,7 @@ bot.command("notion", async (ctx) => {
       await ctx.reply(
         `
       [Selected Source]
-      Board Name : ${userSources.data[0].data_source_name}
+      ${ACTIVE_DATASOURCE[0].data_source_name}
       `
       //commented out for now for proof of concept
       //${JSON.stringify(activeSource)}
@@ -145,7 +147,8 @@ bot.command("notion", async (ctx) => {
         `
       [Linked Sources]
       ${userSources.data.map((item,index)=>{
-        return`${index + 1} - ${item.data_source_name}`
+        return`${index + 1} - ${item.data_source_name}
+        n`
       })}
       `,
         { reply_markup: btns }
@@ -164,6 +167,46 @@ bot.command("notion", async (ctx) => {
 });
 
 bot.callbackQuery("select-notion-source",async(ctx)=>{
+
+  const userID = ctx.from?.id
+  const response = await fetch(`${process.env.CODUCK_API_URL}/api/data/sources`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userID: userID,
+        }),
+      });
+  
+  const userSources = await response.json();
+
+
+const notionSourceMenu = new Menu("dynamic");
+notionSourceMenu
+  .text("Select your source").row()
+  .dynamic(() => {
+    // Generate a part of the menu dynamically!
+    const options = new MenuRange();
+
+
+    userSources?.data.forEach((item)=>{
+        options
+        .text(item.toString(), (ctx) => {
+          ACTIVE_DATASOURCE.pop()
+          ACTIVE_DATASOURCE.push({
+            user_access_token: item.user_access_token,
+            data_source_id: item.data_source_id,
+            data_source_name: item.data_source_name
+          })
+          ctx.reply(`${item.data_source_name} board is active!`)
+          
+        })
+        .row();
+    })
+   
+    
+    return options;
+  })
+  .text("Cancel", (ctx) => ctx.deleteMessage());
 
 })
 
