@@ -57,7 +57,7 @@ const getNotionUser = async (userID, platform) => {
 }
 
 // upsert database_id to set user's active notion board
-const handleActiveUserNotionSource = async (userID, data_source_id) => {
+const handleActiveUserNotionSource = async (userID, data_source_id,platform) => {
     try {
 
         const query = await sql`
