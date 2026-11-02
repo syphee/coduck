@@ -209,7 +209,8 @@ const notionSourceMenu = new Menu("dynamic")
               },
               body: JSON.stringify({
                 userID: userID,
-                dataSourceId:item.data_source_id
+                dataSourceId:item.data_source_id,
+                platform:'telegram'
               }),
             }
           );
