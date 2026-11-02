@@ -200,8 +200,6 @@ const notionSourceMenu = new Menu("dynamic")
           //   data_source_name: item.data_source_name,
           // };
 
-          await ctx.answerCallbackQuery();
-
           const response = await fetch(
             `${process.env.CODUCK_API_URL}/api/data/sources/select`,
             {
