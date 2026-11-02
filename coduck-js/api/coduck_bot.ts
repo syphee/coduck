@@ -216,6 +216,9 @@ const notionSourceMenu = new Menu("dynamic")
     await ctx.deleteMessage();
   });
 
+bot.use(notionSourceMenu);
+
+
 bot.callbackQuery("select-notion-source", async (ctx) => {
 
   await ctx.answerCallbackQuery();
@@ -229,7 +232,6 @@ bot.callbackQuery("select-notion-source", async (ctx) => {
 
 });
 
-bot.use(notionSourceMenu);
 
 
 
