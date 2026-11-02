@@ -57,37 +57,33 @@ const getNotionUser = async (userID, platform) => {
 }
 
 // upsert database_id to set user's active notion board
-const handleActiveUserNotionSource = async(userID)=>{
-      try {
+const handleActiveUserNotionSource = async (userID, data_source_id) => {
+    try {
 
-        let query1 = await sql`
-SELECT * 
-FROM coduck.notion_users 
-WHERE "userID" = ${userID}
-  AND (user_access_token IS NOT NULL OR user_access_token != '');
-`
-        // return false if exists, will return data of user too
-        if (query1.length > 0) {
-            return {
-                exists: true,
-                output: query1
-            }
-        } else {
-            // may have to comment this out
-            //let query2 = await sql`INSERT INTO coduck.notion_users("userID",platform)VALUES(${userID},'telegram');`;
+        const query = await sql`
+    INSERT INTO coduck.active_notion_user_sources (
+        active_notion_database_id,
+        platform,
+        "userID"
+    ) VALUES (
+        ${data_source_id},
+        ${platform},
+        ${userID}
+    )
+    ON CONFLICT ("userID") 
+    DO UPDATE SET 
+        active_notion_database_id = EXCLUDED.active_notion_database_id
+        
+`;
+        const output = query;
 
-            return {
-                exists: false,
-                output: query2
-            }
-        }
-
+        return output
 
     } catch (err) {
         console.error(`[authController handleActiveUserNotionSource error]: ${err}`)
         throw err
     }
-  
+
 }
 
 
@@ -222,14 +218,14 @@ const registerUserToNotion = async (user_access_token, user_refresh_token, dupli
         ${userID}
     )
         `
-//     ON CONFLICT ("userID") 
-//     DO UPDATE SET 
-//         user_access_token = EXCLUDED.user_access_token,
-//         user_refresh_token = EXCLUDED.user_refresh_token,
-//         duplicated_template_id = EXCLUDED.duplicated_template_id,
-//         workspace_id = EXCLUDED.workspace_id,
-//         workspace_name = EXCLUDED.workspace_name;
-// `;
+            //     ON CONFLICT ("userID") 
+            //     DO UPDATE SET 
+            //         user_access_token = EXCLUDED.user_access_token,
+            //         user_refresh_token = EXCLUDED.user_refresh_token,
+            //         duplicated_template_id = EXCLUDED.duplicated_template_id,
+            //         workspace_id = EXCLUDED.workspace_id,
+            //         workspace_name = EXCLUDED.workspace_name;
+            // `;
 
         }
 
@@ -258,4 +254,4 @@ const pingCoduckDB = async () => {
 
 };
 
-export { notionAuth, registerUserToNotion, handleTelegramRegistration }
+export { notionAuth, registerUserToNotion, handleTelegramRegistration, handleActiveUserNotionSource }

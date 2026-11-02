@@ -193,19 +193,41 @@ const notionSourceMenu = new Menu("dynamic")
       range
         .text(item.data_source_name, async (ctx) => {
 
-          // Update active datasource
-          ACTIVE_DATASOURCE[0] = {
-            user_access_token: item.user_access_token,
-            data_source_id: item.data_source_id,
-            data_source_name: item.data_source_name,
-          };
+          // // Update active datasource
+          // ACTIVE_DATASOURCE[0] = {
+          //   user_access_token: item.user_access_token,
+          //   data_source_id: item.data_source_id,
+          //   data_source_name: item.data_source_name,
+          // };
 
           await ctx.answerCallbackQuery();
 
-          await ctx.reply(
-            `${item.data_source_name} board is now active!`
+          const response = await fetch(
+            `${process.env.CODUCK_API_URL}/api/data/sources/select`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                userID: userID,
+                dataSourceId:item.data_source_id
+              }),
+            }
           );
 
+          const selectedSource = await response.json();
+
+          if(selectedSource.status == "success"){
+            await ctx.reply(
+            `${item.data_source_name} board is now active!`
+          );
+          }else if(selectedSource.status == "failed"){
+            await ctx.reply(
+            `❌ Couldn't select source. Reason : ${selectedSource.reason}`
+          );
+          }
+          
         })
         .row();
 
