@@ -18,7 +18,7 @@ const coduck_key: string = process.env.coduck_bot!;
 const gemini_key: string = process.env.GEMINI_API_KEY!;
 
 const bot = new Bot(coduck_key);
-
+ 
 const ACTIVE_DATASOURCE = [{
   user_access_token: "",
   data_source_id: "",
@@ -309,12 +309,6 @@ bot.use(async (ctx, next) => {
   }
   await next();
 })
-
-bot.use(notion)
-
-
-
-
 
 bot.on(["message:voice", "message:audio"], async (ctx) => {
   const media = ctx.message.voice ?? ctx.message.audio;
