@@ -38,7 +38,11 @@
       "source":"/api/data/sources",
       "destination":"/api/dataAPI"
     },
-
+    
+    {
+      "source":"/api/data/sources/select",
+      "destination":"/api/authAPI"
+    },
     {
       "source":"/api/auth",
       "destination":"/api/authAPI"
