@@ -144,12 +144,16 @@ const splitChunks = (text, limit = 4000) => {
 }
 
 // Task Generation Query
-const taskQuery = async (query, userID) => {
+const taskQuery = async (query, userID, platform) => {
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY QUERY]:${query}\n`);
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY USER_ID]:${userID}\n`);
 
   const SCHEMA = z.toJSONSchema(taskQuerySchema);
 
+  const auth = await getNotionUserActiveSource(userID, platform)
+
+  
+  // determine if query is a task or not
   const hasURL = /https?:\/\/\S+/.test(query)
   let interaction;
   if (hasURL) {
@@ -212,8 +216,9 @@ const taskQuery = async (query, userID) => {
 
 // Inserts each task into Notion (sequentially, to respect rate limits)
 // and returns the text reply for Telegram.
-const createTaskResponse = async (parsedResult) => {
+const createTaskResponse = async (parsedResult,auth) => {
   const taskBlocks = [];
+  const userAuth = auth
 
   for (const t of parsedResult.tasks) {
     const stepLines =
@@ -224,6 +229,7 @@ const createTaskResponse = async (parsedResult) => {
 
     // awaited, so any failure propagates to the try/catch in taskQuery
     await insertCoduckRows({
+      auth:userAuth,
       task: t.title,
       status: "Not started",
       description: [parsedResult.project_goal, stepLines, exitCriteriaString]

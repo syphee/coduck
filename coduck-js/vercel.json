@@ -40,7 +40,7 @@
     },
     
     {
-      "source":"/api/data/sources/select",
+      "source":"/api/auth/sources/select",
       "destination":"/api/authAPI"
     },
     {

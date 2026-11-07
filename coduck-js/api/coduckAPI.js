@@ -23,15 +23,16 @@ app.post("/api/chat",upload.single('voiceMemo'), async (req, res) => {
     const query = req.body.message || null;
     const voiceMemo = req.file || null;
     const userID = req.body.userID;
+    const platform = req.body.platform || null;
     let response;
     console.log(`[CODUCK_API:POST /api/chat QUERY]:${query}\n`);
     console.log(`[CODUCK_API:POST /api/chat VOICE MEMO]:${voiceMemo}\n`);
     console.log(`[CODUCK_API:POST /api/chat USER_ID]:${userID}\n`);
+    console.log(`[CODUCK_API:POST /api/chat PLATFORM]:${platform}\n`);
 
-    
     // Call Gemini here
     if (query != null) {
-      response = await taskQuery(query, userID);
+      response = await taskQuery(query, userID,platform);
     }
     if (voiceMemo != null) {
       response = await transcribeAudio(voiceMemo, userID);

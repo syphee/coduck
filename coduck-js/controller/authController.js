@@ -56,11 +56,36 @@ const getNotionUser = async (userID, platform) => {
     }
 }
 
+const getNotionUserActiveSource = async (userID, platform) => {
+
+    try{
+        const query = await sql
+            `select
+                "userID",
+                active_notion_database_id,
+                platform
+            from 
+                coduck.active_notion_user_sources
+            where 
+                "userID" = ${userID} and "platform" = ${platform};`;
+        const output = query;
+
+        return output
+
+    } catch (error) {
+        console.error(`[authController getNotionUser Error]: ${error}`)
+
+    }
+}
+
 // upsert database_id to set user's active notion board
+// this is for when user has multiple boards, and wants to switch between them
+// 1 platform will only be linked to 1 platform, but user can have multiple platforms linked to different boards,
+// or different platforms linked to the same board.
 const handleActiveUserNotionSource = async (userID, data_source_id,platform) => {
     try {
 
-        const query = await sql`
+        const updatedActiveSource = await sql`
     INSERT INTO coduck.active_notion_user_sources (
         active_notion_database_id,
         platform,
@@ -70,12 +95,12 @@ const handleActiveUserNotionSource = async (userID, data_source_id,platform) => 
         ${platform},
         ${userID}
     )
-    ON CONFLICT ("userID") 
+    ON CONFLICT ("userID",platform) 
     DO UPDATE SET 
         active_notion_database_id = EXCLUDED.active_notion_database_id
         
 `;
-        const output = query;
+        const output = updatedActiveSource;
 
         return output
 
@@ -254,4 +279,4 @@ const pingCoduckDB = async () => {
 
 };
 
-export { notionAuth, registerUserToNotion, handleTelegramRegistration, handleActiveUserNotionSource }
+export { notionAuth, registerUserToNotion, handleTelegramRegistration, handleActiveUserNotionSource,getNotionUserActiveSource }

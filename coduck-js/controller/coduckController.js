@@ -6,7 +6,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 
 // Normal Message Query
-const fetchQuery = async (query, userID) => {
+const fetchQuery = async (query, userID,platform) => {
   console.log(`[QUERY]:${query}\n`);
   const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
 
@@ -19,6 +19,7 @@ const fetchQuery = async (query, userID) => {
       body: JSON.stringify({
         message: query,
         userID: userID,
+        platform: platform
       }),
     });
 

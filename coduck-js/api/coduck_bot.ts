@@ -201,7 +201,7 @@ const notionSourceMenu = new Menu("dynamic")
           // };
 
           const response = await fetch(
-            `${process.env.CODUCK_API_URL}/api/data/sources/select`,
+            `${process.env.CODUCK_API_URL}/api/auth/sources/select`,
             {
               method: "POST",
               headers: {

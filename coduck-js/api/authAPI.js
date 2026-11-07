@@ -1,6 +1,6 @@
 import app from "./coduckAPI.js"
 
-import { notionAuth, registerUserToNotion,handleActiveUserNotionSource, handleTelegramRegistration } from "../controller/authController.js";
+import { notionAuth,getNotionUserActiveSource, registerUserToNotion,handleActiveUserNotionSource, handleTelegramRegistration } from "../controller/authController.js";
 import { neon } from "@neondatabase/serverless"
 
 const sql = neon(process.env.NEON_DATABASE_URL);
@@ -107,12 +107,42 @@ app.post("/api/auth/telegram", async (req, res) => {
 })
 
 // set user source
-app.post("/api/data/sources/select/", async (req, res) => {
+app.post("/api/auth/sources/select/", async (req, res) => {
   try {
     const userID = req.body.userID
     const dataSourceId = req.body.dataSourceId
+    const userPlatform = req.body.platform
     
-    await handleActiveUserNotionSource(userID,dataSourceId)
+    await handleActiveUserNotionSource(userID,dataSourceId,userPlatform)
+    // has been inserted to neon
+          .then((resolved) => {
+            return res.status(200).json({
+              status: "success",
+              comment: "Successfully selected source."
+            })
+          },
+
+            // has not been inserted to neon
+            (rejected) => {
+              return res.status(404).json({
+                status: "fail",
+                comment: "Notion source selection was unsuccessful.",
+                reason: rejected
+              })
+            })
+
+  } catch (err) {
+    throw new Error(`[authAPI:POST /api/data/sources/select/ NEONDB]: Error Reason:${err}`)
+  }
+})
+
+// get user source
+app.get("/api/auth/source/", async (req, res) => {
+  try {
+    const userID = req.body.userID
+    const userPlatform = req.body.platform
+    
+    await getNotionUserActiveSource(userID,userPlatform)
     // has been inserted to neon
           .then((resolved) => {
             return res.status(200).json({
