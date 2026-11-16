@@ -28,6 +28,7 @@ import { z } from "zod";
 
 // controller imports
 import { insertCoduckRows } from "./notionController.js";
+import {getNotionUserActiveSource} from "./authController.js"
 
 const CODUCK_SYSTEM_INSTRUCTION = fs.readFileSync(textFilePath, "utf8");
 
