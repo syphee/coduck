@@ -52,7 +52,7 @@
       "destination":"/api/authAPI"
     },
     {
-      "source":"/api/auth/source/",
+      "source":"/api/auth/source",
       "destination":"/api/authAPI"
     }
     
