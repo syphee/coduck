@@ -50,6 +50,10 @@
     {
       "source":"/api/auth/telegram",
       "destination":"/api/authAPI"
+    },
+    {
+      "source":"/api/auth/source/",
+      "destination":"/api/authAPI"
     }
     
 
