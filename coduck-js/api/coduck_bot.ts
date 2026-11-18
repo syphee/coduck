@@ -8,6 +8,7 @@ import * as path from "path";
 import { fetchQuery, resetQuery, fetchVoiceQuery } from "../controller/coduckController.js";
 
 import { fileURLToPath } from 'url';
+import { getUser } from "@notionhq/client/build/src/api-endpoints.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -107,15 +108,24 @@ bot.command("notion", async (ctx) => {
       // if already linked / has existing workspaces
     } else if (userExists.linked) {
       //TODO setup of JWT
-      const response = await fetch(`${process.env.CODUCK_API_URL}/api/data/sources`, {
+      const getUserSources = await fetch(`${process.env.CODUCK_API_URL}/api/data/sources`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userID: userID,
         }),
       });
+      const getUserActiveSource = await fetch(`${process.env.CODUCK_API_URL}/api/data/sources`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userID: userID,
+          platform:'telegram'
+        }),
+      });
   
-  const userSources = await response.json();
+  const userSources = await getUserSources.json();
+  const userActiveSource = await getUserActiveSource.json();
 
       // to add "Unlink Notion btn"
 
@@ -133,13 +143,14 @@ bot.command("notion", async (ctx) => {
         .row()
         .text("Select Source", "select-notion-source")
 
-      const activeSource = userSources.data
-        .find(item => JSON.stringify(item) === JSON.stringify(ACTIVE_DATASOURCE));
+      const activeSourceIndex = userSources.data
+        .findIndex((item) => item.data_source_id === JSON.stringify(userActiveSource[0].active_notion_database_id));
 
+      const activeSource = userSources.data[activeSourceIndex]
       await ctx.reply(
         `
       [Selected Source]
-      ${ACTIVE_DATASOURCE[0].data_source_name}
+      ${activeSource ? activeSource.data_source_name : 'None'}
       `
       //commented out for now for proof of concept
       //${JSON.stringify(activeSource)}
