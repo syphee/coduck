@@ -115,7 +115,7 @@ bot.command("notion", async (ctx) => {
           userID: userID,
         }),
       });
-      const getUserActiveSource = await fetch(`${process.env.CODUCK_API_URL}/api/data/sources`, {
+      const getUserActiveSource = await fetch(`${process.env.CODUCK_API_URL}/api/auth/source`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -144,7 +144,7 @@ bot.command("notion", async (ctx) => {
         .text("Select Source", "select-notion-source")
 
       const activeSourceIndex = userSources.data
-        .findIndex((item) => item.data_source_id === JSON.stringify(userActiveSource[0].active_notion_database_id));
+        .findIndex((item) => item.data_source_id === JSON.stringify(userActiveSource.data[0].active_notion_database_id));
 
       const activeSource = userSources.data[activeSourceIndex]
       await ctx.reply(
