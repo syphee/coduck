@@ -61,13 +61,22 @@ const getNotionUserActiveSource = async (userID, platform) => {
     try{
         const query = await sql
             `select
-                "userID",
-                active_notion_database_id,
-                platform
+                a."userID",
+                a.active_notion_database_id,
+                a.platform,
+                b.user_access_token
             from 
-                coduck.active_notion_user_sources
+                coduck.active_notion_user_sources as a
+            inner join
+                coduck.notion_users b 
+            on
+                b."userID" = a."userID"
+            and
+                b.platform = a.platform
+            and
+                b.duplicated_template_id = a.active_notion_database_id
             where 
-                "userID" = ${userID} and "platform" = ${platform};`;
+                a."userID" = ${userID} and a."platform" = ${platform};`;
         const output = query;
 
         return output

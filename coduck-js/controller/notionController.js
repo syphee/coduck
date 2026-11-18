@@ -55,13 +55,23 @@ const formatData = async ({ data }) => {
 const insertCoduckRows = async (
     { task, status, description, projectName, auth }
 ) => {
-    const token = process.env.NOTION_API_KEY;
-    const dataSourceId = notionDB;
+    const [{userID,active_notion_database_id,platform,user_access_token}] = auth
+
+    //user info
+    const token = user_access_token;
+    const dataSourceId = active_notion_database_id;
+
     if (!token || !dataSourceId) {
         throw new Error("Set NOTION_API_KEY and NOTION_DATA_SOURCE_ID.");
     }
 
-    const dataSource = await notion.dataSources.retrieve({
+    // Initializing a client
+    const userClient = new Client({
+        auth: user_access_token,
+    });
+
+
+    const dataSource = await userClient.dataSources.retrieve({
         data_source_id: dataSourceId,
     });
     if (!("properties" in dataSource)) {
@@ -85,7 +95,7 @@ const insertCoduckRows = async (
         throw new Error(`Invalid status "${status}". Must be one of: ${VALID_STATUSES.join(", ")}`);
     }
 
-    const page = await notion.pages.create({
+    const page = await userClient.pages.create({
         parent: { data_source_id: dataSourceId },
         properties: {
             "project_name": {

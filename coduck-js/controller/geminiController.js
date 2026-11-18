@@ -152,6 +152,7 @@ const taskQuery = async (query, userID, platform) => {
   const SCHEMA = z.toJSONSchema(taskQuerySchema);
 
   const auth = await getNotionUserActiveSource(userID, platform)
+  
 
   
   // determine if query is a task or not
@@ -201,7 +202,7 @@ const taskQuery = async (query, userID, platform) => {
 
   if (parsedResult.intent === "create") {
     try {
-      return await createTaskResponse(parsedResult);
+      return await createTaskResponse(parsedResult,auth);
     } catch (err) {
       console.error(`[GEMINI_CONTROLLER:TASK_QUERY:NOTION_INGESTION]: ${err}`);
       return "I understood the request, but saving to Notion failed. Check the server logs.";
@@ -219,7 +220,6 @@ const taskQuery = async (query, userID, platform) => {
 // and returns the text reply for Telegram.
 const createTaskResponse = async (parsedResult,auth) => {
   const taskBlocks = [];
-  const userAuth = auth
 
   for (const t of parsedResult.tasks) {
     const stepLines =
@@ -230,7 +230,7 @@ const createTaskResponse = async (parsedResult,auth) => {
 
     // awaited, so any failure propagates to the try/catch in taskQuery
     await insertCoduckRows({
-      auth:userAuth,
+      auth:auth,
       task: t.title,
       status: "Not started",
       description: [parsedResult.project_goal, stepLines, exitCriteriaString]
