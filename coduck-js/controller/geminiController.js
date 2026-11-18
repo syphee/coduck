@@ -218,6 +218,9 @@ const taskQuery = async (query, userID, platform) => {
 
 // Inserts each task into Notion (sequentially, to respect rate limits)
 // and returns the text reply for Telegram.
+
+//[TODO]
+// fix auth is not iterable error
 const createTaskResponse = async (parsedResult,auth) => {
   const taskBlocks = [];
 
