@@ -60,7 +60,7 @@ const insertCoduckRows = async (
 
     //user info
     const token = user_access_token;
-    const dataSourceId = active_notion_database_id;
+    const databaseId = active_notion_database_id;
 
     if (!token || !dataSourceId) {
         throw new Error("Set NOTION_API_KEY and NOTION_DATA_SOURCE_ID.");
@@ -71,10 +71,13 @@ const insertCoduckRows = async (
         auth: user_access_token,
     });
 
+    const database = await userClient.databases.retrieve({
+        database_id: databaseId
+    })
 
-    const dataSource = await userClient.dataSources.retrieve({
-        data_source_id: dataSourceId,
-    });
+
+    const dataSourceId = database.data_sources[0].id
+    
     if (!("properties" in dataSource)) {
         throw new Error("The data source response has no schema. Check access.");
     }
