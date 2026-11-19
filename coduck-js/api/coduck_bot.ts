@@ -148,7 +148,7 @@ bot.command("notion", async (ctx) => {
       .find((item) => 
       item.data_source_id === matchedVal)
 
-      const output = activeSource.data_source_name
+      const output = activeSource
       await ctx.reply(
         `
       [Selected Source]
