@@ -62,8 +62,8 @@ const insertCoduckRows = async (
     const token = user_access_token;
     const databaseId = active_notion_database_id;
 
-    if (!token || !dataSourceId) {
-        throw new Error("Set NOTION_API_KEY and NOTION_DATA_SOURCE_ID.");
+    if (!token || !databaseId) {
+        throw new Error("User missing database/user tokens. Probably not registered.");
     }
 
     // Initializing a client
@@ -77,7 +77,7 @@ const insertCoduckRows = async (
 
 
     const dataSourceId = database.data_sources[0].id
-    
+
     if (!("properties" in dataSource)) {
         throw new Error("The data source response has no schema. Check access.");
     }
