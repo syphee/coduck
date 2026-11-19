@@ -63,7 +63,7 @@ const insertCoduckRows = async (
     const databaseId = active_notion_database_id;
 
     if (!token || !databaseId) {
-        throw new Error("User missing database/user tokens. Probably not registered.");
+        throw new Error("User missing database/user tokens. Probably not registeredy.");
     }
 
     // Initializing a client
@@ -77,6 +77,12 @@ const insertCoduckRows = async (
 
 
     const dataSourceId = database.data_sources[0].id
+
+    // TODO
+    // read what this does lol
+    const dataSource = await userClient.dataSources.retrieve({
+        data_source_id: dataSourceId,
+    });
 
     if (!("properties" in dataSource)) {
         throw new Error("The data source response has no schema. Check access.");
