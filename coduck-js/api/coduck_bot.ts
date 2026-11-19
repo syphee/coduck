@@ -143,14 +143,16 @@ bot.command("notion", async (ctx) => {
         .row()
         .text("Select Source", "select-notion-source")
 
-      const activeSourceIndex = userSources.data
-        .findIndex((item) => item.data_source_id === JSON.stringify(userActiveSource.data[0].active_notion_database_id));
+      const matchedVal = userActiveSource.data[0].active_notion_database
+      const activeSource = userSources.data
+      .find((item) => 
+      item.data_source_id === matchedVal)
 
-      const activeSource = userSources.data[activeSourceIndex]
+      const output = activeSource.data_source_name
       await ctx.reply(
         `
       [Selected Source]
-      ${activeSource ? activeSource.data_source_name : 'None'}
+      ${output ? output : 'None'}
       `
       //commented out for now for proof of concept
       //${JSON.stringify(activeSource)}
