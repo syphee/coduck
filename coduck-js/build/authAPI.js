@@ -1,5 +1,5 @@
 import app from "./coduckAPI.js";
-import { notionAuth, registerUserToNotion, handleTelegramRegistration } from "../controller/authController.js";
+import { notionAuth, getNotionUserActiveSource, registerUserToNotion, handleActiveUserNotionSource, handleTelegramRegistration } from "../controller/authController.js";
 import { neon } from "@neondatabase/serverless";
 const sql = neon(process.env.NEON_DATABASE_URL);
 // notion auth
@@ -58,15 +58,22 @@ app.post("/api/auth/telegram", async (req, res) => {
         const result = await handleTelegramRegistration(userID);
         console.log(`[authAPI:GET /api/auth Notion Result]: ${JSON.stringify(result)}`);
         // console.log(`[authAPI:GET /api/auth Notion Result]: ${result.output[0] ? "success" : "failed"}`)
-        if (result.exists) {
+        if (result.exists == true) {
             return res.status(200).json({
                 status: "success",
                 linked: result.exists,
                 comment: "Telegram userID successfully registered in Coduck Servers."
             });
         }
+        else if (result.exists == false) {
+            return res.status(200).json({
+                status: "failed",
+                linked: result.exists,
+                comment: "Telegram userID was not registered in Coduck Servers."
+            });
+        }
         else {
-            return res.status(404).json({
+            return res.status(500).json({
                 status: "failed",
                 comment: "Telegram userID registered in Coduck Servers failed."
             });
@@ -76,6 +83,82 @@ app.post("/api/auth/telegram", async (req, res) => {
         res.send(500);
         console.log(`[authAPI:POST /api/auth ]:${err}`);
     }
+});
+// set user source
+app.post("/api/auth/sources/select/", async (req, res) => {
+    try {
+        const userID = req.body.userID;
+        const dataSourceId = req.body.dataSourceId;
+        const userPlatform = req.body.platform;
+        await handleActiveUserNotionSource(userID, dataSourceId, userPlatform)
+            // has been inserted to neon
+            .then((resolved) => {
+            return res.status(200).json({
+                status: "success",
+                comment: "Successfully selected source."
+            });
+        }, 
+        // has not been inserted to neon
+        (rejected) => {
+            return res.status(404).json({
+                status: "fail",
+                comment: "Notion source selection was unsuccessful.",
+                reason: rejected
+            });
+        });
+    }
+    catch (err) {
+        throw new Error(`[authAPI:POST /api/data/sources/select/ NEONDB]: Error Reason:${err}`);
+    }
+});
+// get user active source
+// [ TODO ]
+// will need to encrypt + jwt tokens here
+app.post("/api/auth/source/", async (req, res) => {
+    try {
+        const userID = req.body.userID;
+        const userPlatform = req.body.platform;
+        const result = await getNotionUserActiveSource(userID, userPlatform);
+        console.log(`[authAPI:POST /api/auth/source/ Result]: ${result ? true : false}`);
+        if (result) {
+            return res.status(200).json({
+                status: "success",
+                comment: `Get all user's sources success. Returned ${result.length} rows.`,
+                data: result
+            });
+        }
+        else {
+            return res.status(404).json({
+                status: "fail",
+                comment: "Get all users failed.",
+            });
+        }
+    }
+    catch (err) {
+        throw new Error(`[authAPI:POST /api/auth/source/ ]: Connection Not Established. Reason:${err}`);
+    }
+    // try {
+    //   const userID = req.body.userID
+    //   const userPlatform = req.body.platform
+    //   await getNotionUserActiveSource(userID,userPlatform)
+    //   // has been inserted to neon
+    //         .then((resolved) => {
+    //           return res.status(200).json({
+    //             status: "success",
+    //             comment: "Successfully selected source."
+    //           })
+    //         },
+    //           // has not been inserted to neon
+    //           (rejected) => {
+    //             return res.status(404).json({
+    //               status: "fail",
+    //               comment: "Notion source selection was unsuccessful.",
+    //               reason: rejected
+    //             })
+    //           })
+    // } catch (err) {
+    //   throw new Error(`[authAPI:POST /api/data/sources/select/ NEONDB]: Error Reason:${err}`)
+    // }
 });
 export default app;
 //# sourceMappingURL=authAPI.js.map

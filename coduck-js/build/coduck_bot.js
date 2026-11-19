@@ -1,9 +1,11 @@
 // to run npx tsc everytime..
 import { Bot, webhookCallback, InlineKeyboard } from "grammy";
+import { Menu, MenuRange } from "@grammyjs/menu";
 import dotenv from "dotenv";
 import * as path from "path";
 import { fetchQuery, resetQuery, fetchVoiceQuery } from "../controller/coduckController.js";
 import { fileURLToPath } from 'url';
+import { getUser } from "@notionhq/client/build/src/api-endpoints.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -60,28 +62,12 @@ bot.command("notion", async (ctx) => {
                 userID: userID,
             }),
             // rookie moment here totally did not spend an hour
-        }).then(async (res) => {
+        }).then((res) => {
             return res.json();
             // 3 years of diploma experience gone
-        }).then(async (data) => {
+            // to research when to use async
+        }).then((data) => {
             // if not linked yet
-            return data;
-        });
-        //TODO setup of JWT
-        const userSources = await fetch(`${process.env.CODUCK_API_URL}/api/data/sources`, {
-            // post for testing for now
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                userID: userID,
-            }),
-            // rookie moment here totally did not spend an hour
-        }).then(async (res) => {
-            return res.json();
-            // 3 years of diploma experience gone
-        }).then(async (data) => {
             return data;
         });
         console.log(`linked? ${userExists.linked}`);
@@ -94,6 +80,24 @@ bot.command("notion", async (ctx) => {
             // if already linked / has existing workspaces
         }
         else if (userExists.linked) {
+            //TODO setup of JWT
+            const getUserSources = await fetch(`${process.env.CODUCK_API_URL}/api/data/sources`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userID: userID,
+                }),
+            });
+            const getUserActiveSource = await fetch(`${process.env.CODUCK_API_URL}/api/auth/source`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userID: userID,
+                    platform: 'telegram'
+                }),
+            });
+            const userSources = await getUserSources.json();
+            const userActiveSource = await getUserActiveSource.json();
             // to add "Unlink Notion btn"
             // or maybe add an interface to allow user to switch between
             // workspaces
@@ -106,14 +110,25 @@ bot.command("notion", async (ctx) => {
                 .row()
                 .url("Remove Notion Source", "www.google.com")
                 .row()
-                .url("Switch Source", "www.youtube.com");
-            const activeSource = userSources
-                .find(item => JSON.stringify(item) === JSON.stringify(ACTIVE_DATASOURCE));
+                .text("Select Source", "select-notion-source");
+            // all these trouble just to get the name of the board...
+            const matchedVal = userActiveSource.data[0].active_notion_database_id;
+            const activeSource = userSources.data
+                .find((item) => item.data_source_id === matchedVal);
+            const output = activeSource.data_source_name;
             await ctx.reply(`
       [Selected Source]
-        ${JSON.stringify(activeSource)}
+      ${output ? output : 'None'}
+      `
+                //commented out for now for proof of concept
+                //${JSON.stringify(activeSource)}
+                +
+                    `
       [Linked Sources]
-      ${JSON.stringify(userSources)}
+      ${userSources.data.map((item, index) => {
+                        return `${index + 1} - ${item.data_source_name}
+        n`;
+                    })}
       `, { reply_markup: btns });
         }
         return;
@@ -122,6 +137,60 @@ bot.command("notion", async (ctx) => {
         console.error(err);
         await ctx.reply("❌ Error initialization. Try again.");
     }
+});
+const notionSourceMenu = new Menu("dynamic")
+    .dynamic(async (ctx, range) => {
+    const userID = ctx.from?.id;
+    const response = await fetch(`${process.env.CODUCK_API_URL}/api/data/sources`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            userID: userID,
+        }),
+    });
+    const userSources = await response.json();
+    userSources?.data?.forEach((item) => {
+        range
+            .text(item.data_source_name, async (ctx) => {
+            // // Update active datasource
+            // ACTIVE_DATASOURCE[0] = {
+            //   user_access_token: item.user_access_token,
+            //   data_source_id: item.data_source_id,
+            //   data_source_name: item.data_source_name,
+            // };
+            const response = await fetch(`${process.env.CODUCK_API_URL}/api/auth/sources/select`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    userID: userID,
+                    dataSourceId: item.data_source_id,
+                    platform: 'telegram'
+                }),
+            });
+            const selectedSource = await response.json();
+            if (selectedSource.status == "success") {
+                await ctx.reply(`${item.data_source_name} board is now active!`);
+            }
+            else if (selectedSource.status == "failed") {
+                await ctx.reply(`❌ Couldn't select source. Reason : ${selectedSource.reason}`);
+            }
+        })
+            .row();
+    });
+})
+    .text("Cancel", async (ctx) => {
+    await ctx.deleteMessage();
+});
+bot.use(notionSourceMenu);
+bot.callbackQuery("select-notion-source", async (ctx) => {
+    await ctx.answerCallbackQuery();
+    await ctx.reply("Select your Notion source:", {
+        reply_markup: notionSourceMenu,
+    });
 });
 bot.command("help", async (ctx) => {
     try {
@@ -217,6 +286,7 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
         for (const part of splitChunks(transcript)) {
             await ctx.reply(`[Transcribed Message] : ${part}`);
         }
+        //main processing
         const processedMemo = await ctx.reply("⏳ Processing your query...");
         const result = await fetchQuery(transcript, userID);
         await ctx.api.editMessageText(ctx.chat.id, processedMemo.message_id, String(result));
@@ -252,7 +322,6 @@ bot.on("message", async (ctx) => {
 //});
 export default webhookCallback(bot, "https", {
     timeoutMilliseconds: 50_000,
-    onTimeout: "return",
-    secretToken: process.env.TELEGRAM_SECRET_TOKEN
+    onTimeout: "return"
 });
 //# sourceMappingURL=coduck_bot.js.map

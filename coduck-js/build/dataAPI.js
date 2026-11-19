@@ -1,5 +1,5 @@
 import app from "./coduckAPI.js";
-import { getAllCoduckUsers, pingCoduckDB } from "../controller/dataController.js";
+import { getAllCoduckUsers, pingCoduckDB, getUserSources } from "../controller/dataController.js";
 app.get("/api/data/allUsers", async (req, res) => {
     try {
         const result = await getAllCoduckUsers();
@@ -28,7 +28,7 @@ app.post("/api/data/sources/", async (req, res) => {
     try {
         const userID = req.body.userID;
         const result = await getUserSources(userID);
-        console.log(`[dataAPI:GET /api/data/sources NEONDB Result]: ${result}`);
+        console.log(`[dataAPI:GET /api/data/sources NEONDB Result]: ${JSON.stringify(result)}`);
         if (result) {
             console.log(result);
             return res.status(200).json({

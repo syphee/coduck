@@ -423,7 +423,7 @@ bot.on("message", async (ctx) => {
     }
 
 
-    const result = await fetchQuery(userInput, userID);
+    const result = await fetchQuery(userInput, userID,'telegram');
 
     await ctx.api.editMessageText(
       ctx.chat.id,
