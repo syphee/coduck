@@ -159,7 +159,7 @@ const taskQuery = async (query, userID, platform) => {
           }),
         });
     
-  const auth = getUserActiveSource.json()
+  const auth = await getUserActiveSource.json()
 
   
   // determine if query is a task or not
