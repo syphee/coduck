@@ -55,7 +55,7 @@ const formatData = async ({ data }) => {
 const insertCoduckRows = async (
     { task, status, description, projectName, auth }
 ) => {
-    const [{userID,active_notion_database_id,platform,user_access_token}] = auth
+    const [{userID,active_notion_database_id,platform,user_access_token}] = auth.data
 
     //user info
     const token = user_access_token;

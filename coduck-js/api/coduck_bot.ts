@@ -143,12 +143,11 @@ bot.command("notion", async (ctx) => {
         .row()
         .text("Select Source", "select-notion-source")
 
+      // all these trouble just to get the name of the board...
       const matchedVal = userActiveSource.data[0].active_notion_database_id
       const activeSource = userSources.data
       .find((item) => 
       item.data_source_id === matchedVal)
-
-
       const output = activeSource.data_source_name
       await ctx.reply(
         `
@@ -392,6 +391,9 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
       await ctx.reply(`[Transcribed Message] : ${part}`);
     }
 
+
+
+    //main processing
     const processedMemo = await ctx.reply("⏳ Processing your query...")
     const result = await fetchQuery(transcript, userID)
     await ctx.api.editMessageText(

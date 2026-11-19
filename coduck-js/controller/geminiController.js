@@ -150,9 +150,16 @@ const taskQuery = async (query, userID, platform) => {
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY USER_ID]:${userID}\n`);
 
   const SCHEMA = z.toJSONSchema(taskQuerySchema);
-
-  const auth = await getNotionUserActiveSource(userID, platform)
-  
+  const getUserActiveSource = await fetch(`${process.env.CODUCK_API_URL}/api/auth/source`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userID: userID,
+            platform:platform
+          }),
+        });
+    
+  const auth = getUserActiveSource.json()
 
   
   // determine if query is a task or not
