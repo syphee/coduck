@@ -264,12 +264,7 @@ const createTaskResponse = async (parsedResult,auth) => {
   }
 };
 
-const pushTaskResponse = async (formattedResult,auth)=>{
 
-  for (const t of formattedResult.tasks) {
-
-  }
-}
 
 // anything other than a normal message query will be handled by this function
 

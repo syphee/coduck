@@ -5,7 +5,6 @@ import { Menu, MenuRange } from "@grammyjs/menu";
 
 import dotenv from "dotenv";
 import * as path from "path";
-import { fetchQuery, resetQuery, fetchVoiceQuery } from "../controller/coduckController.js";
 
 import { fileURLToPath } from 'url';
 import { getUser } from "@notionhq/client/build/src/api-endpoints.js";
@@ -297,6 +296,25 @@ Examples: "Generate a Lasagna Recipe", "What is the current weather now?"," Add 
 `
 ));
 
+const resetQuery = async (userID) => {
+  const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
+ 
+  const response = await fetch(`${API_URL}/api/reset`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ userID: userID }),
+  });
+ 
+  if (!response.ok) {
+    throw new Error(`API returned ${response.status}`);
+  }
+ 
+  const data = await response.json();
+  return data.reply;
+};
+
 bot.command("new", async (ctx) => {
   try {
     await resetQuery(ctx.chat.id);
@@ -341,6 +359,39 @@ bot.use(async (ctx, next) => {
   }
   await next();
 })
+
+// Normal Message Query
+const fetchQuery = async (query, userID,platform) => {
+  console.log(`[QUERY]:${query}\n`);
+  const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
+
+  try {
+    const response = await fetch(`${API_URL}/api/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: query,
+        userID: userID,
+        platform: platform
+      }),
+    });
+
+    console.log(`[RESPONSE]:${JSON.stringify(response)}\n`);
+
+    if (!response.ok) {
+     console.log(`[ERROR]:${response.status} - ${response.statusText}\n`);
+    throw new Error(`API returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.reply;
+  } catch (error) {
+    console.error(`[ERROR]:${error}\n`);
+    throw error;
+  }
+};
 
 const fetchVoiceQuery = async (voiceQuery, userID, mimeType = "audio/ogg") => {
   const formData = new FormData();
