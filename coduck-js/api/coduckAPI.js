@@ -59,7 +59,7 @@ if (process.env.VERCEL !== "1") {
 }
 
 // add to notion 
-app.post("/api/notion/insert", (req, res) => {
+app.post("/api/notion/insert", async(req, res) => {
  try {
     const taskPayload = req.body.taskPayload
     const result = await pushTaskResponse(taskPayload)
@@ -92,7 +92,7 @@ if (process.env.VERCEL !== "1") {
 
 
 // clear context  
-app.post("/api/reset", (req, res) => {
+app.post("/api/reset", async(req, res) => {
   const userID = req.body.userID;
   console.log(`[CODUCK_API:POST /api/reset USER_ID]:${userID}\n`);
 
