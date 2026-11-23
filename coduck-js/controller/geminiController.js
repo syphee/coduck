@@ -27,7 +27,7 @@ if (!textFilePath) {
 import { z } from "zod";
 
 // controller imports
-import { insertCoduckRows } from "./notionController.js";
+
 import {getNotionUserActiveSource} from "./authController.js"
 
 const CODUCK_SYSTEM_INSTRUCTION = fs.readFileSync(textFilePath, "utf8");
@@ -240,15 +240,17 @@ const createTaskResponse = async (parsedResult,auth) => {
 
     // inserts steps 1 by 1
     // awaited, so any failure propagates to the try/catch in taskQuery
-    await insertCoduckRows({
-      auth:auth,
-      task: t.title,
-      status: "Not started",
-      description: [parsedResult.project_goal, stepLines, exitCriteriaString]
-        .filter(Boolean)//filters empty strings, undefined inputs etc
-        .join("\n\n"),
-      projectName: parsedResult.project,
-    });
+
+    //commented out to test 
+    // await insertCoduckRows({
+    //   auth:auth,
+    //   task: t.title,
+    //   status: "Not started",
+    //   description: [parsedResult.project_goal, stepLines, exitCriteriaString]
+    //     .filter(Boolean)//filters empty strings, undefined inputs etc
+    //     .join("\n\n"),
+    //   projectName: parsedResult.project,
+    // });
 
     taskBlocks.push(
       [`• ${t.title}`, stepLines, exitCriteriaString]
@@ -262,6 +264,7 @@ const createTaskResponse = async (parsedResult,auth) => {
     formattedResultText:`[ Generated Task ]\n\n Project Name : ${parsedResult.project}\n\n [ Generated Tasks ] : \n\n${taskBlocks.join("\n\n")}`,
     formattedResult:parsedResult
   }
+  return output
 };
 
 

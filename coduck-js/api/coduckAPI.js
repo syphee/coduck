@@ -61,8 +61,9 @@ if (process.env.VERCEL !== "1") {
 // add to notion 
 app.post("/api/notion/insert", async(req, res) => {
  try {
+    const auth = req.body.auth
     const taskPayload = req.body.taskPayload
-    const result = await pushTaskResponse(taskPayload)
+    const result = await pushTaskResponse(taskPayload,auth)
     console.log(`[coduckAPI:POST /api/notion/insert Notion Insertion Result]: ${result ? "success" : "failed"}`)
     if (result) {
       console.log(result)

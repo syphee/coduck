@@ -521,6 +521,22 @@ bot.callbackQuery("reject-generated-response", async (ctx) => {
 
 bot.callbackQuery("insert-generated-response", async (ctx) => {
   try{
+
+    //TODO  
+    // to cleanup this auth portion
+    const userID = ctx.chat.id
+
+    const getUserActiveSource = await fetch(`${process.env.CODUCK_API_URL}/api/auth/source`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userID: userID,
+            platform:'telegram'
+          }),
+        });
+    
+  const auth = await getUserActiveSource.json()
+
       const payload = ctx.session.generatedResult;
 
    const response = await fetch(`${process.env.CODUCK_API_URL}/api/notion/insert`, {
@@ -529,7 +545,8 @@ bot.callbackQuery("insert-generated-response", async (ctx) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        taskPayload:payload
+        taskPayload:payload,
+        auth:auth
       }),
     });
 
@@ -610,7 +627,10 @@ bot.on("message", async (ctx) => {
 
     const result = await fetchQuery(userInput, userID, 'telegram');
     // then store in session storage temporarily
-    ctx.session.generatedResult = result
+    const queryData = result.formattedResult
+    const queryDataMessage = result.formattedResultText
+    
+    ctx.session.generatedResult = queryData
     ctx.session.userInput = userInput
 
     const btns = new InlineKeyboard()
@@ -624,7 +644,7 @@ bot.on("message", async (ctx) => {
     await ctx.api.editMessageText(
       ctx.chat.id,
       loadingText.message_id,
-      String(result),
+      String(queryDataMessage),
       { reply_markup: btns }
     );
     
