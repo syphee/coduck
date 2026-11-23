@@ -469,7 +469,7 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
 
     //main processing
     const processedMemo = await ctx.reply("⏳ Processing your query...")
-    const result = await fetchQuery(transcript, userID)
+    const result = await fetchQuery(transcript, userID,'telegram')
     await ctx.api.editMessageText(
       ctx.chat.id,
       processedMemo.message_id,
@@ -497,36 +497,8 @@ bot.on("message", async (ctx) => {
     }
 
 
-    //const result = await fetchQuery(userInput, userID,'telegram');
-    console.log(`[QUERY]:${userInput}\n`);
-    const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
-
-    try {
-      const response = await fetch(`${API_URL}/api/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: userInput,
-          userID: userID,
-          platform: 'telegram'
-        }),
-      });
-
-      console.log(`[RESPONSE]:${JSON.stringify(response)}\n`);
-
-      if (!response.ok) {
-        console.log(`[ERROR]:${response.status} - ${response.statusText}\n`);
-        throw new Error(`API returned ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data.reply;
-    } catch (error) {
-      console.error(`[ERROR]:${error}\n`);
-      throw error;
-    }
+    const result = await fetchQuery(userInput, userID,'telegram');
+   
 
     // to add a add/cancel/regenerate/edit btn
     await ctx.api.editMessageText(
