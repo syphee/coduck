@@ -2,6 +2,7 @@
 import express from "express";
 import multer from "multer";
 import { taskQuery, transcribeAudio, resetChat } from "../controller/geminiController.js";
+import { pushTaskResponse } from "../controller/coduckController.js";
 
 const app = express();
 
@@ -50,6 +51,37 @@ app.post("/api/chat",upload.single('voiceMemo'), async (req, res) => {
   }
 });
 
+
+if (process.env.VERCEL !== "1") {
+  app.listen(3000, () => {
+    console.log("API running on port 3000");
+  });
+}
+
+// add to notion 
+app.post("/api/notion/insert", (req, res) => {
+ try {
+    const taskPayload = req.body.taskPayload
+    const result = await pushTaskResponse(taskPayload)
+    console.log(`[coduckAPI:POST /api/notion/insert Notion Insertion Result]: ${result ? "success" : "failed"}`)
+    if (result) {
+      console.log(result)
+      return res.status(200).json({
+        status: "success",
+        comment: `Successfully added task`,
+        data: result
+      })
+    }
+    else {
+      return res.status(404).json({
+        status: "fail",
+        comment: "Task was not added.",
+      })
+    }
+  } catch (err) {
+    throw new Error(`coduckAPI:POST /api/notion/insert ERROR Reason:${err}`)
+  }
+});
 
 if (process.env.VERCEL !== "1") {
   app.listen(3000, () => {

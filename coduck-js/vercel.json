@@ -25,6 +25,10 @@
       "source": "/api/reset",
       "destination": "/api/coduckAPI"
     },
+    {
+      "source": "api/notion/insert",
+      "destination":"/api/coduckAPI"
+    },
 
     {
       "source":"/api/data/ping",

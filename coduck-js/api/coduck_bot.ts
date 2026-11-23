@@ -1,6 +1,6 @@
 // to run npx tsc everytime..
 
-import { Bot, webhookCallback, InlineKeyboard } from "grammy";
+import { Bot, webhookCallback, InlineKeyboard, session, type SessionFlavor, Context } from "grammy";
 import { Menu, MenuRange } from "@grammyjs/menu";
 
 import dotenv from "dotenv";
@@ -17,7 +17,18 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const coduck_key: string = process.env.coduck_bot!;
 const gemini_key: string = process.env.GEMINI_API_KEY!;
 
-const bot = new Bot(coduck_key);
+// to store generated response, if to reject or to add
+
+interface taskData {
+  generatedResult: object | null,
+  userInput: string | null,
+}
+
+type coduckContext = Context & SessionFlavor<taskData>;
+
+
+const bot = new Bot<coduckContext>(coduck_key);
+
 
 
 
@@ -298,7 +309,7 @@ Examples: "Generate a Lasagna Recipe", "What is the current weather now?"," Add 
 
 const resetQuery = async (userID) => {
   const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
- 
+
   const response = await fetch(`${API_URL}/api/reset`, {
     method: "POST",
     headers: {
@@ -306,11 +317,11 @@ const resetQuery = async (userID) => {
     },
     body: JSON.stringify({ userID: userID }),
   });
- 
+
   if (!response.ok) {
     throw new Error(`API returned ${response.status}`);
   }
- 
+
   const data = await response.json();
   return data.reply;
 };
@@ -361,7 +372,7 @@ bot.use(async (ctx, next) => {
 })
 
 // Normal Message Query
-const fetchQuery = async (query, userID,platform) => {
+const fetchQuery = async (query, userID, platform) => {
   console.log(`[QUERY]:${query}\n`);
   const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
 
@@ -381,8 +392,8 @@ const fetchQuery = async (query, userID,platform) => {
     console.log(`[RESPONSE]:${JSON.stringify(response)}\n`);
 
     if (!response.ok) {
-     console.log(`[ERROR]:${response.status} - ${response.statusText}\n`);
-    throw new Error(`API returned ${response.status}`);
+      console.log(`[ERROR]:${response.status} - ${response.statusText}\n`);
+      throw new Error(`API returned ${response.status}`);
     }
 
     const data = await response.json();
@@ -469,7 +480,7 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
 
     //main processing
     const processedMemo = await ctx.reply("⏳ Processing your query...")
-    const result = await fetchQuery(transcript, userID,'telegram')
+    const result = await fetchQuery(transcript, userID, 'telegram')
     await ctx.api.editMessageText(
       ctx.chat.id,
       processedMemo.message_id,
@@ -482,8 +493,109 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
   }
 });
 
-// Normal message handler
 
+bot.use(session({
+  initial: (): taskData => ({
+    generatedResult: null,
+    userInput:null
+  })
+}))
+
+
+bot.callbackQuery("reject-generated-response", async (ctx) => {
+
+  await ctx.answerCallbackQuery();
+
+  await ctx.deleteMessage();
+
+});
+
+// bot.callbackQuery("regenerate-response", async (ctx) => {
+
+//   await ctx.answerCallbackQuery();
+
+//   await ctx.reply(
+
+//   );
+
+// });
+
+bot.callbackQuery("insert-generated-response", async (ctx) => {
+  try{
+      const payload = ctx.session.generatedResult;
+
+   const response = await fetch(`${process.env.CODUCK_API_URL}/api/notion/insert`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        taskPayload:payload
+      }),
+    });
+
+    const selectedSource = await response.json();
+
+    await ctx.answerCallbackQuery();
+
+    if(selectedSource.status === "success"){
+        await ctx.reply(`Task added successfully.`);
+    }
+    if(selectedSource.status === "fail"){
+      await ctx.reply(`Task was not added. Please try again with a new prompt.`);
+    }
+  }catch(err){
+      console.log(`[coduck_bot insert-generated-response Notion Insertion ERROR]: ${err}`)
+  }
+
+});
+
+
+bot.callbackQuery("regenerate-response", async (ctx) => {
+  await ctx.answerCallbackQuery();
+  const loadingText = await ctx.reply("⏳ Regenerating query...");
+  try {
+
+    const userInput = ctx.session.userInput
+    const userID = ctx.from.id
+    if (!userInput) {
+      return;
+    }
+
+
+    const result = await fetchQuery(userInput, userID, 'telegram');
+    // then store in session storage temporarily
+    ctx.session.generatedResult = result
+    ctx.session.userInput = userInput
+
+    const btns = new InlineKeyboard()
+      .text("Cancel", "reject-generated-response")
+      .row()
+      .text("Add to Board", "insert-generated-response")
+      .row()
+      .text("Regenerate prompt", "regenerate-response")
+
+    // to add a add/cancel/regenerate/edit btn
+    await ctx.api.editMessageText(
+      ctx.chat.id,
+      loadingText.message_id,
+      String(result),
+      { reply_markup: btns }
+    ),
+    
+  } catch (error) {
+    console.error(error);
+    await ctx.api.editMessageText(
+      ctx.chat.id,
+      loadingText.message_id,
+      "❌ Sorry, something went wrong while processing that."
+    );
+  }
+
+});
+
+
+// Normal message handler
 // to add auth for notion, to notify user that input is not being saved
 // unless notion is linked
 bot.on("message", async (ctx) => {
@@ -497,15 +609,26 @@ bot.on("message", async (ctx) => {
     }
 
 
-    const result = await fetchQuery(userInput, userID,'telegram');
-   
+    const result = await fetchQuery(userInput, userID, 'telegram');
+    // then store in session storage temporarily
+    ctx.session.generatedResult = result
+    ctx.session.userInput = userInput
+
+    const btns = new InlineKeyboard()
+      .text("Cancel", "reject-generated-response")
+      .row()
+      .text("Add to Board", "insert-generated-response")
+      .row()
+      .text("Regenerate prompt", "regenerate-response")
 
     // to add a add/cancel/regenerate/edit btn
     await ctx.api.editMessageText(
       ctx.chat.id,
       loadingText.message_id,
-      String(result)
-    );
+      String(result),
+      { reply_markup: btns }
+    ),
+    
   } catch (error) {
     console.error(error);
     await ctx.api.editMessageText(
