@@ -34,7 +34,7 @@ const CODUCK_SYSTEM_INSTRUCTION = fs.readFileSync(textFilePath, "utf8");
 
 //"gemini-3.5-flash-lite"
 //"gemini-3.1-flash-lite"
-const CODUCK_MODEL = "gemini-3.1-flash-lite"
+const CODUCK_MODEL = "gemini-3.5-flash-lite"
 
 // Conversation memory: one chain of interaction IDs per chat, per kind of call.
 // previous_interaction_id carries conversation history only, so
