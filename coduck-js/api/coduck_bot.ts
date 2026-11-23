@@ -581,7 +581,7 @@ bot.callbackQuery("regenerate-response", async (ctx) => {
       loadingText.message_id,
       String(result),
       { reply_markup: btns }
-    ),
+    );
     
   } catch (error) {
     console.error(error);
