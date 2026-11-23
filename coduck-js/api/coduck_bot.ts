@@ -1,7 +1,7 @@
 // to run npx tsc everytime..
 
 import { Bot, webhookCallback, InlineKeyboard } from "grammy";
-import { Menu,MenuRange } from "@grammyjs/menu";
+import { Menu, MenuRange } from "@grammyjs/menu";
 
 import dotenv from "dotenv";
 import * as path from "path";
@@ -19,12 +19,8 @@ const coduck_key: string = process.env.coduck_bot!;
 const gemini_key: string = process.env.GEMINI_API_KEY!;
 
 const bot = new Bot(coduck_key);
- 
-const ACTIVE_DATASOURCE = [{
-  user_access_token: "",
-  data_source_id: "",
-  data_source_name: ""
-}]
+
+
 
 bot.use(async (ctx, next) => {
   console.info(`[TELEGRAM_WEBHOOK] update_id=${ctx.update.update_id}`);
@@ -120,12 +116,12 @@ bot.command("notion", async (ctx) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userID: userID,
-          platform:'telegram'
+          platform: 'telegram'
         }),
       });
-  
-  const userSources = await getUserSources.json();
-  const userActiveSource = await getUserActiveSource.json();
+
+      const userSources = await getUserSources.json();
+      const userActiveSource = await getUserActiveSource.json();
 
       // to add "Unlink Notion btn"
 
@@ -146,23 +142,23 @@ bot.command("notion", async (ctx) => {
       // all these trouble just to get the name of the board...
       const matchedVal = userActiveSource.data[0].active_notion_database_id
       const activeSource = userSources.data
-      .find((item) => 
-      item.data_source_id === matchedVal)
+        .find((item) =>
+          item.data_source_id === matchedVal)
       const output = activeSource.data_source_name
       await ctx.reply(
         `
       [Selected Source]
       ${output ? output : 'None'}
       `
-      //commented out for now for proof of concept
-      //${JSON.stringify(activeSource)}
+        //commented out for now for proof of concept
+        //${JSON.stringify(activeSource)}
         +
         `
       [Linked Sources]
-      ${userSources.data.map((item,index)=>{
-        return`${index + 1} - ${item.data_source_name}
+      ${userSources.data.map((item, index) => {
+          return `${index + 1} - ${item.data_source_name}
         n`
-      })}
+        })}
       `,
         { reply_markup: btns }
 
@@ -222,24 +218,24 @@ const notionSourceMenu = new Menu("dynamic")
               },
               body: JSON.stringify({
                 userID: userID,
-                dataSourceId:item.data_source_id,
-                platform:'telegram'
+                dataSourceId: item.data_source_id,
+                platform: 'telegram'
               }),
             }
           );
 
           const selectedSource = await response.json();
 
-          if(selectedSource.status == "success"){
+          if (selectedSource.status == "success") {
             await ctx.reply(
-            `${item.data_source_name} board is now active!`
-          );
-          }else if(selectedSource.status == "failed"){
+              `${item.data_source_name} board is now active!`
+            );
+          } else if (selectedSource.status == "failed") {
             await ctx.reply(
-            `❌ Couldn't select source. Reason : ${selectedSource.reason}`
-          );
+              `❌ Couldn't select source. Reason : ${selectedSource.reason}`
+            );
           }
-          
+
         })
         .row();
 
@@ -346,6 +342,33 @@ bot.use(async (ctx, next) => {
   await next();
 })
 
+const fetchVoiceQuery = async (voiceQuery, userID, mimeType = "audio/ogg") => {
+  const formData = new FormData();
+  const voiceMemo = new Blob([voiceQuery], { type: mimeType });
+  formData.append("voiceMemo", voiceMemo, "telegram_voice_prompt.ogg");
+  formData.append("userID", String(userID));
+
+  const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
+
+  try {
+    const response = await fetch(`${API_URL}/api/chat`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const details = await response.text();
+      throw new Error(`API returned ${response.status}: ${details}`);
+    }
+
+    const data = await response.json();
+    return data.reply;
+  } catch (error) {
+    console.error(`[ERROR]:${error}\n`);
+    throw error;
+  }
+}
+
 bot.on(["message:voice", "message:audio"], async (ctx) => {
   const media = ctx.message.voice ?? ctx.message.audio;
   const userID = ctx.chat.id
@@ -423,8 +446,38 @@ bot.on("message", async (ctx) => {
     }
 
 
-    const result = await fetchQuery(userInput, userID,'telegram');
+    //const result = await fetchQuery(userInput, userID,'telegram');
+    console.log(`[QUERY]:${userInput}\n`);
+    const API_URL = process.env.CODUCK_API_URL || "http://localhost:3000";
 
+    try {
+      const response = await fetch(`${API_URL}/api/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: userInput,
+          userID: userID,
+          platform: 'telegram'
+        }),
+      });
+
+      console.log(`[RESPONSE]:${JSON.stringify(response)}\n`);
+
+      if (!response.ok) {
+        console.log(`[ERROR]:${response.status} - ${response.statusText}\n`);
+        throw new Error(`API returned ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.reply;
+    } catch (error) {
+      console.error(`[ERROR]:${error}\n`);
+      throw error;
+    }
+
+    // to add a add/cancel/regenerate/edit btn
     await ctx.api.editMessageText(
       ctx.chat.id,
       loadingText.message_id,

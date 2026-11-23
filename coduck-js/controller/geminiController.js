@@ -238,13 +238,14 @@ const createTaskResponse = async (parsedResult,auth) => {
         : "";
     const exitCriteriaString = `[Exit Criteria]:\t${t.exit_criteria}`;
 
+    // inserts steps 1 by 1
     // awaited, so any failure propagates to the try/catch in taskQuery
     await insertCoduckRows({
       auth:auth,
       task: t.title,
       status: "Not started",
       description: [parsedResult.project_goal, stepLines, exitCriteriaString]
-        .filter(Boolean)
+        .filter(Boolean)//filters empty strings, undefined inputs etc
         .join("\n\n"),
       projectName: parsedResult.project,
     });
@@ -256,8 +257,19 @@ const createTaskResponse = async (parsedResult,auth) => {
     );
   }
 
-  return `Added to ${parsedResult.project}:\n\n${taskBlocks.join("\n\n")}`;
+  //return `Added to ${parsedResult.project}:\n\n${taskBlocks.join("\n\n")}`;
+  const output = {
+    formattedResultText:`[ Generated Task ]\n\n Project Name : ${parsedResult.project}\n\n [ Generated Tasks ] : \n\n${taskBlocks.join("\n\n")}`,
+    formattedResult:parsedResult
+  }
 };
+
+const pushTaskResponse = async (formattedResult,auth)=>{
+
+  for (const t of formattedResult.tasks) {
+
+  }
+}
 
 // anything other than a normal message query will be handled by this function
 
