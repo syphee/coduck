@@ -18,15 +18,17 @@ const gemini_key: string = process.env.GEMINI_API_KEY!;
 
 // to store generated response, if to reject or to add
 
-interface taskData {
-  generatedResult: object | null,
-  userInput: string | null,
-}
+// interface taskData {
+//   generatedResult: object | null,
+//   userInput: string | null,
+// }
 
-type coduckContext = Context & SessionFlavor<taskData>;
+// type coduckContext = Context & SessionFlavor<taskData>;
 
 
-const bot = new Bot<coduckContext>(coduck_key);
+// const bot = new Bot<coduckContext>(coduck_key);
+
+const bot = new Bot(coduck_key);
 
 
 
@@ -493,12 +495,21 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
 });
 
 
+// bot.use(session({
+//   initial: (): taskData => ({
+//     generatedResult: null,
+//     userInput:null
+//   })
+// }))
+
+
 bot.use(session({
-  initial: (): taskData => ({
+  initial: () => ({
     generatedResult: null,
     userInput:null
   })
 }))
+
 
 
 bot.callbackQuery("reject-generated-response", async (ctx) => {
