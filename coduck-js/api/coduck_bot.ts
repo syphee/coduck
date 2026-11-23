@@ -1,6 +1,6 @@
 // to run npx tsc everytime..
 
-import { Bot, webhookCallback, InlineKeyboard, session, type SessionFlavor, Context } from "grammy";
+import { Bot, webhookCallback, InlineKeyboard, session, type SessionFlavor, type Context } from "grammy";
 import { Menu, MenuRange } from "@grammyjs/menu";
 
 import dotenv from "dotenv";
