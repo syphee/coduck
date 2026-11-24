@@ -496,7 +496,7 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
 bot.use(session({
   initial: (): taskData => ({
     generatedResult: null,
-    userInput:null
+    userInput: null
   })
 }))
 
@@ -520,33 +520,33 @@ bot.callbackQuery("reject-generated-response", async (ctx) => {
 // });
 
 bot.callbackQuery("insert-generated-response", async (ctx) => {
-  try{
+  try {
 
     //TODO  
     // to cleanup this auth portion
     const userID = ctx.chat.id
 
     const getUserActiveSource = await fetch(`${process.env.CODUCK_API_URL}/api/auth/source`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userID: userID,
-            platform:'telegram'
-          }),
-        });
-    
-  const auth = await getUserActiveSource.json()
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userID: userID,
+        platform: 'telegram'
+      }),
+    });
 
-      const payload = ctx.session.generatedResult;
+    const auth = await getUserActiveSource.json()
 
-   const response = await fetch(`${process.env.CODUCK_API_URL}/api/notion/insert`, {
+    const payload = ctx.session.generatedResult;
+
+    const response = await fetch(`${process.env.CODUCK_API_URL}/api/notion/insert`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        taskPayload:payload,
-        auth:auth
+        taskPayload: payload,
+        auth: auth
       }),
     });
 
@@ -554,14 +554,14 @@ bot.callbackQuery("insert-generated-response", async (ctx) => {
 
     await ctx.answerCallbackQuery();
 
-    if(selectedSource.status === "success"){
-        await ctx.reply(`Task added successfully.`);
+    if (selectedSource.status === "success") {
+      await ctx.reply(`Task added successfully.`);
     }
-    if(selectedSource.status === "fail"){
+    if (selectedSource.status === "fail") {
       await ctx.reply(`Task was not added. Please try again with a new prompt.`);
     }
-  }catch(err){
-      console.log(`[coduck_bot insert-generated-response Notion Insertion ERROR]: ${err}`)
+  } catch (err) {
+    console.log(`[coduck_bot insert-generated-response Notion Insertion ERROR]: ${err}`)
   }
 
 });
@@ -583,22 +583,44 @@ bot.callbackQuery("regenerate-response", async (ctx) => {
     // then store in session storage temporarily
     ctx.session.generatedResult = result
     ctx.session.userInput = userInput
-
-    const btns = new InlineKeyboard()
-      .text("Cancel", "reject-generated-response")
-      .row()
-      .text("Add to Board", "insert-generated-response")
-      .row()
-      .text("Regenerate prompt", "regenerate-response")
-
-    // to add a add/cancel/regenerate/edit btn
-    await ctx.api.editMessageText(
-      ctx.chat.id,
-      loadingText.message_id,
-      String(result),
-      { reply_markup: btns }
-    );
     
+    const queryData = result.formattedResult
+    const queryDataMessage = result.formattedResultText
+
+    // if is taskQuery
+    let btns;
+    if (queryData && queryDataMessage) {
+      btns = new InlineKeyboard()
+        .text("Cancel", "reject-generated-response")
+        .row()
+        .text("Add to Board", "insert-generated-response")
+        .row()
+        .text("Regenerate prompt", "regenerate-response")
+
+      ctx.session.generatedResult = queryData
+      ctx.session.userInput = userInput
+
+      // to add a add/cancel/regenerate/edit btn
+      await ctx.api.editMessageText(
+        ctx.chat.id,
+        loadingText.message_id,
+        String(queryDataMessage),
+        { reply_markup: btns }
+      );
+    }
+    //if generalQuery
+    else {
+      // to add a add/cancel/regenerate/edit btn
+      const generalQueryMessage = result
+
+      await ctx.api.editMessageText(
+        ctx.chat.id,
+        loadingText.message_id,
+        String(generalQueryMessage),
+      );
+    }
+
+
   } catch (error) {
     console.error(error);
     await ctx.api.editMessageText(
@@ -629,25 +651,43 @@ bot.on("message", async (ctx) => {
     // then store in session storage temporarily
     const queryData = result.formattedResult
     const queryDataMessage = result.formattedResultText
-    
-    ctx.session.generatedResult = queryData
-    ctx.session.userInput = userInput
 
-    const btns = new InlineKeyboard()
-      .text("Cancel", "reject-generated-response")
-      .row()
-      .text("Add to Board", "insert-generated-response")
-      .row()
-      .text("Regenerate prompt", "regenerate-response")
+    // if is taskQuery
+    let btns;
+    if (queryData && queryDataMessage) {
+      btns = new InlineKeyboard()
+        .text("Cancel", "reject-generated-response")
+        .row()
+        .text("Add to Board", "insert-generated-response")
+        .row()
+        .text("Regenerate prompt", "regenerate-response")
 
-    // to add a add/cancel/regenerate/edit btn
-    await ctx.api.editMessageText(
-      ctx.chat.id,
-      loadingText.message_id,
-      String(queryDataMessage),
-      { reply_markup: btns }
-    );
-    
+      ctx.session.generatedResult = queryData
+      ctx.session.userInput = userInput
+
+      // to add a add/cancel/regenerate/edit btn
+      await ctx.api.editMessageText(
+        ctx.chat.id,
+        loadingText.message_id,
+        String(queryDataMessage),
+        { reply_markup: btns }
+      );
+    }
+    //if generalQuery
+    else {
+      // to add a add/cancel/regenerate/edit btn
+      const generalQueryMessage = result
+
+      await ctx.api.editMessageText(
+        ctx.chat.id,
+        loadingText.message_id,
+        String(generalQueryMessage),
+      );
+    }
+
+
+
+
   } catch (error) {
     console.error(error);
     await ctx.api.editMessageText(

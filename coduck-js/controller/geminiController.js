@@ -148,8 +148,9 @@ const splitChunks = (text, limit = 4000) => {
 const taskQuery = async (query, userID, platform) => {
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY QUERY]:${query}\n`);
   console.log(`[GEMINI_CONTROLLER:TASK_QUERY USER_ID]:${userID}\n`);
-
   const SCHEMA = z.toJSONSchema(taskQuerySchema);
+
+  //get user
   const getUserActiveSource = await fetch(`${process.env.CODUCK_API_URL}/api/auth/source`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -157,12 +158,14 @@ const taskQuery = async (query, userID, platform) => {
             userID: userID,
             platform:platform
           }),
-        });
-    
+        });  
   const auth = await getUserActiveSource.json()
 
-  
-  // determine if query is a task or not
+  // main processing of NLP to tasks/general query
+
+  //TODO
+  // refactor CODUCK_MODEL var as stateful, pick up diff model from DB if high usage/503,
+  // add error handling too
   const hasURL = /https?:\/\/\S+/.test(query)
   let interaction;
   if (hasURL) {
@@ -203,6 +206,7 @@ const taskQuery = async (query, userID, platform) => {
     `[GEMINI_CONTROLLER:TASK_QUERY:RAW GEMINI OUTPUT] ${JSON.stringify(parsedResult)}`
   );
 
+  // query filtering - if task or anything else
   if (parsedResult.intent === "none") {
     return await generalQuery(query, userID);
   }
@@ -292,6 +296,7 @@ const generalQuery = async (query, chatId) => {
     );
 
     return interaction.output_text;
+    
   } catch (error) {
     throw new Error(
       `Failed to generate response: ${error.message}`
