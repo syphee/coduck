@@ -26,7 +26,7 @@
       "destination": "/api/coduckAPI"
     },
     {
-      "source": "api/coduck-notion/insert",
+      "source": "/api/coduck-notion/insert",
       "destination":"/api/coduckAPI"
     },
 
