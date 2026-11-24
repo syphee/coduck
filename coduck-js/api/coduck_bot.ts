@@ -539,7 +539,7 @@ bot.callbackQuery("insert-generated-response", async (ctx) => {
 
     const payload = ctx.session.generatedResult;
 
-    const response = await fetch(`${process.env.CODUCK_API_URL}/api/notion/insert`, {
+    const response = await fetch(`${process.env.CODUCK_API_URL}/api/coduck-notion/insert`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -583,7 +583,7 @@ bot.callbackQuery("regenerate-response", async (ctx) => {
     // then store in session storage temporarily
     ctx.session.generatedResult = result
     ctx.session.userInput = userInput
-    
+
     const queryData = result.formattedResult
     const queryDataMessage = result.formattedResultText
 

@@ -59,7 +59,7 @@ if (process.env.VERCEL !== "1") {
 }
 
 // add to notion 
-app.post("/api/notion/insert", async(req, res) => {
+app.post("/api/coduck-notion/insert", async(req, res) => {
  try {
     const auth = req.body.auth
     const taskPayload = req.body.taskPayload
