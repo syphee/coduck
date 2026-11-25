@@ -169,9 +169,7 @@ bot.command("notion", async (ctx) => {
         // display all added boards linked to account
         textOutput += `\n\n[Linked Sources]
       ${userSources.data.map((item, index) => {
-          return `${index + 1} - ${item.data_source_name}\n\n`
-        })}
-      `
+          return `${index + 1} - ${item.data_source_name}\n\n`})}`
       }
 
       await ctx.reply(
