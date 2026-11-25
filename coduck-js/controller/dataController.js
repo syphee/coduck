@@ -1,7 +1,7 @@
 import { neon } from "@neondatabase/serverless"
 const sql = neon(process.env.NEON_DATABASE_URL);
 
-import { Client } from "@notionhq/client"
+import { Client, APIErrorCode, isNotionClientError } from "@notionhq/client"
 
 
 const getAllCoduckUsers = async () => {
@@ -17,6 +17,30 @@ const getAllCoduckUsers = async () => {
   }
 }
 
+const deleteUserSource = async ( duplicated_template_id, user_access_token, userid) => {
+  
+
+  try {
+    const query = await sql`
+
+          DELETE
+          FROM 
+            coduck.notion_users
+          WHERE
+            duplicated_template_id = ${duplicated_template_id}
+          AND
+            user_access_token = ${user_access_token}
+          AND 
+            "userID" = ${userid}
+          `
+
+    const output = query
+    return output
+  } catch (err) {
+    console.error(`[dataController deleteUserSource ERROR]: ${err}`)
+  }
+}
+
 const getUserSources = async (userid) => {
   try {
     const query = await sql`
@@ -27,29 +51,44 @@ const getUserSources = async (userid) => {
       FROM coduck.notion_users
       WHERE "userID" = ${userid};
     `;
-    
+
     console.log(`User Sources: ${JSON.stringify(query)}`)
-    
+
     const userSources = await Promise.all(
       query.map(async (value) => {
         const notion = new Client({
           auth: value.user_access_token,
         });
 
-        const dataSource = await notion.databases.retrieve({
-          database_id: value.duplicated_template_id,
-        });
+        //TODO 
+        // validate if database even exists
+        // if does not, delete from DB ; this is assuming that notion
+        // keeps its database_ids permanent and does not refresh in the future
+        // reference for error handling : https://github.com/makenotion/notion-sdk-js
+        try {
+          const dataSource = await notion.databases.retrieve({
+            database_id: value.duplicated_template_id,
+          });
 
-        const title = dataSource.title
-          .map((t) => t.plain_text)
-          .join("");
+          const title = dataSource.title
+            .map((t) => t.plain_text)
+            .join("");
 
-        return {
-          user_access_token: value.user_access_token,
-          data_source_id: value.duplicated_template_id,
-          data_source_name: title,
-          workspace_id: value.workspace_id,
-        };
+          return {
+            user_access_token: value.user_access_token,
+            data_source_id: value.duplicated_template_id,
+            data_source_name: title,
+            workspace_id: value.workspace_id,
+          };
+        } catch (err) {
+          if (isNotionClientError(err) && err.code == APIErrorCode.ObjectNotFound) {
+
+            console.warn(`Database with id ${value.duplicated_template_id} was probably deleted/revoked by user, deleting from DB..`)
+            const output = await deleteUserSource(value.duplicated_template_id,value.user_access_token,userid)
+            return output
+          }
+        }
+
       })
     );
 
@@ -78,4 +117,4 @@ const pingCoduckDB = async () => {
 
 };
 
-export { getAllCoduckUsers, pingCoduckDB,getUserSources }
+export { getAllCoduckUsers, pingCoduckDB, getUserSources,deleteUserSource }
