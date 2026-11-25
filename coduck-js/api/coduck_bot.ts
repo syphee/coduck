@@ -167,11 +167,9 @@ bot.command("notion", async (ctx) => {
       } else {
 
         // display all added boards linked to account
-        textOutput += `        
-      [Linked Sources]
+        textOutput += `\n\n[Linked Sources]
       ${userSources.data.map((item, index) => {
-          return `${index + 1} - ${item.data_source_name}
-        `
+          return `${index + 1} - ${item.data_source_name}`
         })}
       `
       }
@@ -243,7 +241,7 @@ const notionSourceMenu = new Menu("dynamic")
           const selectedSource = await response.json();
 
           if (selectedSource.status == "success") {
-            await ctx.reply(
+            await ctx.editMessageText(
               `${item.data_source_name} board is now active!`
             );
           } else if (selectedSource.status == "failed") {
@@ -269,7 +267,7 @@ bot.callbackQuery("select-notion-source", async (ctx) => {
 
   await ctx.answerCallbackQuery();
 
-  await ctx.reply(
+  await ctx.editMessageText(
     "Select your Notion source:",
     {
       reply_markup: notionSourceMenu,
