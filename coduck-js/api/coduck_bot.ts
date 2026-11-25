@@ -622,10 +622,14 @@ bot.callbackQuery("regenerate-response", async (ctx) => {
       // to add a add/cancel/regenerate/edit btn
       const generalQueryMessage = result
 
+      btns = new InlineKeyboard()
+        .text("Regenerate prompt", "regenerate-response")
+
       await ctx.api.editMessageText(
         ctx.chat.id,
         loadingText.message_id,
         String(generalQueryMessage),
+         { reply_markup: btns }
       );
     }
 
