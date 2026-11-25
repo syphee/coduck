@@ -1,6 +1,6 @@
 import app from "./coduckAPI.js"
 
-import { getAllCoduckUsers, pingCoduckDB,getUserSources,deleteUserSource } from "../controller/dataController.js"
+import { deleteActiveUserSource,getAllCoduckUsers, pingCoduckDB,getUserSources,deleteUserSource } from "../controller/dataController.js"
 
 app.get("/api/data/allUsers", async (req, res) => {
   try {
@@ -30,7 +30,8 @@ app.get("/api/data/allUsers", async (req, res) => {
 app.post("/api/data/sources/", async (req, res) => {
   try {
     const userID = req.body.userID
-    const result = await getUserSources(userID)
+    const platform = req.body.platform
+    const result = await getUserSources(userID,platform)
     console.log(`[dataAPI:GET /api/data/sources NEONDB Result]: ${JSON.stringify(result)}`)
     if (result) {
       console.log(result)
@@ -58,8 +59,41 @@ app.delete("/api/data/sources/delete", async (req, res) => {
     const userID = req.body.userID
     const database_id = req.body.database_id
     const user_access_token = req.body.user_access_token
+    const platform = req.body.platform
 
-    const result = await deleteUserSource(database_id,user_access_token,userID)
+    const result = await deleteUserSource(platform,database_id,user_access_token,userID)
+
+    console.log(`[dataAPI:DELETE /api/data/sources/delete NEONDB Result]: ${JSON.stringify(result)}`)
+    if (result) {
+      console.log(result)
+      return res.status(200).json({
+        status: "success",
+        comment: `Delete user source success. Returned ${result.length} rows.`,
+        data: result
+      })
+    }
+    else {
+      return res.status(404).json({
+        status: "fail",
+        comment: "Delete user source failed..",
+      })
+    }
+  } catch (err) {
+    throw new Error(`[dataAPI:DELETE /api/data/sources/delete NEONDB]: Connection Not Established. Reason:${err}`)
+  }
+})
+
+
+
+// delete user's datasources
+app.delete("/api/data/active-sources/delete", async (req, res) => {
+  try {
+    const userID = req.body.userID
+    const database_id = req.body.database_id
+    const user_access_token = req.body.user_access_token
+    const platform = req.body.platform
+
+    const result = await deleteActiveUserSource(platform,database_id,user_access_token,userID)
 
     console.log(`[dataAPI:DELETE /api/data/sources/delete NEONDB Result]: ${JSON.stringify(result)}`)
     if (result) {

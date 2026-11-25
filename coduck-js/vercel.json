@@ -42,6 +42,10 @@
       "source":"/api/data/sources",
       "destination":"/api/dataAPI"
     },
+    {
+      "source":"/api/data/active-source/delete",
+      "destination":"/api/dataAPI"
+    },
     
     {
       "source":"/api/auth/sources/select",

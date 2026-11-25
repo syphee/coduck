@@ -2,6 +2,7 @@ import { neon } from "@neondatabase/serverless"
 const sql = neon(process.env.NEON_DATABASE_URL);
 
 import { Client, APIErrorCode, isNotionClientError } from "@notionhq/client"
+import { platform } from "os";
 
 
 const getAllCoduckUsers = async () => {
@@ -17,9 +18,8 @@ const getAllCoduckUsers = async () => {
   }
 }
 
-const deleteUserSource = async ( duplicated_template_id, user_access_token, userid) => {
+const deleteUserSource = async ( platform,duplicated_template_id, user_access_token, userid) => {
   
-
   try {
     const query = await sql`
 
@@ -32,6 +32,8 @@ const deleteUserSource = async ( duplicated_template_id, user_access_token, user
             user_access_token = ${user_access_token}
           AND 
             "userID" = ${userid}
+          AND
+            platform = ${platform}
           `
 
     const output = query
@@ -41,7 +43,31 @@ const deleteUserSource = async ( duplicated_template_id, user_access_token, user
   }
 }
 
-const getUserSources = async (userid) => {
+const deleteActiveUserSource = async ( platform,duplicated_template_id, user_access_token, userid)=>{
+  try {
+    const query = await sql`
+
+          DELETE
+          FROM 
+            coduck.active_notion_user_sources
+          WHERE
+            active_notion_database_id = ${duplicated_template_id}
+          AND
+            user_access_token = ${user_access_token}
+          AND 
+            "userID" = ${userid}
+          AND
+            platform = ${platform}
+          `
+
+    const output = query
+    return output
+  } catch (err) {
+    console.error(`[dataController deleteUserSource ERROR]: ${err}`)
+  }
+}
+
+const getUserSources = async (userid,platform) => {
   try {
     const query = await sql`
       SELECT
@@ -87,8 +113,13 @@ const getUserSources = async (userid) => {
             // add checks for the active_notion_user_sources db too if the same id exists, will have to delete it too
             // will have to add error handling for the /notion command as well
             console.warn(`Database with id ${value.duplicated_template_id} was probably deleted/revoked by user, deleting from DB..`)
-            const output = await deleteUserSource(value.duplicated_template_id,value.user_access_token,userid)
-            return output
+            const query1 = await deleteUserSource(platform,value.duplicated_template_id,value.user_access_token,userid)
+            const query2 = await deleteActiveUserSource(platform,value.duplicated_template_id,value.user_access_token,userid)
+            
+            // i should probably write a better type check lol
+            if(query1 && query2){
+              return true
+            }
           }
         }
 
@@ -120,4 +151,4 @@ const pingCoduckDB = async () => {
 
 };
 
-export { getAllCoduckUsers, pingCoduckDB, getUserSources,deleteUserSource }
+export { getAllCoduckUsers, pingCoduckDB, getUserSources,deleteUserSource,deleteActiveUserSource }
