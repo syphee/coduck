@@ -152,7 +152,7 @@ bot.command("notion", async (ctx) => {
       let textOutput = '';
 
       if (!userActiveSource) {
-      // all these trouble just to get the name of the board...
+        // all these trouble just to get the name of the board...
 
         const matchedVal = userActiveSource.data[0].active_notion_database_id
         const activeSource = userSources.data
@@ -176,17 +176,9 @@ bot.command("notion", async (ctx) => {
       `
       }
 
-
-
-
-
       await ctx.reply(
-        `
-      ${textOutput},
+        `${textOutput}`,
         { reply_markup: btns }
-
-
-`
       );
 
     }
