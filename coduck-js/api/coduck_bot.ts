@@ -169,7 +169,7 @@ bot.command("notion", async (ctx) => {
         // display all added boards linked to account
         textOutput += `\n\n[Linked Sources]
       ${userSources.data.map((item, index) => {
-          return `${index + 1} - ${item.data_source_name}`
+          return `${index + 1} - ${item.data_source_name}\n\n`
         })}
       `
       }
@@ -242,7 +242,8 @@ const notionSourceMenu = new Menu("dynamic")
 
           if (selectedSource.status == "success") {
             await ctx.editMessageText(
-              `${item.data_source_name} board is now active!`
+              `${item.data_source_name} board is now active!`,
+              { reply_markup: new InlineKeyboard()  }
             );
           } else if (selectedSource.status == "failed") {
             await ctx.reply(
