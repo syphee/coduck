@@ -551,16 +551,18 @@ bot.callbackQuery("insert-generated-response", async (ctx) => {
     });
 
     const selectedSource = await response.json();
-
+    
     await ctx.answerCallbackQuery();
+    await ctx.deleteMessage();
 
     if (selectedSource.status === "success") {
-      await ctx.reply(`Task added successfully.`);
+      await ctx.reply(`${selectedSource.data}`);
     }
     if (selectedSource.status === "fail") {
       await ctx.reply(`Task was not added. Please try again with a new prompt.`);
     }
   } catch (err) {
+     await ctx.reply("❌ Sorry, something went wrong while processing that.");
     console.log(`[coduck_bot insert-generated-response Notion Insertion ERROR]: ${err}`)
   }
 
@@ -569,6 +571,8 @@ bot.callbackQuery("insert-generated-response", async (ctx) => {
 
 bot.callbackQuery("regenerate-response", async (ctx) => {
   await ctx.answerCallbackQuery();
+  await ctx.deleteMessage();
+
   const loadingText = await ctx.reply("⏳ Regenerating query...");
   try {
 

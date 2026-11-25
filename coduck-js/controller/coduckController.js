@@ -38,7 +38,7 @@ const pushTaskResponse = async (formattedResult, auth) => {
       );
     }
 
-    return `Added to ${parsedResult.project}:\n\n${taskBlocks.join("\n\n")}`;
+    return `Added to ${formattedResult.project}:\n\n${taskBlocks.join("\n\n")}`;
   } catch (err) {
     console.error(`[coduckController pushTaskResponse ERROR ] : ${err}`)
   }
