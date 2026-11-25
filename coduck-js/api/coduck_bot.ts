@@ -148,31 +148,45 @@ bot.command("notion", async (ctx) => {
         .row()
         .text("Select Source", "select-notion-source")
 
+      //to check if there is even a board selected, else return just added sources
+      let textOutput = '';
+
+      if (!userActiveSource) {
       // all these trouble just to get the name of the board...
-      const matchedVal = userActiveSource.data[0].active_notion_database_id
-      const activeSource = userSources.data
-        .find((item) =>
-          item.data_source_id === matchedVal)
-      const output = activeSource.data_source_name
-      await ctx.reply(
-        `
+
+        const matchedVal = userActiveSource.data[0].active_notion_database_id
+        const activeSource = userSources.data
+          .find((item) =>
+            item.data_source_id === matchedVal)
+        const output = activeSource.data_source_name
+
+        textOutput += `
       [Selected Source]
       ${output ? output : 'None'}
       `
-        //commented out for now for proof of concept
-        //${JSON.stringify(activeSource)}
-        +
-        `
+      } else {
+
+        // display all added boards linked to account
+        textOutput += `        
       [Linked Sources]
       ${userSources.data.map((item, index) => {
           return `${index + 1} - ${item.data_source_name}
-        n`
+        `
         })}
-      `,
+      `
+      }
+
+
+
+
+
+      await ctx.reply(
+        `
+      ${textOutput},
         { reply_markup: btns }
 
 
-
+`
       );
 
     }
@@ -200,7 +214,7 @@ const notionSourceMenu = new Menu("dynamic")
         },
         body: JSON.stringify({
           userID: userID,
-          platform:'telegram'
+          platform: 'telegram'
         }),
       }
     );
@@ -553,7 +567,7 @@ bot.callbackQuery("insert-generated-response", async (ctx) => {
     });
 
     const selectedSource = await response.json();
-    
+
     await ctx.answerCallbackQuery();
     await ctx.deleteMessage();
 
@@ -564,7 +578,7 @@ bot.callbackQuery("insert-generated-response", async (ctx) => {
       await ctx.reply(`Task was not added. Please try again with a new prompt.`);
     }
   } catch (err) {
-     await ctx.reply("❌ Sorry, something went wrong while processing that.");
+    await ctx.reply("❌ Sorry, something went wrong while processing that.");
     console.log(`[coduck_bot insert-generated-response Notion Insertion ERROR]: ${err}`)
   }
 
