@@ -506,6 +506,7 @@ bot.callbackQuery("reject-generated-response", async (ctx) => {
   await ctx.answerCallbackQuery();
 
   await ctx.deleteMessage();
+  await ctx.reply("❌ Query cancelled.");
 
 });
 
