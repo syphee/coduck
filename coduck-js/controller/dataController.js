@@ -83,6 +83,9 @@ const getUserSources = async (userid) => {
         } catch (err) {
           if (isNotionClientError(err) && err.code == APIErrorCode.ObjectNotFound) {
 
+            // TODO 
+            // add checks for the active_notion_user_sources db too if the same id exists, will have to delete it too
+            // will have to add error handling for the /notion command as well
             console.warn(`Database with id ${value.duplicated_template_id} was probably deleted/revoked by user, deleting from DB..`)
             const output = await deleteUserSource(value.duplicated_template_id,value.user_access_token,userid)
             return output
