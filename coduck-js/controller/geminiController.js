@@ -12,7 +12,7 @@ const ai = new GoogleGenAI({});
 
 // coduck system instruction
 import fs from "fs";
-import { taskQuerySchema } from "../schema/coduck_schema.js";
+import { taskQuerySchema } from "../schema/coduck_schema.ts";
 
 const instructionFile = path.resolve(
   __dirname,
@@ -241,6 +241,7 @@ const createTaskResponse = async (parsedResult,auth) => {
         ? t.steps.map((step, index) => `[${index + 1}]\t${step}`).join("\n")
         : "";
     const exitCriteriaString = `[Exit Criteria]:\t${t.exit_criteria}`;
+    const taskDeadlineString = `[Deadline]:\t${t.task_deadline}`
 
     // inserts steps 1 by 1
     // awaited, so any failure propagates to the try/catch in taskQuery
@@ -265,7 +266,7 @@ const createTaskResponse = async (parsedResult,auth) => {
 
   //return `Added to ${parsedResult.project}:\n\n${taskBlocks.join("\n\n")}`;
   const output = {
-    formattedResultText:`[ Generated Task ]\n\n Project Name : ${parsedResult.project}\n\n [ Generated Tasks ] : \n\n${taskBlocks.join("\n\n")}`,
+    formattedResultText:`[ Generated Task ]\n\n Project Name : ${parsedResult.project}\n\n Project Deadline : ${parsedResult.project_deadline}\n\n [ Generated Tasks ] : \n\n${taskBlocks.join("\n\n")}`,
     formattedResult:parsedResult
   }
   return output

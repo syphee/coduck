@@ -6,7 +6,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 import { insertCoduckRows } from "./notionController.js";
 
-
+// might actually need to move this to notionController instead hais
 const pushTaskResponse = async (formattedResult, auth) => {
 
   try {
