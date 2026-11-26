@@ -258,7 +258,7 @@ const createTaskResponse = async (parsedResult,auth) => {
     // });
 
     taskBlocks.push(
-      [`• ${t.title}`, stepLines, exitCriteriaString]
+      [`• ${t.title}`, stepLines, exitCriteriaString,taskDeadlineString]
         .filter(Boolean)
         .join("\n\n")
     );
