@@ -66,4 +66,4 @@ Output:
   "updates": []
 }
 
-If the user gives no deadline, "deadline" is null at the project level and on every task.
+If the user gives no deadline, "project_deadline" is null at the project level and on every "task_deadline".

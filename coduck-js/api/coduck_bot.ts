@@ -151,7 +151,7 @@ bot.command("notion", async (ctx) => {
       //to check if there is even a board selected, else return just added sources
       let textOutput = '';
 
-      if (!userActiveSource) {
+      if (userActiveSource) {
         // all these trouble just to get the name of the board...
 
         const matchedVal = userActiveSource.data[0].active_notion_database_id
@@ -164,7 +164,8 @@ bot.command("notion", async (ctx) => {
       [Selected Source]
       ${output ? output : 'None'}
       `
-      } else {
+      }
+      if(userSources){
 
         // display all added boards linked to account
         textOutput += `\n\n[Linked Sources]
@@ -483,7 +484,13 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
 
     //main processing
     const processedMemo = await ctx.reply("⏳ Processing your query...")
-    const result = await fetchQuery(transcript, userID, 'telegram')
+
+   
+
+    const today = new Date().toISOString().slice(0, 10); // "2026-11-26"
+    const prompt = `CURRENT_DATE: ${today}\n\n${transcript}`;
+    
+    const result = await fetchQuery(prompt, userID, 'telegram')
     await ctx.api.editMessageText(
       ctx.chat.id,
       processedMemo.message_id,
@@ -581,14 +588,19 @@ bot.callbackQuery("regenerate-response", async (ctx) => {
   const loadingText = await ctx.reply("⏳ Regenerating query...");
   try {
 
+    
     const userInput = ctx.session.userInput
     const userID = ctx.from.id
+
+    const today = new Date().toISOString().slice(0, 10); // "2026-11-26"
+    const prompt = `CURRENT_DATE: ${today}\n\n${userInput}`;
+    
     if (!userInput) {
       return;
     }
 
 
-    const result = await fetchQuery(userInput, userID, 'telegram');
+    const result = await fetchQuery(prompt, userID, 'telegram');
     // then store in session storage temporarily
     ctx.session.generatedResult = result
     ctx.session.userInput = userInput
@@ -655,12 +667,16 @@ bot.on("message", async (ctx) => {
 
     const userInput = ctx.message?.text;
     const userID = ctx.from.id
+
+    const today = new Date().toISOString().slice(0, 10); // "2026-11-26"
+    const prompt = `CURRENT_DATE: ${today}\n\n${userInput}`;
+    
     if (!userInput) {
       return;
     }
 
 
-    const result = await fetchQuery(userInput, userID, 'telegram');
+    const result = await fetchQuery(prompt, userID, 'telegram');
     // then store in session storage temporarily
     const queryData = result.formattedResult
     const queryDataMessage = result.formattedResultText
