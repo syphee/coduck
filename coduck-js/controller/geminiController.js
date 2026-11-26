@@ -12,7 +12,7 @@ const ai = new GoogleGenAI({});
 
 // coduck system instruction
 import fs from "fs";
-import { taskQuerySchema } from "../schema/coduck_schema.ts";
+import { taskQuerySchema } from "../schema/coduck_schema.js";
 
 const instructionFile = path.resolve(
   __dirname,

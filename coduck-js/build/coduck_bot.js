@@ -1,10 +1,9 @@
 // to run npx tsc everytime..
-import { Bot, webhookCallback, InlineKeyboard, session, Context } from "grammy";
+import { Bot, webhookCallback, InlineKeyboard, session } from "grammy";
 import { Menu, MenuRange } from "@grammyjs/menu";
 import dotenv from "dotenv";
 import * as path from "path";
 import { fileURLToPath } from 'url';
-import { getUser } from "@notionhq/client/build/src/api-endpoints.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -105,25 +104,27 @@ bot.command("notion", async (ctx) => {
                 .url("Remove Notion Source", "www.google.com")
                 .row()
                 .text("Select Source", "select-notion-source");
-            // all these trouble just to get the name of the board...
-            const matchedVal = userActiveSource.data[0].active_notion_database_id;
-            const activeSource = userSources.data
-                .find((item) => item.data_source_id === matchedVal);
-            const output = activeSource.data_source_name;
-            await ctx.reply(`
+            //to check if there is even a board selected, else return just added sources
+            let textOutput = '';
+            if (!userActiveSource) {
+                // all these trouble just to get the name of the board...
+                const matchedVal = userActiveSource.data[0].active_notion_database_id;
+                const activeSource = userSources.data
+                    .find((item) => item.data_source_id === matchedVal);
+                const output = activeSource.data_source_name;
+                textOutput += `
       [Selected Source]
       ${output ? output : 'None'}
-      `
-                //commented out for now for proof of concept
-                //${JSON.stringify(activeSource)}
-                +
-                    `
-      [Linked Sources]
+      `;
+            }
+            else {
+                // display all added boards linked to account
+                textOutput += `\n\n[Linked Sources]
       ${userSources.data.map((item, index) => {
-                        return `${index + 1} - ${item.data_source_name}
-        n`;
-                    })}
-      `, { reply_markup: btns });
+                    return `${index + 1} - ${item.data_source_name}\n\n`;
+                })}`;
+            }
+            await ctx.reply(`${textOutput}`, { reply_markup: btns });
         }
         return;
     }
@@ -142,6 +143,7 @@ const notionSourceMenu = new Menu("dynamic")
         },
         body: JSON.stringify({
             userID: userID,
+            platform: 'telegram'
         }),
     });
     const userSources = await response.json();
@@ -167,7 +169,7 @@ const notionSourceMenu = new Menu("dynamic")
             });
             const selectedSource = await response.json();
             if (selectedSource.status == "success") {
-                await ctx.reply(`${item.data_source_name} board is now active!`);
+                await ctx.editMessageText(`${item.data_source_name} board is now active!`, { reply_markup: new InlineKeyboard() });
             }
             else if (selectedSource.status == "failed") {
                 await ctx.reply(`❌ Couldn't select source. Reason : ${selectedSource.reason}`);
@@ -182,7 +184,7 @@ const notionSourceMenu = new Menu("dynamic")
 bot.use(notionSourceMenu);
 bot.callbackQuery("select-notion-source", async (ctx) => {
     await ctx.answerCallbackQuery();
-    await ctx.reply("Select your Notion source:", {
+    await ctx.editMessageText("Select your Notion source:", {
         reply_markup: notionSourceMenu,
     });
 });
@@ -366,6 +368,7 @@ bot.use(session({
 bot.callbackQuery("reject-generated-response", async (ctx) => {
     await ctx.answerCallbackQuery();
     await ctx.deleteMessage();
+    await ctx.reply("❌ Query cancelled.");
 });
 // bot.callbackQuery("regenerate-response", async (ctx) => {
 //   await ctx.answerCallbackQuery();
@@ -374,31 +377,47 @@ bot.callbackQuery("reject-generated-response", async (ctx) => {
 // });
 bot.callbackQuery("insert-generated-response", async (ctx) => {
     try {
+        //TODO  
+        // to cleanup this auth portion
+        const userID = ctx.chat.id;
+        const getUserActiveSource = await fetch(`${process.env.CODUCK_API_URL}/api/auth/source`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userID: userID,
+                platform: 'telegram'
+            }),
+        });
+        const auth = await getUserActiveSource.json();
         const payload = ctx.session.generatedResult;
-        const response = await fetch(`${process.env.CODUCK_API_URL}/api/notion/insert`, {
+        const response = await fetch(`${process.env.CODUCK_API_URL}/api/coduck-notion/insert`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                taskPayload: payload
+                taskPayload: payload,
+                auth: auth
             }),
         });
         const selectedSource = await response.json();
         await ctx.answerCallbackQuery();
+        await ctx.deleteMessage();
         if (selectedSource.status === "success") {
-            await ctx.reply(`Task added successfully.`);
+            await ctx.reply(`${selectedSource.data}`);
         }
         if (selectedSource.status === "fail") {
             await ctx.reply(`Task was not added. Please try again with a new prompt.`);
         }
     }
     catch (err) {
+        await ctx.reply("❌ Sorry, something went wrong while processing that.");
         console.log(`[coduck_bot insert-generated-response Notion Insertion ERROR]: ${err}`);
     }
 });
 bot.callbackQuery("regenerate-response", async (ctx) => {
     await ctx.answerCallbackQuery();
+    await ctx.deleteMessage();
     const loadingText = await ctx.reply("⏳ Regenerating query...");
     try {
         const userInput = ctx.session.userInput;
@@ -410,14 +429,30 @@ bot.callbackQuery("regenerate-response", async (ctx) => {
         // then store in session storage temporarily
         ctx.session.generatedResult = result;
         ctx.session.userInput = userInput;
-        const btns = new InlineKeyboard()
-            .text("Cancel", "reject-generated-response")
-            .row()
-            .text("Add to Board", "insert-generated-response")
-            .row()
-            .text("Regenerate prompt", "regenerate-response");
-        // to add a add/cancel/regenerate/edit btn
-        await ctx.api.editMessageText(ctx.chat.id, loadingText.message_id, String(result), { reply_markup: btns });
+        const queryData = result.formattedResult;
+        const queryDataMessage = result.formattedResultText;
+        // if is taskQuery
+        let btns;
+        if (queryData && queryDataMessage) {
+            btns = new InlineKeyboard()
+                .text("Cancel", "reject-generated-response")
+                .row()
+                .text("Add to Board", "insert-generated-response")
+                .row()
+                .text("Regenerate prompt", "regenerate-response");
+            ctx.session.generatedResult = queryData;
+            ctx.session.userInput = userInput;
+            // to add a add/cancel/regenerate/edit btn
+            await ctx.api.editMessageText(ctx.chat.id, loadingText.message_id, String(queryDataMessage), { reply_markup: btns });
+        }
+        //if generalQuery
+        else {
+            // to add a add/cancel/regenerate/edit btn
+            const generalQueryMessage = result;
+            btns = new InlineKeyboard()
+                .text("Regenerate prompt", "regenerate-response");
+            await ctx.api.editMessageText(ctx.chat.id, loadingText.message_id, String(generalQueryMessage), { reply_markup: btns });
+        }
     }
     catch (error) {
         console.error(error);
@@ -437,16 +472,28 @@ bot.on("message", async (ctx) => {
         }
         const result = await fetchQuery(userInput, userID, 'telegram');
         // then store in session storage temporarily
-        ctx.session.generatedResult = result;
-        ctx.session.userInput = userInput;
-        const btns = new InlineKeyboard()
-            .text("Cancel", "reject-generated-response")
-            .row()
-            .text("Add to Board", "insert-generated-response")
-            .row()
-            .text("Regenerate prompt", "regenerate-response");
-        // to add a add/cancel/regenerate/edit btn
-        await ctx.api.editMessageText(ctx.chat.id, loadingText.message_id, String(result), { reply_markup: btns });
+        const queryData = result.formattedResult;
+        const queryDataMessage = result.formattedResultText;
+        // if is taskQuery
+        let btns;
+        if (queryData && queryDataMessage) {
+            btns = new InlineKeyboard()
+                .text("Cancel", "reject-generated-response")
+                .row()
+                .text("Add to Board", "insert-generated-response")
+                .row()
+                .text("Regenerate prompt", "regenerate-response");
+            ctx.session.generatedResult = queryData;
+            ctx.session.userInput = userInput;
+            // to add a add/cancel/regenerate/edit btn
+            await ctx.api.editMessageText(ctx.chat.id, loadingText.message_id, String(queryDataMessage), { reply_markup: btns });
+        }
+        //if generalQuery
+        else {
+            // to add a add/cancel/regenerate/edit btn
+            const generalQueryMessage = result;
+            await ctx.api.editMessageText(ctx.chat.id, loadingText.message_id, String(generalQueryMessage));
+        }
     }
     catch (error) {
         console.error(error);
